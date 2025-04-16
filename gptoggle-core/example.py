@@ -133,15 +133,15 @@ def demo_provider_customization():
     print("\n=== Provider Customization ===")
     
     # Show current enabled providers
-    print("Default enabled providers:", config.get_enabled_providers())
-    print("Default provider priority:", config.get_provider_priority())
+    print("Default enabled providers:", config.config.get_enabled_providers())
+    print("Default provider priority:", config.config.get_provider_priority())
     
     # Disable a provider (if both are available)
-    if "openai" in config.get_enabled_providers() and "claude" in config.get_enabled_providers():
+    if "openai" in config.config.get_enabled_providers() and "claude" in config.config.get_enabled_providers():
         print("\n--- Example: Disabling a Provider ---")
         print("Disabling Claude provider...")
-        config.disable_provider("claude")
-        print("Enabled providers after disabling Claude:", config.get_enabled_providers())
+        config.config.disable_provider("claude")
+        print("Enabled providers after disabling Claude:", config.config.get_enabled_providers())
         
         # Try auto-selection with disabled provider
         try:
@@ -156,19 +156,19 @@ def demo_provider_customization():
             
         # Re-enable the provider
         print("\nRe-enabling Claude provider...")
-        config.enable_provider("claude")
-        print("Enabled providers:", config.get_enabled_providers())
+        config.config.enable_provider("claude")
+        print("Enabled providers:", config.config.get_enabled_providers())
     
     # Change provider priority
-    if "openai" in config.get_enabled_providers() and "claude" in config.get_enabled_providers():
+    if "openai" in config.config.get_enabled_providers() and "claude" in config.config.get_enabled_providers():
         print("\n--- Example: Changing Provider Priority ---")
-        print("Current priority:", config.get_provider_priority())
+        print("Current priority:", config.config.get_provider_priority())
         
         # Set Claude as highest priority
         new_priority = ["claude", "openai"]
         print(f"Setting new priority: {new_priority}")
-        config.set_provider_priority(new_priority)
-        print("New priority:", config.get_provider_priority())
+        config.config.set_provider_priority(new_priority)
+        print("New priority:", config.config.get_provider_priority())
         
         # Try auto-selection with new priority
         try:
@@ -183,7 +183,7 @@ def demo_provider_customization():
             
         # Reset priority to default
         default_priority = ["openai", "claude"]
-        config.set_provider_priority(default_priority)
+        config.config.set_provider_priority(default_priority)
         
 def main():
     """Run the demonstration."""

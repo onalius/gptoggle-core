@@ -37,7 +37,8 @@ setup(
     install_requires=[
         "openai>=1.0.0",
         "anthropic>=0.5.0",
-        # "google-generativeai>=0.1.0",  # Uncomment when adding Gemini support
+        "google-generativeai>=0.1.0",
+        # We'll use OpenAI SDK for X.AI's Grok as they use a compatible API format
     ],
     entry_points={
         "console_scripts": [

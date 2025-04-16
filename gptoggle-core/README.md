@@ -4,11 +4,12 @@ GPToggle is a multi-provider AI wrapper with intelligent model selection, compar
 
 ## Features
 
-- **Multi-Provider Support**: Seamlessly switch between OpenAI, Claude, and more (Gemini coming soon)
+- **Multi-Provider Support**: Seamlessly switch between OpenAI, Claude, Google Gemini, and xAI's Grok models
 - **Auto-triage Model Selection**: Automatically selects the most appropriate model based on your prompt
 - **Cross-Provider Comparison**: Compare responses from different AI providers and models
 - **Command Line Interface**: Use GPToggle directly from the command line
 - **Python API**: Import GPToggle into your Python projects
+- **Provider Customization**: Enable/disable specific providers and set priority order
 
 ## Installation
 
@@ -44,6 +45,12 @@ export OPENAI_API_KEY='your-openai-api-key'
 
 # Set Anthropic API key (for Claude)
 export ANTHROPIC_API_KEY='your-anthropic-api-key'
+
+# Set Google API key (for Gemini)
+export GOOGLE_API_KEY='your-google-api-key'
+
+# Set X AI API key (for Grok)
+export XAI_API_KEY='your-xai-api-key'
 ```
 
 #### Auto-select the best model for your prompt:
@@ -91,6 +98,8 @@ from gptoggle import get_response, choose_provider_and_model, compare_models, co
 # Set your API keys
 os.environ["OPENAI_API_KEY"] = "your-openai-api-key"
 os.environ["ANTHROPIC_API_KEY"] = "your-anthropic-api-key"
+os.environ["GOOGLE_API_KEY"] = "your-google-api-key" 
+os.environ["XAI_API_KEY"] = "your-xai-api-key"
 
 # Auto-select the best provider and model
 provider, model, reason = choose_provider_and_model("Write code to implement a binary search tree in Python")
@@ -121,20 +130,20 @@ GPToggle allows you to easily customize which providers are enabled and their pr
 from gptoggle import config
 
 # Check which providers are enabled
-print(config.get_enabled_providers())  # By default, all providers are enabled
+print(config.config.get_enabled_providers())  # By default, all providers are enabled
 
 # Disable a provider you don't want to use
-config.disable_provider("claude")
+config.config.disable_provider("claude")
 
 # Re-enable a provider
-config.enable_provider("claude")
+config.config.enable_provider("claude")
 
 # Change the priority order for auto-selection
 # This will make Claude the first choice when auto-selecting a provider
-config.set_provider_priority(["claude", "openai"])
+config.config.set_provider_priority(["claude", "openai"])
 
 # Get the current priority order
-print(config.get_provider_priority())
+print(config.config.get_provider_priority())
 ```
 
 ## How Model Selection Works
@@ -162,11 +171,17 @@ GPToggle uses provider-specific triage algorithms to determine the most appropri
 - Claude 3 Haiku
 - Claude 2.1
 
-### Google Gemini (Coming Soon)
-- Gemini 1.5 Pro
-- Gemini 1.5 Flash
-- Gemini 1.0 Pro
-- Gemini 1.0
+### Google Gemini
+- Gemini 1.5 Pro - Most capable model with 1M token context
+- Gemini 1.5 Flash - Fast and efficient model with 1M token context
+- Gemini Pro Vision - Vision-specialized model for image processing
+- Gemini Pro - Efficient text-only model
+
+### X AI (xAI) Grok
+- Grok-2 (grok-2-1212) - Latest model with 128K token context
+- Grok-2 Vision (grok-2-vision-1212) - Vision-capable version of Grok-2
+- Grok Beta (grok-beta) - Original Grok model
+- Grok Vision Beta (grok-vision-beta) - Vision-capable original Grok
 
 ## License
 

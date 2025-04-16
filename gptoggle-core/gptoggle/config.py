@@ -46,10 +46,15 @@ class Config:
             api_key=os.environ.get("ANTHROPIC_API_KEY", "")
         )
         
-        # Google Gemini (future)
-        # self.providers["gemini"] = ProviderConfig(
-        #     api_key=os.environ.get("GEMINI_API_KEY", "")
-        # )
+        # Google Gemini
+        self.providers["gemini"] = ProviderConfig(
+            api_key=os.environ.get("GOOGLE_API_KEY", "")
+        )
+        
+        # X AI (xAI) Grok
+        self.providers["grok"] = ProviderConfig(
+            api_key=os.environ.get("XAI_API_KEY", "")
+        )
         
         # Default to all providers enabled
         self.enabled_providers = list(self.providers.keys())

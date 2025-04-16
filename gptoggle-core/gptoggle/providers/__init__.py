@@ -2,23 +2,18 @@
 Provider modules for different AI model services.
 """
 
-# Import all providers
-from .openai_provider import OpenAIProvider
-from .claude_provider import ClaudeProvider
+from ..providers.openai_provider import OpenAIProvider
+from ..providers.claude_provider import ClaudeProvider
+from ..providers.gemini_provider import GeminiProvider
+from ..providers.grok_provider import GrokProvider
 
-# Dictionary mapping provider names to their respective classes
+# Dictionary mapping provider names to provider classes
 PROVIDERS = {
     "openai": OpenAIProvider,
     "claude": ClaudeProvider,
-    # "gemini": GeminiProvider,  # To be added in the future
+    "gemini": GeminiProvider,
+    "grok": GrokProvider
 }
 
 # Default provider
 DEFAULT_PROVIDER = "openai"
-
-__all__ = [
-    "OpenAIProvider",
-    "ClaudeProvider",
-    "PROVIDERS",
-    "DEFAULT_PROVIDER",
-]
