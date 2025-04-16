@@ -2,13 +2,17 @@
 This module handles the comparison of responses from different models and providers,
 and manages the user rating system.
 """
+
 import json
 import os
-import datetime
-from typing import Dict, List, Any, Tuple
+from datetime import datetime
+from typing import Dict, List, Tuple
 
-from . import config
-from .providers import PROVIDERS
+from gptoggle.config import config
+from gptoggle.chat import get_response
+
+# File path for storing user ratings
+RATINGS_FILE = os.path.expanduser("~/.gptoggle/ratings.json")
 
 def get_responses(prompt: str, model_pairs: List[Tuple[str, str]]) -> Dict[str, str]:
     """
@@ -24,29 +28,23 @@ def get_responses(prompt: str, model_pairs: List[Tuple[str, str]]) -> Dict[str, 
     responses = {}
     
     for provider_name, model_name in model_pairs:
-        # Get provider instance
-        provider_class = PROVIDERS[provider_name]
-        provider = provider_class()
+        # Get provider-specific configuration
+        provider_config = config.get_provider_config(provider_name)
         
-        # Get provider-specific config
-        provider_config = config.config.get_provider_config(provider_name)
+        # Use shorter token limit for comparisons
+        max_tokens = provider_config.max_comparison_tokens
         
-        try:
-            # Validate API key
-            if not provider.validate_api_key():
-                responses[f"{provider_name}:{model_name}"] = f"Error: API key not set for provider '{provider_name}'"
-                continue
-                
-            # Get response
-            response = provider.get_response(
-                prompt=prompt, 
-                model=model_name,
-                temperature=provider_config.temperature,
-                max_tokens=provider_config.max_comparison_tokens
-            )
-            responses[f"{provider_name}:{model_name}"] = response
-        except Exception as e:
-            responses[f"{provider_name}:{model_name}"] = f"Error: {str(e)}"
+        # Generate response
+        response = get_response(
+            prompt=prompt,
+            provider_name=provider_name,
+            model=model_name,
+            max_tokens=max_tokens
+        )
+        
+        # Store response
+        model_key = f"{provider_name}:{model_name}"
+        responses[model_key] = response
     
     return responses
 
@@ -57,10 +55,36 @@ def display_comparison(responses: Dict[str, str]) -> None:
     Args:
         responses: Dictionary mapping provider:model to their responses
     """
-    for i, (model_key, response) in enumerate(responses.items(), 1):
-        print(f"\n--- Response {i} (Model: {model_key}) ---")
-        print(response)
+    # Get models in a consistent order
+    models = sorted(responses.keys())
+    
+    # Check if we have exactly 2 models (most common case)
+    if len(models) == 2:
+        # Print header
+        print("\n" + "=" * 80)
+        print(f"MODEL COMPARISON: {models[0]} vs {models[1]}")
+        print("=" * 80 + "\n")
+        
+        # Print responses side by side
+        print(f"[1] {models[0]}:")
         print("-" * 80)
+        print(responses[models[0]])
+        print("\n" + "-" * 80 + "\n")
+        
+        print(f"[2] {models[1]}:")
+        print("-" * 80)
+        print(responses[models[1]])
+        print("\n" + "-" * 80)
+    else:
+        # Print each response sequentially for 3+ models
+        print("\nMODEL COMPARISON:")
+        print("=" * 80 + "\n")
+        
+        for i, model in enumerate(models, 1):
+            print(f"[{i}] {model}:")
+            print("-" * 80)
+            print(responses[model])
+            print("\n" + "-" * 80 + "\n")
 
 def get_user_rating() -> int:
     """
@@ -70,13 +94,10 @@ def get_user_rating() -> int:
         The user's rating (1 or 2)
     """
     while True:
-        try:
-            rating = int(input("\nWhich response was better? (1 or 2): "))
-            if rating in [1, 2]:
-                return rating
-            print("Please enter either 1 or 2.")
-        except ValueError:
-            print("Please enter a valid number (1 or 2).")
+        rating = input("Which response was better? Enter 1 or 2 (or 0 to skip rating): ")
+        if rating in ["0", "1", "2"]:
+            return int(rating)
+        print("Invalid input. Please enter 1, 2, or 0 to skip.")
 
 def save_rating(prompt: str, model_pairs: List[Tuple[str, str]], responses: Dict[str, str], preferred: int) -> None:
     """
@@ -88,60 +109,42 @@ def save_rating(prompt: str, model_pairs: List[Tuple[str, str]], responses: Dict
         responses: Dictionary mapping provider:model to their responses
         preferred: The user's preferred response (1 or 2)
     """
-    # Create the ratings file if it doesn't exist
-    if not os.path.exists(config.RATINGS_FILE):
-        with open(config.RATINGS_FILE, 'w') as f:
-            json.dump([], f)
+    # Create directory if it doesn't exist
+    os.makedirs(os.path.dirname(RATINGS_FILE), exist_ok=True)
     
-    # Load existing ratings
-    try:
-        with open(config.RATINGS_FILE, 'r') as f:
-            ratings = json.load(f)
-    except json.JSONDecodeError:
-        # If the file is empty or malformed, start with an empty list
-        ratings = []
+    # Load existing ratings if file exists
+    ratings_data = []
+    if os.path.exists(RATINGS_FILE):
+        try:
+            with open(RATINGS_FILE, "r") as f:
+                ratings_data = json.load(f)
+        except json.JSONDecodeError:
+            # Handle case where file exists but isn't valid JSON
+            ratings_data = []
     
-    # Map the user's preference to the actual model pairs
-    preferred_model_pair = model_pairs[preferred - 1]
-    non_preferred_model_pair = model_pairs[1 - (preferred - 1)]
-    
-    # Format for logging
-    preferred_key = f"{preferred_model_pair[0]}:{preferred_model_pair[1]}"
-    non_preferred_key = f"{non_preferred_model_pair[0]}:{non_preferred_model_pair[1]}"
-    
-    # Create a new rating entry
+    # Create new rating entry
+    models = sorted([f"{p}:{m}" for p, m in model_pairs])
     rating_entry = {
-        "timestamp": datetime.datetime.now().isoformat(),
+        "timestamp": datetime.now().isoformat(),
         "prompt": prompt,
-        "models_compared": [
-            {
-                "provider": model_pairs[0][0],
-                "model": model_pairs[0][1]
-            },
-            {
-                "provider": model_pairs[1][0],
-                "model": model_pairs[1][1]
-            }
-        ],
-        "preferred": {
-            "provider": preferred_model_pair[0],
-            "model": preferred_model_pair[1]
-        },
-        "non_preferred": {
-            "provider": non_preferred_model_pair[0],
-            "model": non_preferred_model_pair[1]
-        },
-        "responses": responses
+        "models": models,
+        "responses": responses,
+        "preferred_index": preferred - 1 if preferred > 0 else None,
+        "preferred_model": models[preferred - 1] if preferred > 0 else None
     }
     
-    # Add the new rating to the list
-    ratings.append(rating_entry)
+    # Add to ratings data
+    ratings_data.append(rating_entry)
     
-    # Save the updated ratings
-    with open(config.RATINGS_FILE, 'w') as f:
-        json.dump(ratings, f, indent=2)
+    # Save to file
+    with open(RATINGS_FILE, "w") as f:
+        json.dump(ratings_data, f, indent=2)
     
-    print(f"Rating saved to {config.RATINGS_FILE}")
+    # Print confirmation
+    if preferred > 0:
+        print(f"Rating saved: {models[preferred - 1]} preferred for this prompt.")
+    else:
+        print("Rating skipped.")
 
 def compare_models(prompt: str, model_pairs: List[Tuple[str, str]]) -> None:
     """
@@ -151,22 +154,23 @@ def compare_models(prompt: str, model_pairs: List[Tuple[str, str]]) -> None:
         prompt: The user's prompt
         model_pairs: List of (provider_name, model_name) tuples
     """
-    # Format for display
-    model_display = [f"{provider}:{model}" for provider, model in model_pairs]
-    print(f"Comparing responses from: {', '.join(model_display)}")
+    # Validate input
+    if len(model_pairs) < 2:
+        print("Error: At least two models are required for comparison.")
+        return
     
-    # Get responses
+    # Get responses from all models
+    print("Generating responses from all models...")
     responses = get_responses(prompt, model_pairs)
     
-    # Display comparison
+    # Display side-by-side comparison
     display_comparison(responses)
     
     # Get user rating
-    preferred = get_user_rating()
+    user_rating = get_user_rating()
     
-    # Save rating
-    save_rating(prompt, model_pairs, responses, preferred)
-    
-    # Show confirmation
-    preferred_provider, preferred_model = model_pairs[preferred - 1]
-    print(f"You preferred the response from {preferred_provider}:{preferred_model}")
+    # Save the rating
+    if user_rating > 0:
+        save_rating(prompt, model_pairs, responses, user_rating)
+    else:
+        print("Rating skipped.")

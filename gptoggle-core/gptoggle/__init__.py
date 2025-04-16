@@ -2,20 +2,16 @@
 GPToggle: A multi-provider AI model wrapper with auto-model selection and comparison capabilities.
 """
 
-__version__ = "0.2.0"
+__version__ = "0.1.0"
 
-from .chat import get_response, list_available_models, choose_provider_and_model
-from .compare import compare_models
-from .config import Config, ProviderConfig
-from .providers import PROVIDERS, DEFAULT_PROVIDER
+# Core functionality
+from gptoggle.config import Config
+from gptoggle.chat import get_response, choose_provider_and_model, list_available_models
+from gptoggle.compare import compare_models
 
-__all__ = [
-    "get_response",
-    "list_available_models",
-    "choose_provider_and_model",
-    "compare_models",
-    "Config",
-    "ProviderConfig",
-    "PROVIDERS",
-    "DEFAULT_PROVIDER",
-]
+# Import provider classes for direct access if needed
+from gptoggle.providers.base_provider import BaseProvider
+from gptoggle.providers.openai_provider import OpenAIProvider
+from gptoggle.providers.claude_provider import ClaudeProvider
+from gptoggle.providers.gemini_provider import GeminiProvider
+from gptoggle.providers.grok_provider import GrokProvider

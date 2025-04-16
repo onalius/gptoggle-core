@@ -6,12 +6,10 @@ This module provides configuration options for the GPToggle system, including:
 - Global configuration (active providers, default provider, etc.)
 - Customization options for enabled providers and their priority
 """
+
 import os
 from dataclasses import dataclass, field
-from typing import Dict, List, Any, Optional
-
-# Ratings configuration
-RATINGS_FILE = "ratings.json"
+from typing import Dict, List, Optional
 
 @dataclass
 class ProviderConfig:
@@ -27,49 +25,40 @@ class Config:
     # Provider configurations
     providers: Dict[str, ProviderConfig] = field(default_factory=dict)
     
-    # Global settings
+    # Active provider for direct calls without provider specification
     active_provider: str = "openai"  # Default provider
     
-    # Provider management
+    # List of enabled providers and their priority order
     enabled_providers: List[str] = field(default_factory=list)
     provider_priority: List[str] = field(default_factory=list)
     
     def __post_init__(self):
         """Initialize provider configurations."""
-        # OpenAI
-        self.providers["openai"] = ProviderConfig(
-            api_key=os.environ.get("OPENAI_API_KEY", "")
-        )
+        # Initialize configurations for all known providers
+        self.providers = {
+            "openai": ProviderConfig(api_key=os.environ.get("OPENAI_API_KEY", "")),
+            "claude": ProviderConfig(api_key=os.environ.get("ANTHROPIC_API_KEY", "")),
+            "gemini": ProviderConfig(api_key=os.environ.get("GOOGLE_API_KEY", "")),
+            "grok": ProviderConfig(api_key=os.environ.get("XAI_API_KEY", "")),
+        }
         
-        # Anthropic Claude
-        self.providers["claude"] = ProviderConfig(
-            api_key=os.environ.get("ANTHROPIC_API_KEY", "")
-        )
+        # Enable providers that have API keys set
+        self.enabled_providers = []
+        for provider_name, config in self.providers.items():
+            if config.api_key:
+                self.enabled_providers.append(provider_name)
         
-        # Google Gemini
-        self.providers["gemini"] = ProviderConfig(
-            api_key=os.environ.get("GOOGLE_API_KEY", "")
-        )
-        
-        # X AI (xAI) Grok
-        self.providers["grok"] = ProviderConfig(
-            api_key=os.environ.get("XAI_API_KEY", "")
-        )
-        
-        # Default to all providers enabled
-        self.enabled_providers = list(self.providers.keys())
-        
-        # Default priority (can be customized by users)
-        self.provider_priority = list(self.providers.keys())
+        # Set default priority order based on general capability/cost balance
+        self.provider_priority = ["openai", "claude", "gemini", "grok"]
     
     def get_provider_config(self, provider: Optional[str] = None) -> ProviderConfig:
         """Get configuration for the specified provider."""
-        provider = provider or self.active_provider
-        return self.providers.get(provider, ProviderConfig())
+        provider_name = provider or self.active_provider
+        return self.providers.get(provider_name, ProviderConfig())
     
     def set_active_provider(self, provider: str) -> bool:
         """Set the active provider."""
-        if provider in self.providers and provider in self.enabled_providers:
+        if provider in self.providers:
             self.active_provider = provider
             return True
         return False
@@ -99,11 +88,8 @@ class Config:
         Returns:
             True if successful, False if provider doesn't exist or is already disabled
         """
-        if provider in self.enabled_providers:
+        if provider in self.providers and provider in self.enabled_providers:
             self.enabled_providers.remove(provider)
-            # If we disabled the active provider, switch to the first available one
-            if provider == self.active_provider and self.enabled_providers:
-                self.active_provider = self.enabled_providers[0]
             return True
         return False
     
@@ -114,7 +100,7 @@ class Config:
         Returns:
             List of enabled provider names
         """
-        return self.enabled_providers
+        return self.enabled_providers.copy()
     
     def set_provider_priority(self, priority_list: List[str]) -> bool:
         """
@@ -126,15 +112,11 @@ class Config:
         Returns:
             True if successful, False if any provider in the list doesn't exist
         """
-        # Check all providers exist
+        # Validate all providers in the list
         if not all(p in self.providers for p in priority_list):
             return False
-            
-        # Check all enabled providers are included
-        missing_providers = [p for p in self.enabled_providers if p not in priority_list]
         
-        # Update priority list, adding any enabled providers that were missing at the end
-        self.provider_priority = priority_list + missing_providers
+        self.provider_priority = priority_list
         return True
     
     def get_provider_priority(self) -> List[str]:
@@ -144,8 +126,7 @@ class Config:
         Returns:
             List of provider names in priority order
         """
-        # Filter out any disabled providers
-        return [p for p in self.provider_priority if p in self.enabled_providers]
+        return self.provider_priority.copy()
 
-# Create a global config instance
+# Global configuration instance
 config = Config()

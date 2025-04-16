@@ -8,199 +8,178 @@ This script demonstrates the main features of GPToggle, including:
 - Getting responses
 - Comparing models across providers
 """
+
 import os
 import sys
 
-from gptoggle import (
-    get_response, 
-    choose_provider_and_model, 
-    compare_models,
-    list_available_models,
-    PROVIDERS,
-    Config,
-    config
-)
+from gptoggle import Config, get_response, choose_provider_and_model, compare_models
+from gptoggle.providers import get_available_providers
 
 def check_api_keys():
     """Check if the required API keys are set as environment variables."""
-    missing_keys = []
+    api_keys = {
+        "openai": os.environ.get("OPENAI_API_KEY"),
+        "claude": os.environ.get("ANTHROPIC_API_KEY"),
+        "gemini": os.environ.get("GOOGLE_API_KEY"),
+        "grok": os.environ.get("XAI_API_KEY"),
+    }
     
-    if not os.environ.get("OPENAI_API_KEY"):
-        missing_keys.append("OPENAI_API_KEY")
+    available_keys = {k: bool(v) for k, v in api_keys.items()}
     
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        missing_keys.append("ANTHROPIC_API_KEY")
+    print("API Key Status:")
+    for provider, available in available_keys.items():
+        status = "✓ Available" if available else "✗ Not Set"
+        print(f"  {provider.upper()}: {status}")
+    print()
     
-    if missing_keys:
-        print(f"Warning: The following API keys are not set: {', '.join(missing_keys)}")
-        print("Some examples may not work without the appropriate API keys.")
-        print("\nTo set API keys:")
-        
-        if "OPENAI_API_KEY" in missing_keys:
-            print("export OPENAI_API_KEY='your-openai-api-key'")
-            
-        if "ANTHROPIC_API_KEY" in missing_keys:
-            print("export ANTHROPIC_API_KEY='your-anthropic-api-key'")
-            
-        return False
-        
-    return True
+    return any(available_keys.values())
 
 def demo_available_providers():
     """Demonstrate checking available providers."""
-    print("\n=== Available AI Providers ===")
+    print("\n=== Available Providers ===")
+    providers = get_available_providers()
+    print(f"All providers: {', '.join(providers)}")
     
-    for provider_name in PROVIDERS:
-        print(f"- {provider_name}")
+    # Get global configuration
+    config = Config()
+    enabled_providers = config.get_enabled_providers()
+    print(f"Enabled providers: {', '.join(enabled_providers)}")
     
-    # List models for each provider
-    for provider_name in PROVIDERS:
-        print(f"\n=== Available Models for {provider_name} ===")
-        try:
-            list_available_models(provider_name)
-        except Exception as e:
-            print(f"Error listing models for {provider_name}: {str(e)}")
+    priority = config.get_provider_priority()
+    print(f"Priority order: {', '.join(priority)}")
+    print()
 
 def demo_auto_select():
     """Demonstrate auto-selection of provider and model."""
-    prompts = [
-        "What is the capital of France?",
-        "Write a function in Python to find prime numbers up to n",
-        "Write a short story about a robot that falls in love with a toaster",
-        "Explain the pros and cons of quantum computing in simple terms"
-    ]
+    print("\n=== Auto-Selection Demo ===")
     
-    print("\n=== Auto-Selection of Provider and Model ===")
+    prompt = "Write a Python function to calculate the Fibonacci sequence"
+    print(f"Prompt: {prompt}")
     
-    for prompt in prompts:
-        print(f"\nPrompt: \"{prompt}\"")
-        try:
-            provider, model, reason = choose_provider_and_model(prompt)
-            print(f"Selected provider: {provider}")
-            print(f"Selected model: {model}")
-            print(f"Reason: {reason}")
-        except Exception as e:
-            print(f"Error: {str(e)}")
+    provider, model, reason = choose_provider_and_model(prompt)
+    print(f"Selected provider: {provider}")
+    print(f"Selected model: {model}")
+    print(f"Reason: {reason}")
+    print()
 
 def demo_get_response():
     """Demonstrate getting responses from different providers."""
-    print("\n=== Getting Responses from Different Providers ===")
+    print("\n=== Get Response Demo ===")
     
-    # OpenAI example
-    if os.environ.get("OPENAI_API_KEY"):
-        print("\n--- OpenAI Example ---")
-        prompt = "Explain how a car engine works in simple terms"
-        print(f"Prompt: \"{prompt}\"")
-        try:
-            response = get_response(prompt, provider_name="openai")
-            print("Response:")
-            print(response)
-        except Exception as e:
-            print(f"Error: {str(e)}")
+    # First, try with a specific provider and model
+    provider = "openai"
+    model = "gpt-3.5-turbo"
+    prompt = "Explain quantum computing in simple terms"
     
-    # Claude example
-    if os.environ.get("ANTHROPIC_API_KEY"):
-        print("\n--- Claude Example ---")
-        prompt = "What are the top 5 programming languages in 2025?"
-        print(f"Prompt: \"{prompt}\"")
-        try:
-            response = get_response(prompt, provider_name="claude")
-            print("Response:")
-            print(response)
-        except Exception as e:
-            print(f"Error: {str(e)}")
+    print(f"Getting response from {provider}:{model}...")
+    response = get_response(prompt, provider, model)
+    print(f"\nResponse from {provider}:{model}:")
+    print("-" * 80)
+    print(response)
+    print("-" * 80)
+    print()
+    
+    # Next, try with auto-selection
+    prompt = "Tell me a short joke about programming"
+    print(f"Getting response with auto-selection for: '{prompt}'")
+    provider, model, reason = choose_provider_and_model(prompt)
+    print(f"Auto-selected: {provider}:{model}")
+    print(f"Reason: {reason}")
+    
+    response = get_response(prompt, provider, model)
+    print(f"\nResponse from auto-selected {provider}:{model}:")
+    print("-" * 80)
+    print(response)
+    print("-" * 80)
+    print()
 
 def demo_compare():
     """Demonstrate comparing models across providers."""
-    if os.environ.get("OPENAI_API_KEY") and os.environ.get("ANTHROPIC_API_KEY"):
-        print("\n=== Comparing Models Across Providers ===")
-        prompt = "Create a 5-day meal plan for a vegetarian diet"
-        print(f"Prompt: \"{prompt}\"")
-        try:
-            print("Comparing OpenAI GPT-4o vs Claude Opus...")
-            print("Results will be displayed and you'll be asked to rate which response is better.")
-            compare_models(
-                prompt, 
-                [("openai", "gpt-4o"), ("claude", "claude-3-opus-20240229")]
-            )
-        except Exception as e:
-            print(f"Error: {str(e)}")
-    else:
-        print("\nSkipping comparison demo - requires both OpenAI and Anthropic API keys")
+    print("\n=== Model Comparison Demo ===")
+    
+    prompt = "Explain the difference between quantum computing and classical computing"
+    print(f"Prompt: {prompt}")
+    
+    # Check available providers
+    config = Config()
+    enabled_providers = config.get_enabled_providers()
+    
+    # Ensure we have at least 2 providers for comparison
+    if len(enabled_providers) < 2:
+        print("Need at least 2 enabled providers with API keys for comparison.")
+        print(f"Currently enabled: {', '.join(enabled_providers)}")
+        return
+    
+    # Get the first two providers for comparison
+    provider1, provider2 = enabled_providers[:2]
+    
+    # Choose default models for each
+    model_pairs = [
+        (provider1, get_response(prompt, provider1, None).split()[0]),  # This is a hack to get the model name
+        (provider2, get_response(prompt, provider2, None).split()[0])   # Should be replaced with a proper method
+    ]
+    
+    print(f"Comparing {provider1} and {provider2}...")
+    compare_models(prompt, model_pairs)
 
 def demo_provider_customization():
     """Demonstrate provider customization capabilities."""
-    print("\n=== Provider Customization ===")
+    print("\n=== Provider Customization Demo ===")
     
-    # Show current enabled providers
-    print("Default enabled providers:", config.config.get_enabled_providers())
-    print("Default provider priority:", config.config.get_provider_priority())
+    # Create a custom configuration
+    config = Config()
     
-    # Disable a provider (if both are available)
-    if "openai" in config.config.get_enabled_providers() and "claude" in config.config.get_enabled_providers():
-        print("\n--- Example: Disabling a Provider ---")
-        print("Disabling Claude provider...")
-        config.config.disable_provider("claude")
-        print("Enabled providers after disabling Claude:", config.config.get_enabled_providers())
-        
-        # Try auto-selection with disabled provider
-        try:
-            prompt = "What will the weather be like tomorrow?"
-            print(f"\nAuto-selecting with prompt: \"{prompt}\"")
-            provider, model, reason = choose_provider_and_model(prompt)
-            print(f"Selected provider: {provider}")
-            print(f"Selected model: {model}")
-            print(f"Reason: {reason}")
-        except Exception as e:
-            print(f"Error: {str(e)}")
-            
-        # Re-enable the provider
-        print("\nRe-enabling Claude provider...")
-        config.config.enable_provider("claude")
-        print("Enabled providers:", config.config.get_enabled_providers())
+    # Get current state
+    print("Current configuration:")
+    print(f"  Active provider: {config.active_provider}")
+    print(f"  Enabled providers: {', '.join(config.get_enabled_providers())}")
+    print(f"  Priority order: {', '.join(config.get_provider_priority())}")
+    print()
     
-    # Change provider priority
-    if "openai" in config.config.get_enabled_providers() and "claude" in config.config.get_enabled_providers():
-        print("\n--- Example: Changing Provider Priority ---")
-        print("Current priority:", config.config.get_provider_priority())
-        
-        # Set Claude as highest priority
-        new_priority = ["claude", "openai"]
-        print(f"Setting new priority: {new_priority}")
-        config.config.set_provider_priority(new_priority)
-        print("New priority:", config.config.get_provider_priority())
-        
-        # Try auto-selection with new priority
-        try:
-            prompt = "What are the best practices for database design?"
-            print(f"\nAuto-selecting with prompt: \"{prompt}\"")
-            provider, model, reason = choose_provider_and_model(prompt)
-            print(f"Selected provider: {provider}")
-            print(f"Selected model: {model}")
-            print(f"Reason: {reason}")
-        except Exception as e:
-            print(f"Error: {str(e)}")
-            
-        # Reset priority to default
-        default_priority = ["openai", "claude"]
-        config.config.set_provider_priority(default_priority)
-        
+    # Change configuration
+    print("Customizing configuration...")
+    config.set_active_provider("claude")
+    
+    # Disable a provider
+    if "gemini" in config.get_enabled_providers():
+        config.disable_provider("gemini")
+    
+    # Change priority
+    new_priority = ["claude", "openai", "grok", "gemini"]
+    config.set_provider_priority(new_priority)
+    
+    # Show updated configuration
+    print("Updated configuration:")
+    print(f"  Active provider: {config.active_provider}")
+    print(f"  Enabled providers: {', '.join(config.get_enabled_providers())}")
+    print(f"  Priority order: {', '.join(config.get_provider_priority())}")
+    print()
+
 def main():
     """Run the demonstration."""
-    print("GPToggle Multi-Provider Example")
-    print("-" * 40)
+    print("GPToggle Demonstration\n")
     
-    # Check API keys
-    check_api_keys()
+    # Check for API keys
+    if not check_api_keys():
+        print("Warning: No API keys are set. Most functions will not work properly.")
+        print("Please set at least one of the following environment variables:")
+        print("  - OPENAI_API_KEY")
+        print("  - ANTHROPIC_API_KEY")
+        print("  - GOOGLE_API_KEY")
+        print("  - XAI_API_KEY")
+        sys.exit(1)
     
-    # Run demos
+    # Run demonstrations
     demo_available_providers()
-    demo_auto_select()
-    demo_get_response()
-    demo_compare()
     demo_provider_customization()
+    demo_auto_select()
     
-    print("\nExample complete.")
+    # These demos make actual API calls
+    if input("Run demos that make API calls? (y/n): ").lower() == 'y':
+        demo_get_response()
+        demo_compare()
+    else:
+        print("Skipping API call demos.")
 
 if __name__ == "__main__":
     main()

@@ -1,192 +1,144 @@
-# GPToggle Core
+# GPToggle
 
-GPToggle is a multi-provider AI wrapper with intelligent model selection, comparison, and switching capabilities.
+A sophisticated Python library for intelligent AI API interactions, designed to simplify and enhance AI-powered conversations through dynamic model selection and provider management.
 
 ## Features
 
-- **Multi-Provider Support**: Seamlessly switch between OpenAI, Claude, Google Gemini, and xAI's Grok models
-- **Auto-triage Model Selection**: Automatically selects the most appropriate model based on your prompt
-- **Cross-Provider Comparison**: Compare responses from different AI providers and models
-- **Command Line Interface**: Use GPToggle directly from the command line
-- **Python API**: Import GPToggle into your Python projects
-- **Provider Customization**: Enable/disable specific providers and set priority order
+- **Multi-Provider Support**: Interact with multiple AI providers through a unified interface
+  - OpenAI (GPT-4, GPT-3.5)
+  - Anthropic (Claude)
+  - Google (Gemini)
+  - xAI (Grok)
+  
+- **Intelligent Model Selection**: Automatically selects the most appropriate model based on:
+  - Prompt length and complexity
+  - Content type (code, creative writing, general questions)
+  - Visual content requirements
+  - Required context window size
+  
+- **Model Comparison**: Compare responses from different models side by side and collect user ratings
+
+- **Customizable Provider Management**:
+  - Enable/disable specific providers
+  - Set provider priority for auto-selection
+  - Configure provider-specific settings
 
 ## Installation
-
-### From PyPI (Coming Soon)
 
 ```bash
 pip install gptoggle
 ```
 
-### From GitHub
+Or for development:
 
 ```bash
-pip install git+https://github.com/gptoggle/gptoggle-core.git
-```
-
-### Development Installation
-
-```bash
-git clone https://github.com/gptoggle/gptoggle-core.git
-cd gptoggle-core
+git clone https://github.com/yourusername/gptoggle.git
+cd gptoggle
 pip install -e .
 ```
 
-## Usage
+## Getting Started
+
+### API Keys
+
+You need to set API keys for the providers you want to use:
+
+```bash
+# For OpenAI
+export OPENAI_API_KEY="your-openai-key"
+
+# For Anthropic Claude
+export ANTHROPIC_API_KEY="your-anthropic-key"
+
+# For Google Gemini
+export GOOGLE_API_KEY="your-google-key"
+
+# For xAI Grok
+export XAI_API_KEY="your-xai-key"
+```
 
 ### CLI Usage
 
-#### Set up your API keys
-
 ```bash
-# Set OpenAI API key
-export OPENAI_API_KEY='your-openai-api-key'
+# Basic usage with auto-provider and model selection
+gptoggle "Tell me about quantum computing"
 
-# Set Anthropic API key (for Claude)
-export ANTHROPIC_API_KEY='your-anthropic-api-key'
+# Specify provider and model
+gptoggle "Tell me about quantum computing" --provider openai --model gpt-4o
 
-# Set Google API key (for Gemini)
-export GOOGLE_API_KEY='your-google-api-key'
+# Compare models from different providers
+gptoggle "Tell me about quantum computing" --compare openai:gpt-4o,claude:claude-3-opus-20240229
 
-# Set X AI API key (for Grok)
-export XAI_API_KEY='your-xai-api-key'
-```
-
-#### Auto-select the best model for your prompt:
-
-```bash
-gptoggle "Write a short story about a robot learning to paint"
-```
-
-#### Specify a provider and model manually:
-
-```bash
-gptoggle "Explain quantum computing in simple terms" --provider openai --model gpt-4o
-
-# Or use Claude
-gptoggle "Create a marketing strategy for a new coffee shop" --provider claude --model claude-3-opus-20240229
-```
-
-#### Compare responses across providers:
-
-```bash
-gptoggle "Solve this coding challenge: implement a function to reverse a linked list" --compare openai:gpt-4o,claude:claude-3-opus-20240229
-```
-
-#### List available providers:
-
-```bash
+# List available providers
 gptoggle --list-providers
-```
 
-#### List available models for all providers:
-
-```bash
-gptoggle --list-models
-
-# Or for a specific provider
-gptoggle --provider claude --list-models
+# List available models for a specific provider
+gptoggle --list-models --provider openai
 ```
 
 ### Python API Usage
 
 ```python
-import os
-from gptoggle import get_response, choose_provider_and_model, compare_models, config
+from gptoggle import Config, get_response, choose_provider_and_model
 
-# Set your API keys
-os.environ["OPENAI_API_KEY"] = "your-openai-api-key"
-os.environ["ANTHROPIC_API_KEY"] = "your-anthropic-api-key"
-os.environ["GOOGLE_API_KEY"] = "your-google-api-key" 
-os.environ["XAI_API_KEY"] = "your-xai-api-key"
+# Auto-select provider and model
+provider, model, reason = choose_provider_and_model("Write a Python function to calculate Fibonacci numbers")
+print(f"Selected {provider}:{model} because: {reason}")
 
-# Auto-select the best provider and model
-provider, model, reason = choose_provider_and_model("Write code to implement a binary search tree in Python")
-print(f"Selected provider: {provider}")
-print(f"Selected model: {model}")
-print(f"Reason: {reason}")
-
-# Get a response from OpenAI
-response = get_response("Explain the theory of relativity", provider_name="openai")
-print(response)
-
-# Get a response from Claude
-response = get_response("Summarize the history of artificial intelligence", provider_name="claude")
-print(response)
-
-# Compare models across providers
-compare_models(
-    "Design a database schema for an e-commerce application", 
-    [("openai", "gpt-4o"), ("claude", "claude-3-opus-20240229")]
+# Get response from a specific provider and model
+response = get_response(
+    prompt="Explain quantum computing like I'm five",
+    provider_name="claude",
+    model="claude-3-opus-20240229"
 )
+print(response)
+
+# Customize provider configuration
+config = Config()
+config.enable_provider("openai")
+config.enable_provider("claude")
+config.disable_provider("gemini")
+config.set_provider_priority(["claude", "openai"])
 ```
 
-### Customizing Providers
+## Provider Customization
 
-GPToggle allows you to easily customize which providers are enabled and their priority for auto-selection:
+You can customize which providers are enabled and their priority order:
 
 ```python
-from gptoggle import config
+from gptoggle import Config
 
-# Check which providers are enabled
-print(config.config.get_enabled_providers())  # By default, all providers are enabled
+config = Config()
 
-# Disable a provider you don't want to use
-config.config.disable_provider("claude")
+# Enable only certain providers
+config.disable_provider("openai")
+config.disable_provider("grok")
 
-# Re-enable a provider
-config.config.enable_provider("claude")
+# Set provider priority (highest first)
+config.set_provider_priority(["claude", "gemini"])
 
-# Change the priority order for auto-selection
-# This will make Claude the first choice when auto-selecting a provider
-config.config.set_provider_priority(["claude", "openai"])
-
-# Get the current priority order
-print(config.config.get_provider_priority())
+# Set active provider for direct calls
+config.set_active_provider("claude")
 ```
 
-## How Model Selection Works
+## Model Auto-Selection
 
-GPToggle uses provider-specific triage algorithms to determine the most appropriate model based on:
+GPToggle can intelligently select models based on prompt characteristics:
 
-1. **Prompt Length**: For very long prompts, models with longer context windows are preferred
-2. **Code Keywords**: If your prompt contains programming-related keywords, code-optimized models are selected
-3. **Creative Content**: For creative tasks like storytelling or content generation, models with better creative capabilities are chosen
-4. **General Knowledge**: For standard informational queries, a balanced model is selected
+- Long context (>10K tokens) → Models with large context windows
+- Code-related content → Models with strong coding abilities
+- Creative writing → Models with strong creative capabilities
+- Image analysis → Models with vision capabilities
+- Short, simple queries → Faster, more efficient models
 
-## Provider Support
+## Contributing
 
-### OpenAI (Default)
-- GPT-4o
-- GPT-4 Turbo
-- GPT-4
-- GPT-3.5 Turbo
-- GPT-3.5 Turbo with 16k context
-
-### Anthropic Claude
-- Claude 3.5 Sonnet (newest)
-- Claude 3 Opus
-- Claude 3 Sonnet
-- Claude 3 Haiku
-- Claude 2.1
-
-### Google Gemini
-- Gemini 1.5 Pro - Most capable model with 1M token context
-- Gemini 1.5 Flash - Fast and efficient model with 1M token context
-- Gemini Pro Vision - Vision-specialized model for image processing
-- Gemini Pro - Efficient text-only model
-
-### X AI (xAI) Grok
-- Grok-2 (grok-2-1212) - Latest model with 128K token context
-- Grok-2 Vision (grok-2-vision-1212) - Vision-capable version of Grok-2
-- Grok Beta (grok-beta) - Original Grok model
-- Grok Vision Beta (grok-vision-beta) - Vision-capable original Grok
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-MIT License
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-## For More Information
+## Contact
 
-Visit [GPToggle.com](https://gptoggle.com) for more information, documentation, and to explore premium features.
+For questions or support, contact lano@docdel.io.
