@@ -6,7 +6,7 @@ GPToggle: A multi-provider AI model wrapper with auto-model selection and compar
 # MAJOR: Incompatible API changes
 # MINOR: Functionality added in a backward compatible manner
 # PATCH: Backward compatible bug fixes
-__version__ = "0.1.0"  # Initial release
+__version__ = "1.0.0"  # Major update with multi-provider architecture
 
 # Core functionality
 from gptoggle.config import Config
