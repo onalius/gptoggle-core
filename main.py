@@ -27,7 +27,9 @@ def chat():
     
     # Auto-select model if none provided
     if not selected_model:
-        selected_model = triage.choose_model(prompt)
+        selected_model, reason = triage.choose_model(prompt)
+    else:
+        reason = "Manually selected by user"
     
     # Validate model
     if selected_model not in config.AVAILABLE_MODELS:
@@ -45,7 +47,8 @@ def chat():
         response_text = response.choices[0].message.content
         return jsonify({
             'response': response_text,
-            'model': selected_model
+            'model': selected_model,
+            'reason': reason
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500

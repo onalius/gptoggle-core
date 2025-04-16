@@ -90,6 +90,7 @@
                             <span class="badge bg-secondary" id="responseTimestamp"></span>
                         </div>
                         <div class="card-body">
+                            <div class="alert alert-info mb-3" id="modelReason"></div>
                             <div id="responseContent" class="response-content"></div>
                         </div>
                     </div>
@@ -305,6 +306,7 @@ python chat.py "Your question here" --compare gpt-4o,gpt-3.5-turbo</code></pre>
                         // Update UI
                         document.getElementById('responseModel').textContent = data.model;
                         document.getElementById('responseContent').textContent = data.response;
+                        document.getElementById('modelReason').textContent = data.reason || "No selection reasoning available";
                         document.getElementById('responseTimestamp').textContent = new Date().toLocaleTimeString();
                     })
                     .catch(error => {

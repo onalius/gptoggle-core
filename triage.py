@@ -25,7 +25,7 @@ def estimate_tokens(text: str) -> int:
     """
     return len(text) // 4  # Simple character-based estimation
 
-def choose_model(prompt: str) -> str:
+def choose_model(prompt: str) -> tuple:
     """
     Auto-triage function to select the appropriate model based on the prompt characteristics.
     
@@ -33,7 +33,7 @@ def choose_model(prompt: str) -> str:
         prompt: The user's input prompt
         
     Returns:
-        The selected model name
+        A tuple of (selected_model, reason)
     """
     # Check prompt length
     token_estimate = estimate_tokens(prompt)
@@ -48,18 +48,18 @@ def choose_model(prompt: str) -> str:
         # For very long prompts, use models with longer context
         if has_code_keywords or has_creative_keywords:
             # If it's complex and code or creative related, use top model
-            return "gpt-4o"
+            return ("gpt-4o", "Selected for handling long, complex content with code or creative elements.")
         else:
             # For long but general prompts
-            return "gpt-3.5-turbo-16k"
+            return ("gpt-3.5-turbo-16k", "Selected for handling long general content efficiently.")
     
     # For code-related tasks, prefer more capable models
     if has_code_keywords:
-        return "gpt-4o"
+        return ("gpt-4o", "Selected for superior code understanding and generation capabilities.")
     
     # For creative tasks, prefer more capable models
     if has_creative_keywords:
-        return "gpt-4o"
+        return ("gpt-4o", "Selected for enhanced creative writing and storytelling abilities.")
     
     # Default to the balanced option
-    return config.DEFAULT_MODEL
+    return (config.DEFAULT_MODEL, "Selected as the balanced option for general-purpose queries.")

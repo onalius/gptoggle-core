@@ -128,7 +128,11 @@ def main():
         return
     
     # Single model mode
-    model = args.model if args.model else triage.choose_model(prompt)
+    if args.model:
+        model = args.model
+        reason = "Manually selected by user"
+    else:
+        model, reason = triage.choose_model(prompt)
     
     # Validate model
     if not validate_model(model):
@@ -138,6 +142,7 @@ def main():
     # Get the auto-triaged model if none is specified
     if not args.model:
         print(f"Auto-selected model: {model}")
+        print(f"Reason: {reason}")
     
     # Get response
     print(f"Getting response from {model}...")
