@@ -116,3 +116,18 @@ def get_response(
     
     # Generate response
     return provider.get_response(prompt, model, temperature, max_tokens)
+
+
+def recommend_model(prompt: str) -> str:
+    """
+    Recommend a model for a given prompt.
+    This is an alias for choose_provider_and_model for backward compatibility.
+    
+    Args:
+        prompt: The user's prompt
+        
+    Returns:
+        A string in format "provider:model" representing the recommended model
+    """
+    provider, model, reason = choose_provider_and_model(prompt)
+    return f"{provider}:{model}"

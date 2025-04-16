@@ -10,7 +10,7 @@ with open('gptoggle/__init__.py', 'r') as f:
         raise RuntimeError("Unable to find version string in gptoggle/__init__.py")
 
 setup(
-    name="gptoggle",
+    name="gptoggle-package",  # Changed package name to avoid self-dependency issues
     version=version,
     author="GPToggle Team",
     author_email="lano@docdel.io",
@@ -30,10 +30,25 @@ setup(
         "anthropic>=0.5.0",  # For Claude provider
         "google-generativeai>=0.3.0",  # For Gemini provider
         "rich>=10.0.0",  # For terminal formatting
+        "flask>=2.0.0",  # For web interface
     ],
+    extras_require={
+        "dev": [
+            "pytest>=7.0.0",
+            "black>=22.0.0",
+            "isort>=5.0.0",
+            "flake8>=4.0.0",
+        ],
+    },
     entry_points={
         "console_scripts": [
             "gptoggle=gptoggle.chat:main",
         ],
+    },
+    # Make sure package data is included
+    include_package_data=True,
+    # Include templates, static files, etc.
+    package_data={
+        "gptoggle": ["templates/*", "static/**/*"],
     },
 )

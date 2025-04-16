@@ -33,18 +33,33 @@ The complete application including:
 ## Installation
 
 ```bash
-# Install the complete package
-pip install gptoggle
+# Install the complete package from PyPI
+pip install gptoggle-package
 
 # For developers working on the core library
 pip install -e .
+```
+
+For detailed installation instructions and troubleshooting, see [INSTALLATION.md](INSTALLATION.md).
+
+### Installation Issues
+
+If you encounter installation issues with "self-dependencies" errors:
+
+```bash
+# Use this specific package name
+pip install gptoggle-package
+
+# Or for development installation
+pip install -e . --no-deps
+pip install openai anthropic google-generativeai rich flask
 ```
 
 ## Quick Start
 
 ```python
 import os
-from gptoggle import get_response, choose_provider_and_model
+from gptoggle import get_response, choose_provider_and_model, recommend_model
 
 # Set up API keys for providers you want to use
 os.environ["OPENAI_API_KEY"] = "your-openai-key"
@@ -52,9 +67,13 @@ os.environ["ANTHROPIC_API_KEY"] = "your-anthropic-key"
 os.environ["GOOGLE_API_KEY"] = "your-google-key"
 os.environ["XAI_API_KEY"] = "your-xai-key"
 
-# Auto-select the best provider and model for your prompt
+# Auto-select the best provider and model for your prompt (detailed method)
 provider, model, reason = choose_provider_and_model("Create a Python function to calculate the Fibonacci sequence")
 print(f"Selected {provider}:{model} because {reason}")
+
+# Or use the simpler recommend_model function
+recommended = recommend_model("Explain quantum computing")
+print(f"Recommended model: {recommended}")
 
 # Get a response from any provider and model
 response = get_response(
