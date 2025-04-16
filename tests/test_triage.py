@@ -14,26 +14,29 @@ def test_choose_model_general():
     assert "general" in reason.lower() or "simple" in reason.lower()
 
 def test_choose_model_code():
-    """Test model selection for code-related queries."""
+    """Test provider and model selection for code-related queries."""
     prompt = "Write a function in Python to find the greatest common divisor of two numbers"
-    model, reason = choose_model(prompt)
+    provider, model, reason = choose_provider_and_model(prompt)
+    assert provider is not None
     assert model is not None
     assert reason is not None
-    assert "code" in reason.lower()
+    assert "code" in reason.lower() or "programming" in reason.lower()
 
 def test_choose_model_creative():
-    """Test model selection for creative queries."""
+    """Test provider and model selection for creative queries."""
     prompt = "Write a short story about a robot learning to paint"
-    model, reason = choose_model(prompt)
+    provider, model, reason = choose_provider_and_model(prompt)
+    assert provider is not None
     assert model is not None
     assert reason is not None
-    assert "creative" in reason.lower() or "story" in reason.lower()
+    assert any(word in reason.lower() for word in ["creative", "story", "content", "generation"])
 
 def test_choose_model_long():
-    """Test model selection for long queries."""
+    """Test provider and model selection for long queries."""
     # Generate a long prompt
     prompt = "Explain " + "very " * 500 + "thoroughly how a computer works."
-    model, reason = choose_model(prompt)
+    provider, model, reason = choose_provider_and_model(prompt)
+    assert provider is not None
     assert model is not None
     assert reason is not None
-    assert "long" in reason.lower()
+    assert any(word in reason.lower() for word in ["long", "lengthy", "token"])

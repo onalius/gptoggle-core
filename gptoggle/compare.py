@@ -9,7 +9,7 @@ from datetime import datetime
 from typing import Dict, List, Tuple
 
 from gptoggle.config import config
-from gptoggle.chat import get_response
+from gptoggle.utils import get_response
 
 # File path for storing user ratings
 RATINGS_FILE = os.path.expanduser("~/.gptoggle/ratings.json")

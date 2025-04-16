@@ -9,8 +9,9 @@ GPToggle: A multi-provider AI model wrapper with auto-model selection and compar
 __version__ = "1.0.0"  # Major update with multi-provider architecture
 
 # Core functionality
-from gptoggle.config import Config
-from gptoggle.chat import get_response, choose_provider_and_model, list_available_models
+from gptoggle.config import Config, config
+from gptoggle.utils import get_response, choose_provider_and_model, get_provider_instance
+from gptoggle.chat import list_available_models
 from gptoggle.compare import compare_models
 
 # Import provider classes for direct access if needed
