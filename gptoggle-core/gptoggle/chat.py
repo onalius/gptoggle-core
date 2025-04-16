@@ -241,7 +241,8 @@ def choose_provider_and_model(prompt: str) -> Tuple[str, str, str]:
     
     # Fallback if no valid provider found
     if not selected_provider:
-        return "none", "none", "No available providers could process this request"
+        # Make sure we return strings for all values
+        return str("none"), str("none"), "No available providers could process this request"
     
     return selected_provider, selected_model, selection_reason
 
