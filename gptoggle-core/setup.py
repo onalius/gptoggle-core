@@ -8,7 +8,7 @@ setup(
     name="gptoggle",
     version="0.1.0",
     author="GPToggle",
-    author_email="info@gptoggle.com",
+    author_email="lano@docdel.io",
     description="A Python wrapper for the OpenAI API with auto-model selection and comparison capabilities",
     long_description=long_description,
     long_description_content_type="text/markdown",
