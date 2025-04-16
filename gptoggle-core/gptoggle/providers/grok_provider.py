@@ -24,9 +24,11 @@ class GrokProvider(BaseProvider):
                 api_key=api_key
             )
 
+    @property
     def name(self) -> str:
         return "grok"
 
+    @property
     def available_models(self) -> List[str]:
         return [
             "grok-2-1212",
@@ -35,9 +37,11 @@ class GrokProvider(BaseProvider):
             "grok-vision-beta",
         ]
 
+    @property
     def default_model(self) -> str:
         return "grok-2-1212"
 
+    @property
     def model_capabilities(self) -> Dict[str, Dict[str, Any]]:
         return {
             "grok-2-1212": {
@@ -96,7 +100,7 @@ class GrokProvider(BaseProvider):
                 )
             
             # Make sure the model is available
-            if model not in self.available_models():
+            if model not in self.available_models:
                 return f"Error: Model '{model}' is not available for the Grok provider."
 
             # Generate response
@@ -133,7 +137,7 @@ class GrokProvider(BaseProvider):
     def choose_model(self, prompt: str) -> Tuple[str, str]:
         """Select the most appropriate Grok model based on the prompt."""
         # Default model for most cases
-        default_model = self.default_model()
+        default_model = self.default_model
         
         # Estimate token count
         estimated_tokens = self.estimate_tokens(prompt)
@@ -151,10 +155,10 @@ class GrokProvider(BaseProvider):
 
     def list_models(self) -> None:
         """Display all available Grok models."""
-        capabilities = self.model_capabilities()
-        print(f"Available models for {self.name()}:")
+        capabilities = self.model_capabilities
+        print(f"Available models for {self.name}:")
         
-        for model_name in self.available_models():
+        for model_name in self.available_models:
             model_info = capabilities.get(model_name, {})
             description = model_info.get("description", "No description available")
             context_window = model_info.get("context_window", "Unknown")

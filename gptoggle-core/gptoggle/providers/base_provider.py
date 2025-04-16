@@ -1,8 +1,9 @@
 """
 Base provider class for AI model service integrations.
 """
+
 from abc import ABC, abstractmethod
-from typing import Dict, List, Any, Tuple, Optional
+from typing import List, Dict, Any, Tuple
 
 class BaseProvider(ABC):
     """
