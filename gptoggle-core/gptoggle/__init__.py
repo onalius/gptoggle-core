@@ -1,19 +1,21 @@
 """
-GPToggle: A ChatGPT API wrapper with auto-model selection and comparison capabilities.
+GPToggle: A multi-provider AI model wrapper with auto-model selection and comparison capabilities.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
-from .chat import get_response, list_available_models
+from .chat import get_response, list_available_models, choose_provider_and_model
 from .compare import compare_models
-from .triage import choose_model
-from .config import OpenAIConfig, AVAILABLE_MODELS
+from .config import Config, ProviderConfig
+from .providers import PROVIDERS, DEFAULT_PROVIDER
 
 __all__ = [
     "get_response",
     "list_available_models",
+    "choose_provider_and_model",
     "compare_models",
-    "choose_model",
-    "OpenAIConfig",
-    "AVAILABLE_MODELS",
+    "Config",
+    "ProviderConfig",
+    "PROVIDERS",
+    "DEFAULT_PROVIDER",
 ]

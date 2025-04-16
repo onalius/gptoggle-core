@@ -6,10 +6,10 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="gptoggle",
-    version="0.1.0",
+    version="0.2.0",
     author="GPToggle",
     author_email="lano@docdel.io",
-    description="A Python wrapper for the OpenAI API with auto-model selection and comparison capabilities",
+    description="A multi-provider AI wrapper with auto-model selection, comparison, and switching capabilities",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/gptoggle/gptoggle-core",

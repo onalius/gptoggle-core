@@ -1,81 +1,58 @@
 """
-Configuration settings and model list for the OpenAI chat wrapper.
+Configuration settings for the AI model toggle system.
 """
 import os
-from dataclasses import dataclass
-from typing import Dict, List, Any
+from dataclasses import dataclass, field
+from typing import Dict, List, Any, Optional
 
-# The model list is based on OpenAI's available models
-# the newest OpenAI model is "gpt-4o" which was released May 13, 2024.
-# do not change this unless explicitly requested by the user
-AVAILABLE_MODELS = [
-    "gpt-4o",           # Latest and most capable model
-    "gpt-4-turbo",      # GPT-4 Turbo
-    "gpt-4",            # Original GPT-4
-    "gpt-3.5-turbo",    # Balanced option for most tasks
-    "gpt-3.5-turbo-16k" # GPT-3.5 with extended context
-]
+# Ratings configuration
+RATINGS_FILE = "ratings.json"
 
-# Default model to use when auto-triage can't determine
-DEFAULT_MODEL = "gpt-3.5-turbo"
-
-# Model capabilities classification
-MODEL_CAPABILITIES = {
-    "gpt-4o": {
-        "max_tokens": 128000,
-        "capabilities": ["code", "creative", "reasoning", "long_context"],
-        "tier": "premium"
-    },
-    "gpt-4-turbo": {
-        "max_tokens": 128000,
-        "capabilities": ["code", "creative", "reasoning", "long_context"],
-        "tier": "premium"
-    },
-    "gpt-4": {
-        "max_tokens": 8192,
-        "capabilities": ["code", "creative", "reasoning"],
-        "tier": "premium"
-    },
-    "gpt-3.5-turbo": {
-        "max_tokens": 4096,
-        "capabilities": ["general"],
-        "tier": "standard"
-    },
-    "gpt-3.5-turbo-16k": {
-        "max_tokens": 16384,
-        "capabilities": ["general", "long_context"],
-        "tier": "standard"
-    }
-}
-
-# Keywords for triaging
-CODE_KEYWORDS = [
-    'code', 'program', 'function', 'algorithm', 'debug', 
-    'programming', 'developer', 'software', 'bug', 'error',
-    'syntax', 'compile', 'python', 'javascript', 'java', 
-    'c++', 'html', 'css', 'api', 'database', 'sql', 
-    'repository', 'git', 'github', 'class', 'interface',
-    'implementation', 'tests', 'testing'
-]
-
-CREATIVE_KEYWORDS = [
-    'story', 'poem', 'creative', 'write', 'novel', 
-    'fiction', 'narrative', 'character', 'plot', 'setting',
-    'imagine', 'fantasy', 'scene', 'dialogue', 'script',
-    'lyrics', 'song', 'art', 'design', 'create', 'invent',
-    'generate', 'compose', 'author', 'creative', 'artistic'
-]
-
-# API Configuration
 @dataclass
-class OpenAIConfig:
-    api_key: str = os.environ.get("OPENAI_API_KEY", "")
+class ProviderConfig:
+    """Configuration for an AI provider."""
+    api_key: str = ""
     temperature: float = 0.7
     max_tokens: int = 1000
     max_comparison_tokens: int = 500  # Shorter responses for comparison
 
-# Create a global config instance
-openai_config = OpenAIConfig()
+@dataclass
+class Config:
+    """Global configuration class."""
+    # Provider configurations
+    providers: Dict[str, ProviderConfig] = field(default_factory=dict)
+    
+    # Global settings
+    active_provider: str = "openai"  # Default provider
+    
+    def __post_init__(self):
+        """Initialize provider configurations."""
+        # OpenAI
+        self.providers["openai"] = ProviderConfig(
+            api_key=os.environ.get("OPENAI_API_KEY", "")
+        )
+        
+        # Anthropic Claude
+        self.providers["claude"] = ProviderConfig(
+            api_key=os.environ.get("ANTHROPIC_API_KEY", "")
+        )
+        
+        # Google Gemini (future)
+        # self.providers["gemini"] = ProviderConfig(
+        #     api_key=os.environ.get("GEMINI_API_KEY", "")
+        # )
+    
+    def get_provider_config(self, provider: Optional[str] = None) -> ProviderConfig:
+        """Get configuration for the specified provider."""
+        provider = provider or self.active_provider
+        return self.providers.get(provider, ProviderConfig())
+    
+    def set_active_provider(self, provider: str) -> bool:
+        """Set the active provider."""
+        if provider in self.providers:
+            self.active_provider = provider
+            return True
+        return False
 
-# Rating configuration
-RATINGS_FILE = "ratings.json"
+# Create a global config instance
+config = Config()
