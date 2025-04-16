@@ -36,6 +36,8 @@ setup(
     python_requires=">=3.8",
     install_requires=[
         "openai>=1.0.0",
+        "anthropic>=0.5.0",
+        # "google-generativeai>=0.1.0",  # Uncomment when adding Gemini support
     ],
     entry_points={
         "console_scripts": [

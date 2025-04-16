@@ -241,35 +241,67 @@ def choose_provider_and_model(prompt: str) -> Tuple[str, str, str]:
     Returns:
         A tuple of (provider_name, model_name, reason)
     """
+    # Get enabled providers in priority order
+    priority_providers = config.config.get_provider_priority()
+    
+    if not priority_providers:
+        raise ValueError("No providers are enabled. Enable at least one provider using config.enable_provider().")
+    
     # Try each provider to get their model recommendations
     recommendations = []
     
-    for provider_name, provider_class in PROVIDERS.items():
-        provider = provider_class()
-        model, reason = provider.choose_model(prompt)
-        recommendations.append((provider_name, model, reason))
+    for provider_name in priority_providers:
+        if provider_name in PROVIDERS:
+            provider_class = PROVIDERS[provider_name]
+            provider = provider_class()
+            
+            # Skip providers with missing API keys
+            if not provider.validate_api_key():
+                continue
+                
+            model, reason = provider.choose_model(prompt)
+            recommendations.append((provider_name, model, reason))
     
-    # For now, just return the first provider's recommendation (OpenAI)
-    # TODO: Implement cross-provider selection logic
-    return recommendations[0]
+    # If we have recommendations, return the highest priority one
+    if recommendations:
+        return recommendations[0]
+    
+    # If no providers are available (e.g., no API keys set), raise an error
+    raise ValueError("No providers with valid API keys are available. Please set at least one API key.")
 
 def list_available_models(provider_name: Optional[str] = None):
     """
-    Display all available models for the specified provider.
+    Display all available models for the specified provider(s).
     For use as a Python API.
     
     Args:
-        provider_name: Name of the provider, or None for all providers
+        provider_name: Name of the provider, or None for all enabled providers
     """
     if provider_name:
-        provider = get_provider_instance(provider_name)
-        if provider:
-            provider.list_models()
-    else:
-        for provider_name in PROVIDERS:
+        # Check if this specific provider is enabled
+        if provider_name in config.config.get_enabled_providers():
             provider = get_provider_instance(provider_name)
-            provider.list_models()
-            print()
+            if provider:
+                provider.list_models()
+        else:
+            print(f"Provider '{provider_name}' is not enabled. "
+                  f"Use config.enable_provider('{provider_name}') to enable it.")
+    else:
+        # Show enabled providers in priority order
+        enabled_providers = config.config.get_provider_priority()
+        
+        if not enabled_providers:
+            print("No providers are currently enabled. "
+                  "Use config.enable_provider(provider_name) to enable a provider.")
+            return
+            
+        for provider_name in enabled_providers:
+            if provider_name in PROVIDERS:
+                provider = get_provider_instance(provider_name)
+                if provider:
+                    print(f"\n=== Models for {provider_name} ===")
+                    provider.list_models()
+                    print()
 
 if __name__ == "__main__":
     main()
