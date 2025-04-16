@@ -55,5 +55,9 @@ venv.bak/
 # Project specific
 attached_assets/
 claudetoggle-core/
+gptoggle-core/
 .replit
 .upm/
+# Editor files
+*.pyc
+__pycache__/
