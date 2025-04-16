@@ -5,7 +5,9 @@ All notable changes to the GPToggle project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.0] - 2025-04-16
+## [0.1.0] - 2025-04-16 - Initial Release
+
+GPToggle v0.1.0 marks the first public release of this multi-provider AI model wrapper library. This version establishes the core architecture and foundational features.
 
 ### Added
 - Initial release with multi-provider architecture

@@ -1,8 +1,17 @@
 from setuptools import setup, find_packages
+import re
+
+# Read version from __init__.py to ensure single source of truth
+with open('gptoggle/__init__.py', 'r') as f:
+    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", f.read(), re.M)
+    if version_match:
+        version = version_match.group(1)
+    else:
+        raise RuntimeError("Unable to find version string in gptoggle/__init__.py")
 
 setup(
     name="gptoggle",
-    version="0.1.0",
+    version=version,
     author="GPToggle Team",
     author_email="lano@docdel.io",
     description="A multi-provider wrapper for AI model APIs with auto-model selection and comparison",
