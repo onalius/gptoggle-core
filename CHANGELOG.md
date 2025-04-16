@@ -25,12 +25,19 @@ GPToggle v1.0.0 introduces a complete overhaul with a new multi-provider archite
 - Cross-provider model comparison functionality with user rating collection
 - Installation scripts for development mode
 - Test utilities to verify installation and functionality
+- Utilities module (utils.py) to centralize shared functionality and prevent circular imports
 
 ### Changed
 - Complete architecture redesign to support multiple providers
 - Refactored configuration system to handle provider-specific settings
 - Updated command-line interface with provider selection capabilities
 - Enhanced auto-selection logic with provider priority
+- Reorganized project structure for better maintainability:
+  - Created a dedicated utilities module to prevent circular imports
+  - Improved provider initialization and configuration handling
+  - Streamlined import hierarchy
+  - Better separation between core libraries and user interfaces
+- Fixed Flask web interface to properly display and use models from all providers
 
 ### Security
 - API key handling via environment variables
