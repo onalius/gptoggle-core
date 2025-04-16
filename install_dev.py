@@ -2,36 +2,35 @@
 """
 Helper script to install the gptoggle package in development mode.
 """
+
 import os
-import sys
 import subprocess
+import sys
+
 
 def main():
     """Install the package in development mode."""
-    print("Installing gptoggle package in development mode...")
-    
-    # Get the directory of the current script
+    # Get the directory containing this script
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    package_dir = os.path.join(script_dir, "gptoggle-core")
     
-    if not os.path.exists(package_dir):
-        print(f"Error: Package directory not found: {package_dir}")
-        return 1
+    # Install the package in development mode
+    print("Installing GPToggle package in development mode...")
+    result = subprocess.run(
+        [sys.executable, "-m", "pip", "install", "-e", "."],
+        cwd=script_dir,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
     
-    # Change to the package directory
-    os.chdir(package_dir)
-    
-    # Run pip install -e .
-    try:
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "-e", "."])
-        print("\nInstallation successful!")
-        print("\nYou can now import the gptoggle package or use the CLI:")
-        print("  python -c 'from gptoggle import choose_model; print(choose_model(\"Hello\"))'")
-        print("  python -m gptoggle.chat \"What is the capital of France?\"")
-        return 0
-    except subprocess.CalledProcessError as e:
-        print(f"Error: Installation failed with code {e.returncode}")
-        return e.returncode
+    if result.returncode == 0:
+        print("Installation successful!")
+        print("You can now import gptoggle in your Python scripts or run 'gptoggle' from the command line.")
+    else:
+        print("Installation failed!")
+        print(f"Error: {result.stderr}")
+        sys.exit(1)
+
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()
