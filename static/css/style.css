@@ -1,0 +1,44 @@
+/* Custom styles for the OpenAI Chat Wrapper */
+
+/* Response content */
+.response-content {
+    white-space: pre-wrap;
+    font-family: monospace;
+    padding: 10px;
+    min-height: 200px;
+}
+
+/* Pre and code blocks styling */
+pre {
+    background-color: var(--bs-dark);
+    border-radius: 4px;
+    padding: 1rem;
+    overflow-x: auto;
+}
+
+code {
+    color: var(--bs-info);
+}
+
+/* Better spacing */
+.container {
+    max-width: 1200px;
+    margin-bottom: 3rem;
+}
+
+/* Form styles */
+textarea.form-control {
+    min-height: 100px;
+}
+
+/* Rating button */
+#saveRatingBtn:disabled {
+    opacity: 0.5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .col-md-6 {
+        margin-bottom: 1rem;
+    }
+}

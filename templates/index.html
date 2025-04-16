@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenAI Chat Wrapper</title>
+    <!-- Bootstrap CSS (Replit theme) -->
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <header class="mb-4">
+            <h1>OpenAI Chat Wrapper</h1>
+            <p class="lead">Interact with OpenAI's models with auto-triage and comparison</p>
+        </header>
+
+        <div class="row">
+            <div class="col-md-8">
+                <!-- Chat Form -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Send a prompt</span>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="compareSwitch">
+                            <label class="form-check-label" for="compareSwitch">Compare Mode</label>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form id="chatForm">
+                            <div class="mb-3">
+                                <label for="promptInput" class="form-label">Your prompt:</label>
+                                <textarea class="form-control" id="promptInput" rows="4" required></textarea>
+                            </div>
+                            
+                            <!-- Single model selection (shown when compare mode is off) -->
+                            <div id="singleModelSection">
+                                <div class="mb-3">
+                                    <label for="modelSelect" class="form-label">Model (optional, auto-triage if empty):</label>
+                                    <select class="form-select" id="modelSelect">
+                                        <option value="">Auto-select</option>
+                                        {% for model in models %}
+                                        <option value="{{ model }}">{{ model }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Compare model selection (shown when compare mode is on) -->
+                            <div id="compareModelSection" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="modelSelectA" class="form-label">Model A:</label>
+                                        <select class="form-select" id="modelSelectA" required>
+                                            {% for model in models %}
+                                            <option value="{{ model }}">{{ model }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="modelSelectB" class="form-label">Model B:</label>
+                                        <select class="form-select" id="modelSelectB" required>
+                                            {% for model in models %}
+                                            {% if loop.index == 2 %}
+                                            <option value="{{ model }}" selected>{{ model }}</option>
+                                            {% else %}
+                                            <option value="{{ model }}">{{ model }}</option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary" id="submitBtn">
+                                <span class="spinner-border spinner-border-sm d-none" id="submitSpinner" role="status" aria-hidden="true"></span>
+                                Submit
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Chat Responses -->
+                <div id="responseContainer">
+                    <!-- Single response (shown when compare mode is off) -->
+                    <div id="singleResponseSection" class="card mb-4" style="display: none;">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span>Response (<span id="responseModel"></span>)</span>
+                            <span class="badge bg-secondary" id="responseTimestamp"></span>
+                        </div>
+                        <div class="card-body">
+                            <div id="responseContent" class="response-content"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Compare responses (shown when compare mode is on) -->
+                    <div id="compareResponseSection" style="display: none;">
+                        <h3>Compare Responses</h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card mb-4">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <span>Model A: <span id="responseModelA"></span></span>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="preferredModel" id="preferModel1" value="1">
+                                            <label class="form-check-label" for="preferModel1">
+                                                Prefer this response
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="responseContentA" class="response-content"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card mb-4">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <span>Model B: <span id="responseModelB"></span></span>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="preferredModel" id="preferModel2" value="2">
+                                            <label class="form-check-label" for="preferModel2">
+                                                Prefer this response
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="responseContentB" class="response-content"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center mb-4">
+                            <button type="button" class="btn btn-success" id="saveRatingBtn" disabled>
+                                Save Rating
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <!-- Info sidebar -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5>About</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6>Available Models</h6>
+                        <ul class="list-group list-group-flush mb-3">
+                            {% for model in models %}
+                            <li class="list-group-item">{{ model }}</li>
+                            {% endfor %}
+                        </ul>
+                        
+                        <h6>Features</h6>
+                        <ul>
+                            <li><strong>Auto-Triage:</strong> Let the system choose the best model for your prompt</li>
+                            <li><strong>Compare Mode:</strong> Compare responses from two different models</li>
+                            <li><strong>Rating System:</strong> Help improve model selection by rating responses</li>
+                        </ul>
+                        
+                        <h6>Command Line Version</h6>
+                        <p>You can also use the command line version:</p>
+                        <pre><code>python chat.py "Your question here"
+python chat.py "Your question here" --model gpt-4o
+python chat.py "Your question here" --compare gpt-4o,gpt-3.5-turbo</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM elements
+            const compareSwitch = document.getElementById('compareSwitch');
+            const singleModelSection = document.getElementById('singleModelSection');
+            const compareModelSection = document.getElementById('compareModelSection');
+            const chatForm = document.getElementById('chatForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const submitSpinner = document.getElementById('submitSpinner');
+            const singleResponseSection = document.getElementById('singleResponseSection');
+            const compareResponseSection = document.getElementById('compareResponseSection');
+            const saveRatingBtn = document.getElementById('saveRatingBtn');
+            
+            // Form data
+            let lastPrompt = '';
+            let lastModels = [];
+            let lastResponses = {};
+            
+            // Toggle between single and compare mode
+            compareSwitch.addEventListener('change', function() {
+                if (this.checked) {
+                    singleModelSection.style.display = 'none';
+                    compareModelSection.style.display = 'block';
+                } else {
+                    singleModelSection.style.display = 'block';
+                    compareModelSection.style.display = 'none';
+                }
+            });
+            
+            // Enable save rating button when a choice is made
+            document.querySelectorAll('input[name="preferredModel"]').forEach(function(radio) {
+                radio.addEventListener('change', function() {
+                    saveRatingBtn.disabled = false;
+                });
+            });
+            
+            // Handle form submission
+            chatForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const prompt = document.getElementById('promptInput').value.trim();
+                lastPrompt = prompt;
+                
+                // Show loading
+                submitBtn.disabled = true;
+                submitSpinner.classList.remove('d-none');
+                
+                if (compareSwitch.checked) {
+                    // Compare mode
+                    const modelA = document.getElementById('modelSelectA').value;
+                    const modelB = document.getElementById('modelSelectB').value;
+                    lastModels = [modelA, modelB];
+                    
+                    // Reset rating
+                    document.querySelectorAll('input[name="preferredModel"]').forEach(radio => radio.checked = false);
+                    saveRatingBtn.disabled = true;
+                    
+                    // Fetch comparison
+                    fetch('/api/compare', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            prompt: prompt,
+                            models: [modelA, modelB]
+                        }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        submitBtn.disabled = false;
+                        submitSpinner.classList.add('d-none');
+                        
+                        if (data.error) {
+                            alert('Error: ' + data.error);
+                            return;
+                        }
+                        
+                        // Store responses for rating
+                        lastResponses = data.responses;
+                        
+                        // Show comparison UI
+                        singleResponseSection.style.display = 'none';
+                        compareResponseSection.style.display = 'block';
+                        
+                        // Update UI
+                        document.getElementById('responseModelA').textContent = lastModels[0];
+                        document.getElementById('responseModelB').textContent = lastModels[1];
+                        document.getElementById('responseContentA').textContent = lastResponses[lastModels[0]];
+                        document.getElementById('responseContentB').textContent = lastResponses[lastModels[1]];
+                    })
+                    .catch(error => {
+                        submitBtn.disabled = false;
+                        submitSpinner.classList.add('d-none');
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                    });
+                } else {
+                    // Single model mode
+                    const model = document.getElementById('modelSelect').value;
+                    
+                    // Fetch response
+                    fetch('/api/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            prompt: prompt,
+                            model: model
+                        }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        submitBtn.disabled = false;
+                        submitSpinner.classList.add('d-none');
+                        
+                        if (data.error) {
+                            alert('Error: ' + data.error);
+                            return;
+                        }
+                        
+                        // Show single response UI
+                        compareResponseSection.style.display = 'none';
+                        singleResponseSection.style.display = 'block';
+                        
+                        // Update UI
+                        document.getElementById('responseModel').textContent = data.model;
+                        document.getElementById('responseContent').textContent = data.response;
+                        document.getElementById('responseTimestamp').textContent = new Date().toLocaleTimeString();
+                    })
+                    .catch(error => {
+                        submitBtn.disabled = false;
+                        submitSpinner.classList.add('d-none');
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                    });
+                }
+            });
+            
+            // Handle save rating
+            saveRatingBtn.addEventListener('click', function() {
+                const selectedPreference = document.querySelector('input[name="preferredModel"]:checked');
+                if (!selectedPreference) {
+                    alert('Please select which response you prefer.');
+                    return;
+                }
+                
+                const preferred = parseInt(selectedPreference.value);
+                
+                // Save rating
+                fetch('/api/save-rating', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        prompt: lastPrompt,
+                        models: lastModels,
+                        responses: lastResponses,
+                        preferred: preferred
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Error: ' + data.error);
+                        return;
+                    }
+                    
+                    alert('Rating saved successfully! You preferred ' + data.preferred_model);
+                    saveRatingBtn.disabled = true;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while saving your rating.');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
