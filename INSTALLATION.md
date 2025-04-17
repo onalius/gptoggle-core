@@ -16,8 +16,8 @@ For development or to install the latest version directly from GitHub:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/gptoggle.git
-cd gptoggle
+git clone https://github.com/onalius/gptoggle-core.git
+cd gptoggle-core
 
 # Install in development mode
 pip install -e .
@@ -102,7 +102,7 @@ For Replit environments, you may need to use specific installation strategies:
 pip install gptoggle-package
 
 # Or install directly from GitHub with specific flags
-pip install git+https://github.com/yourusername/gptoggle.git@main#egg=gptoggle-package --no-deps
+pip install git+https://github.com/onalius/gptoggle-core.git@main#egg=gptoggle-package --no-deps
 pip install openai anthropic google-generativeai rich flask
 ```
 
@@ -153,6 +153,6 @@ python main.py
 
 If you continue to experience installation issues, please:
 
-1. Check the [GitHub repository](https://github.com/yourusername/gptoggle) for the latest instructions
+1. Check the [GitHub repository](https://github.com/onalius/gptoggle-core) for the latest instructions
 2. Open an issue with details about your environment and the specific error
 3. Contact the maintainers at lano@docdel.io

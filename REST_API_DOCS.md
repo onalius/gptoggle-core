@@ -15,7 +15,7 @@ http://localhost:5000/api
 
 For the public demo instance (if available):
 ```
-https://gptoggle-api.yourusername.repl.co/api
+https://gptoggle-api.onalius.repl.co/api
 ```
 
 ## API Endpoints
@@ -28,7 +28,7 @@ https://gptoggle-api.yourusername.repl.co/api
 
 **Example Request:**
 ```bash
-curl https://gptoggle-api.yourusername.repl.co/api/providers
+curl https://gptoggle-api.onalius.repl.co/api/providers
 ```
 
 **Example Response:**
@@ -49,7 +49,7 @@ curl https://gptoggle-api.yourusername.repl.co/api/providers
 
 **Example Request:**
 ```bash
-curl https://gptoggle-api.yourusername.repl.co/api/models?provider=openai
+curl https://gptoggle-api.onalius.repl.co/api/models?provider=openai
 ```
 
 **Example Response:**
@@ -74,7 +74,7 @@ curl https://gptoggle-api.yourusername.repl.co/api/models?provider=openai
 
 **Example Request:**
 ```bash
-curl -X POST https://gptoggle-api.yourusername.repl.co/api/recommend \
+curl -X POST https://gptoggle-api.onalius.repl.co/api/recommend \
   -H "Content-Type: application/json" \
   -d '{"prompt": "Explain quantum computing in simple terms"}'
 ```
@@ -107,7 +107,7 @@ curl -X POST https://gptoggle-api.yourusername.repl.co/api/recommend \
 
 **Example Request:**
 ```bash
-curl -X POST https://gptoggle-api.yourusername.repl.co/api/generate \
+curl -X POST https://gptoggle-api.onalius.repl.co/api/generate \
   -H "Content-Type: application/json" \
   -d '{
     "prompt": "What is the meaning of life?",
@@ -176,7 +176,7 @@ Here's an example of using the GPToggle API from a Node.js application:
 const axios = require('axios');
 
 // Base URL of the GPToggle API
-const API_URL = 'https://gptoggle-api.yourusername.repl.co/api';
+const API_URL = 'https://gptoggle-api.onalius.repl.co/api';
 
 // Generate a response using the API
 async function generateResponse(prompt, provider = null, model = null) {
@@ -222,8 +222,8 @@ To self-host the API:
 
 1. Clone the GPToggle repository:
    ```bash
-   git clone https://github.com/yourusername/gptoggle.git
-   cd gptoggle
+   git clone https://github.com/onalius/gptoggle-core.git
+   cd gptoggle-core
    ```
 
 2. Install dependencies:
