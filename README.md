@@ -44,7 +44,18 @@ For detailed installation instructions and troubleshooting, see [INSTALLATION.md
 
 ### Platform-Specific Guides
 
-- **Replit Users**: If you're using Replit, see [REPLIT_INSTALLATION.md](REPLIT_INSTALLATION.md) for Replit-specific installation instructions.
+- **Replit Users**: If you're using Replit, see [REPLIT_INSTALLATION.md](REPLIT_INSTALLATION.md) for Replit-specific installation instructions. We provide multiple options for Replit:
+
+1. **One-line installer**: Install in Replit with this command:
+   ```bash
+   curl -s https://raw.githubusercontent.com/yourusername/gptoggle/main/replit_install.sh | bash
+   ```
+
+2. **Standalone Python module**: If you're having trouble with installation, you can use [gptoggle_minimal.py](gptoggle_minimal.py), a single-file version with the core functionality.
+
+3. **JavaScript implementation**: For web environments, we offer [gptoggle.js](gptoggle.js), a browser and Node.js compatible implementation.
+
+4. **REST API**: Use the REST API as described in [REST_API_DOCS.md](REST_API_DOCS.md).
 
 ### Easy Installation Script
 
@@ -66,8 +77,9 @@ python install.py --dev     # Install in development mode
 If you encounter installation issues with "self-dependencies" errors:
 
 ```bash
-# Use this specific package name
-pip install gptoggle-package
+# Use this specific package name for Replit
+pip install gptoggle-ai-wrapper-library-pkg --no-deps
+pip install openai anthropic google-generativeai
 
 # Or for development installation
 pip install -e . --no-deps

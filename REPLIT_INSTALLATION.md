@@ -49,7 +49,64 @@ pip install gptoggle-ai-wrapper-library-pkg[ui] --no-deps
 pip install openai anthropic google-generativeai rich
 ```
 
-## Option 3: Using GPToggle as a REST API Service
+## Option 3: Using the Standalone File
+
+If you're having trouble with package installation, use the standalone Python file:
+
+```bash
+# Download the standalone file
+curl -s https://raw.githubusercontent.com/yourusername/gptoggle/main/gptoggle_minimal.py -o gptoggle_minimal.py
+
+# Use directly in your code
+python -c "from gptoggle_minimal import get_response; print(get_response('Hello, world!'))"
+```
+
+The standalone file includes the core functionality of GPToggle without requiring installation.
+
+## Option 4: Using the JavaScript Implementation
+
+For web projects or if you prefer JavaScript, use our JavaScript implementation:
+
+```bash
+# Download the JavaScript file
+curl -s https://raw.githubusercontent.com/yourusername/gptoggle/main/gptoggle.js -o gptoggle.js
+```
+
+In Node.js:
+```javascript
+const GPToggle = require('./gptoggle');
+const gptoggle = new GPToggle({}, {
+  openai: process.env.OPENAI_API_KEY,
+  claude: process.env.ANTHROPIC_API_KEY
+});
+
+async function example() {
+  const response = await gptoggle.getResponse('What is quantum computing?');
+  console.log(response);
+}
+
+example().catch(console.error);
+```
+
+In a browser:
+```html
+<script src="gptoggle.js"></script>
+<script>
+  const gptoggle = new GPToggle({}, {
+    openai: 'your-openai-key', // Be careful with API keys in frontend code!
+    claude: 'your-claude-key'
+  });
+  
+  async function askAI() {
+    const response = await gptoggle.getResponse(
+      document.getElementById('prompt').value
+    );
+    document.getElementById('response').textContent = response;
+  }
+</script>
+```
+
+## Option 5: Using GPToggle as a REST API Service
 
 If you continue having issues with direct installation, you can use the REST API approach:
 

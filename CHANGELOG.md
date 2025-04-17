@@ -16,6 +16,10 @@ GPToggle v1.0.1 focuses on improving installation and compatibility across diffe
 - Installation helper script (install.py) for automatic environment detection
 - Detailed Replit-specific installation guide (REPLIT_INSTALLATION.md)
 - Recommend_model function for backward compatibility
+- Standalone Python module (gptoggle_minimal.py) for import-free usage
+- Native JavaScript implementation (gptoggle.js) for web environments
+- Replit installation shell script (replit_install.sh) for one-line setup
+- Comprehensive REST API documentation (REST_API_DOCS.md)
 
 ### Fixed
 - Self-dependency installation issues in Replit
