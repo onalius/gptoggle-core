@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenAI Chat Wrapper</title>
+    <title>GPToggle - Multi-Provider AI Wrapper</title>
     <!-- Bootstrap CSS (Replit theme) -->
     <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
     <!-- Custom CSS -->
@@ -12,8 +12,8 @@
 <body>
     <div class="container mt-4">
         <header class="mb-4">
-            <h1>OpenAI Chat Wrapper</h1>
-            <p class="lead">Interact with OpenAI's models with auto-triage and comparison</p>
+            <h1>GPToggle</h1>
+            <p class="lead">Multi-provider AI wrapper for OpenAI, Claude, Gemini and Grok with auto-triage and comparison</p>
         </header>
 
         <div class="row">
@@ -165,8 +165,9 @@
                         <h6>Command Line Version</h6>
                         <p>You can also use the command line version:</p>
                         <pre><code>python chat.py "Your question here"
-python chat.py "Your question here" --model gpt-4o
-python chat.py "Your question here" --compare gpt-4o,gpt-3.5-turbo</code></pre>
+python chat.py "Your question here" --provider openai --model gpt-4o
+python chat.py "Your question here" --provider claude --model claude-3-opus-20240229
+python chat.py "Your question here" --compare openai:gpt-4o,claude:claude-3-opus-20240229</code></pre>
                     </div>
                 </div>
             </div>

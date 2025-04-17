@@ -75,10 +75,10 @@ setup(
     description="A multi-provider wrapper for AI model APIs with auto-model selection and comparison",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/gptoggle",
+    url="https://github.com/onalius/gptoggle-core",
     project_urls={
-        "Bug Tracker": "https://github.com/yourusername/gptoggle/issues",
-        "Documentation": "https://github.com/yourusername/gptoggle/blob/main/README.md",
+        "Bug Tracker": "https://github.com/onalius/gptoggle-core/issues",
+        "Documentation": "https://github.com/onalius/gptoggle-core/blob/main/README.md",
     },
     packages=find_packages(),
     classifiers=[
