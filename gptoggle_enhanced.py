@@ -33,7 +33,7 @@ __version__ = "1.0.2"
 #################################################
 
 # Provider priority for auto-selection (in descending order)
-PROVIDER_PRIORITY = ["openai", "claude", "gemini", "grok", "llama", "perplexity"]
+PROVIDER_PRIORITY = ["openai", "claude", "gemini", "llama", "perplexity", "grok"]
 
 # Model mappings for each provider
 MODELS = {
@@ -192,7 +192,7 @@ TASK_CATEGORIES = [
         "description": "Creative content or narrative",
         "keywords": ["story", "creative", "narrative", "write", "content", "article", 
                      "blog post", "fiction", "poem", "script", "essay", "copywriting"],
-        "provider_ranking": ["claude", "openai", "gemini", "grok"],
+        "provider_ranking": ["claude", "openai", "gemini", "llama", "perplexity", "grok"],
         "likely_followups": [
             "content_editing", "story_continuation", "character_development", 
             "dialogue_creation", "narrative_structure", "style_refinement"
@@ -204,7 +204,7 @@ TASK_CATEGORIES = [
         "keywords": ["business plan", "strategy", "startup", "venture", "business model",
                     "revenue", "profit", "market entry", "scaling", "growth", "ROI", 
                     "investment", "financial projection"],
-        "provider_ranking": ["claude", "openai", "gemini", "grok"],
+        "provider_ranking": ["claude", "openai", "gemini", "llama", "perplexity", "grok"],
         "likely_followups": [
             "financial_modeling", "competitive_analysis", "market_sizing", 
             "funding_strategy", "operational_planning", "risk_assessment"
@@ -215,7 +215,7 @@ TASK_CATEGORIES = [
         "description": "Product design or development",
         "keywords": ["product design", "UX", "UI", "user experience", "product management",
                     "feature", "prototype", "MVP", "product roadmap", "user testing", "design"],
-        "provider_ranking": ["openai", "claude", "gemini", "grok"],
+        "provider_ranking": ["openai", "claude", "gemini", "llama", "perplexity", "grok"],
         "likely_followups": [
             "user_research", "wireframing", "prototyping", "usability_testing", 
             "feature_prioritization", "design_system_creation"
@@ -228,11 +228,13 @@ FOLLOWUP_CATEGORIES = {
     # Marketing followups
     "audience_research": {
         "description": "Market and audience research",
-        "provider_ranking": ["claude", "openai", "gemini"],
+        "provider_ranking": ["claude", "openai", "gemini", "llama", "perplexity"],
         "suggested_models": {
             "claude": "claude-3-opus-20240229", 
             "openai": "gpt-4o",
-            "gemini": "gemini-1.5-pro"
+            "gemini": "gemini-1.5-pro",
+            "llama": "llama-3-70b-instruct",
+            "perplexity": "llama-3.1-sonar-large-128k-online"
         }
     },
     "competitive_analysis": {
