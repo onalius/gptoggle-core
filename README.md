@@ -2,148 +2,75 @@
 
 GPToggle is a comprehensive wrapper for multiple AI providers including OpenAI, Anthropic Claude, Google Gemini, and xAI Grok. It simplifies working with various AI APIs by providing automatic model selection, unified interface, and response comparison.
 
-## Features
+## Latest Version: 1.0.3 - Task-Specific Recommendations & Follow-up Task Suggestions
 
-- 🤖 **Multi-Provider Support**: Use OpenAI (GPT models), Anthropic Claude, Google Gemini, and xAI Grok with a single interface
+**New in 1.0.3:**
+- Task-specific model recommendations for multi-faceted prompts
+- Component-specific model suggestions embedded in responses
+- Follow-up task recommendations based on detected prompt components
+- Enhanced model selection rationale with detailed task analysis
+- 6 task categories with provider-specific model strengths
+
+## Core Features
+
+- 🤖 **Multi-Provider Support**: OpenAI (GPT models), Anthropic Claude, Google Gemini, and xAI Grok
 - 🔄 **Auto-Model Selection**: Intelligently chooses the best model based on prompt characteristics
-- 📊 **Response Comparison**: Compare responses from different models side by side
-- 🌐 **Multiple Implementations**: Available as Python package, standalone Python file, or JavaScript library
-- 🚀 **Simple Installation**: Multiple installation options for different environments
+- 📊 **Task-Specific Recommendations**: Specific model recommendations for different components in a prompt
+- 🔮 **Follow-up Task Suggestions**: Optimal models for likely follow-up tasks
+- 🌐 **Multiple Implementations**: Python package, standalone file, or JavaScript library
+- 🚀 **Simple Installation**: Multiple options for different environments
 
-## Quick Start
+## Installation
 
-### Python Installation
+### Main Package: `gptoggle-core`
 
-#### Option 1: Install via pip (Recommended)
+The main package for Python and JavaScript code is in the `gptoggle-core` directory.
+
+For detailed installation instructions, see:
+- [Python Installation](gptoggle-core/docs/README.md)
+- [JavaScript Installation](gptoggle-core/docs/JS_INSTALLATION.md)
+- [Replit Installation](gptoggle-core/docs/REPLIT_INSTALLATION.md)
+
+### Quick Start with Python
 
 ```bash
+# Option 1: Install via pip (recommended)
 pip install gptoggle-core
+
+# Option 2: Install from source
+cd gptoggle-core
+python install.py
 ```
 
-#### Option 2: Standalone File (No Installation)
-
-Download the standalone Python file:
+### Quick Start with JavaScript
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/onalius/gptoggle-core/main/gptoggle_minimal.py -o gptoggle_minimal.py
-```
-
-### JavaScript Installation
-
-#### Option 1: Install via npm (For Node.js Projects)
-
-```bash
+# Option 1: Install via npm
 npm install github:onalius/gptoggle-core
-```
 
-#### Option 2: Standalone File (For Any Environment)
-
-Download the standalone JavaScript file:
-
-```bash
-curl -sSL https://raw.githubusercontent.com/onalius/gptoggle-core/main/gptoggle.js -o gptoggle.js
-```
-
-## Basic Usage
-
-### Python
-
-```python
-# With installed package
-from gptoggle import get_response
-
-# Or with standalone file
-from gptoggle_minimal import get_response
-
-# Auto-select provider and model
-response = get_response("Explain quantum computing in simple terms")
-
-# Specify provider and/or model
-response = get_response("Write a Python function", provider_name="openai", model_name="gpt-4o")
-```
-
-### JavaScript
-
-```javascript
-// With npm installation
-const { GPToggle } = require('gptoggle-js');
-
-// Or with standalone file
-const { GPToggle } = require('./gptoggle.js');
-
-// Setup API keys
-const apiKeys = {
-  openai: process.env.OPENAI_API_KEY,
-  claude: process.env.ANTHROPIC_API_KEY,
-  gemini: process.env.GOOGLE_AI_API_KEY,
-  grok: process.env.GROK_API_KEY
-};
-
-// Create GPToggle instance
-const gptoggle = new GPToggle({}, apiKeys);
-
-// Auto-select model
-const response = await gptoggle.getResponse("Explain quantum computing in simple terms");
-
-// Specify provider and model
-const response = await gptoggle.getResponse("Write a Python function", "openai", "gpt-4o");
-```
-
-## Advanced Usage
-
-### Model Comparison
-
-#### Python
-
-```python
-from gptoggle import compare_models
-
-compare_models("Explain quantum computing", ["gpt-4o", "claude-3-opus-20240229"])
-```
-
-#### JavaScript
-
-```javascript
-const responses = {};
-responses.gpt4 = await gptoggle.getResponse("Explain quantum computing", "openai", "gpt-4o");
-responses.claude = await gptoggle.getResponse("Explain quantum computing", "claude", "claude-3-opus-20240229");
-console.log("GPT-4o:", responses.gpt4);
-console.log("Claude:", responses.claude);
-```
-
-### Custom Provider Priority
-
-#### Python
-
-```python
-import os
-from gptoggle import set_provider_priority
-
-# Prioritize Claude over OpenAI
-set_provider_priority(["claude", "openai", "gemini", "grok"])
-```
-
-#### JavaScript
-
-```javascript
-const config = {
-  providerPriority: ['claude', 'openai', 'gemini', 'grok']
-};
-
-const gptoggle = new GPToggle(config, apiKeys);
+# Option 2: Use the standalone file
+curl -sSL https://raw.githubusercontent.com/onalius/gptoggle-core/main/gptoggle_enhanced.js -o gptoggle_enhanced.js
 ```
 
 ## Documentation
 
-- [Python Installation](INSTALLATION.md) - Detailed Python installation guide
-- [JavaScript Installation](JS_INSTALLATION.md) - Detailed JavaScript installation guide
-- [API Reference](API_REFERENCE.md) - Complete API documentation
-- [Replit Installation](REPLIT_INSTALLATION.md) - Special instructions for Replit environments
+For more detailed information:
+- [CHANGELOG.md](gptoggle-core/docs/CHANGELOG.md): Version history and feature updates
+- [REST_API_DOCS.md](REST_API_DOCS.md): REST API documentation (if using the API server)
+
+## Examples
+
+Check out the example scripts:
+- `gptoggle_enhanced_example.py`: Demonstrates multi-task detection
+- `gptoggle_followup_example.py`: Shows follow-up task recommendations
+- `gptoggle-enhanced-example.js`: JavaScript example with all features
 
 ## License
 
-MIT License
+MIT
 
 ## Contact
 
-For questions or support, contact lano@docdel.io
+For questions or support, please contact:
+- Email: lano@docdel.io
+- GitHub: [github.com/onalius/gptoggle-core](https://github.com/onalius/gptoggle-core)

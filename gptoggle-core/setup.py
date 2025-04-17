@@ -18,6 +18,30 @@ if IN_REPLIT:
 with open(os.path.join(os.path.dirname(__file__), "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
+# Check if standalone files exist - otherwise copy them from examples
+standalone_files = ["gptoggle_minimal.py", "gptoggle_enhanced.py", "gptoggle.js", "gptoggle_enhanced.js"]
+for file in standalone_files:
+    if not os.path.exists(os.path.join(os.path.dirname(__file__), file)):
+        print(f"Warning: {file} not found in package root. Package may be incomplete.")
+
+# Get all example files
+example_files = []
+examples_dir = os.path.join(os.path.dirname(__file__), "examples")
+if os.path.isdir(examples_dir):
+    for root, dirs, files in os.walk(examples_dir):
+        for file in files:
+            if file.endswith(".py") or file.endswith(".js"):
+                example_files.append(os.path.join(root, file).replace(os.path.dirname(__file__) + os.sep, ""))
+
+# Get all documentation files
+docs_files = []
+docs_dir = os.path.join(os.path.dirname(__file__), "docs")
+if os.path.isdir(docs_dir):
+    for root, dirs, files in os.walk(docs_dir):
+        for file in files:
+            if file.endswith(".md"):
+                docs_files.append(os.path.join(root, file).replace(os.path.dirname(__file__) + os.sep, ""))
+
 setup(
     name=PACKAGE_NAME,
     version="1.0.3",
@@ -30,6 +54,12 @@ setup(
     py_modules=["gptoggle_minimal", "gptoggle_enhanced"],
     packages=find_packages(),
     include_package_data=True,
+    data_files=[
+        ("gptoggle/javascript", ["gptoggle.js", "gptoggle_enhanced.js"]),
+        ("gptoggle/docs", docs_files),
+        ("gptoggle/examples", example_files),
+    ],
+    scripts=["install.py", "release.py", "replit_install.sh"],
     install_requires=[
         # Core dependencies - minimal requirements
         "requests>=2.25.0",
@@ -57,5 +87,5 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     python_requires=">=3.8",
-    keywords="ai, openai, claude, gemini, grok, gpt, chatgpt, api, wrapper",
+    keywords="ai, openai, claude, gemini, grok, gpt, chatgpt, api, wrapper, llm, multi-provider, gptoggle",
 )
