@@ -1,144 +1,141 @@
-# GPToggle
+# GPToggle: Multi-Provider AI Model Wrapper
 
-A sophisticated Python library for intelligent AI API interactions, designed to simplify and enhance AI-powered conversations through dynamic model selection and provider management.
+GPToggle is a comprehensive wrapper for multiple AI providers including OpenAI, Anthropic Claude, Google Gemini, and xAI Grok. It simplifies working with various AI APIs by providing automatic model selection, unified interface, and response comparison.
 
 ## Features
 
-- **Multi-Provider Support**: Interact with multiple AI providers through a unified interface
-  - OpenAI (GPT-4, GPT-3.5)
-  - Anthropic (Claude)
-  - Google (Gemini)
-  - xAI (Grok)
-  
-- **Intelligent Model Selection**: Automatically selects the most appropriate model based on:
-  - Prompt length and complexity
-  - Content type (code, creative writing, general questions)
-  - Visual content requirements
-  - Required context window size
-  
-- **Model Comparison**: Compare responses from different models side by side and collect user ratings
+- 🤖 **Multi-Provider Support**: Use OpenAI (GPT models), Anthropic Claude, Google Gemini, and xAI Grok with a single interface
+- 🔄 **Auto-Model Selection**: Intelligently chooses the best model based on prompt characteristics
+- 📊 **Task-Specific Recommendations**: Provides specific model recommendations for different task components in a prompt
+- 🔮 **Follow-up Task Suggestions**: Suggests optimal models for likely follow-up tasks
+- 🌐 **Multiple Implementations**: Available as Python package, standalone Python file, or JavaScript library
+- 🚀 **Simple Installation**: Multiple installation options for different environments
 
-- **Customizable Provider Management**:
-  - Enable/disable specific providers
-  - Set provider priority for auto-selection
-  - Configure provider-specific settings
+## Quick Start
 
-## Installation
+### Python Installation
+
+#### Option 1: Install via pip (Recommended)
 
 ```bash
-pip install gptoggle
+pip install gptoggle-core
 ```
 
-Or for development:
+#### Option 2: Use the Standalone File
+
+Download the standalone file directly:
 
 ```bash
-git clone https://github.com/onalius/gptoggle-core.git
-cd gptoggle-core
-pip install -e .
+curl -sSL https://raw.githubusercontent.com/onalius/gptoggle-core/main/gptoggle_enhanced.py -o gptoggle_enhanced.py
 ```
 
-## Getting Started
-
-### API Keys
-
-You need to set API keys for the providers you want to use:
-
-```bash
-# For OpenAI
-export OPENAI_API_KEY="your-openai-key"
-
-# For Anthropic Claude
-export ANTHROPIC_API_KEY="your-anthropic-key"
-
-# For Google Gemini
-export GOOGLE_API_KEY="your-google-key"
-
-# For xAI Grok
-export XAI_API_KEY="your-xai-key"
-```
-
-### CLI Usage
-
-```bash
-# Basic usage with auto-provider and model selection
-gptoggle "Tell me about quantum computing"
-
-# Specify provider and model
-gptoggle "Tell me about quantum computing" --provider openai --model gpt-4o
-
-# Compare models from different providers
-gptoggle "Tell me about quantum computing" --compare openai:gpt-4o,claude:claude-3-opus-20240229
-
-# List available providers
-gptoggle --list-providers
-
-# List available models for a specific provider
-gptoggle --list-models --provider openai
-```
-
-### Python API Usage
+Then use it in your code:
 
 ```python
-from gptoggle import Config, get_response, choose_provider_and_model
+from gptoggle_enhanced import get_response, recommend_model
 
-# Auto-select provider and model
-provider, model, reason = choose_provider_and_model("Write a Python function to calculate Fibonacci numbers")
-print(f"Selected {provider}:{model} because: {reason}")
+# Get a response using auto-selected model
+response = get_response("What is quantum computing?")
 
-# Get response from a specific provider and model
-response = get_response(
-    prompt="Explain quantum computing like I'm five",
-    provider_name="claude",
-    model="claude-3-opus-20240229"
-)
-print(response)
-
-# Customize provider configuration
-config = Config()
-config.enable_provider("openai")
-config.enable_provider("claude")
-config.disable_provider("gemini")
-config.set_provider_priority(["claude", "openai"])
+# Get component-specific recommendations
+provider, model, reason, tasks = recommend_model("Create a marketing plan and implement a landing page")
 ```
 
-## Provider Customization
+### JavaScript Installation
 
-You can customize which providers are enabled and their priority order:
+#### Option 1: NPM Installation
+
+```bash
+npm install github:onalius/gptoggle-core
+```
+
+#### Option 2: Standalone JavaScript File
+
+Download the standalone file directly:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/onalius/gptoggle-core/main/gptoggle_enhanced.js -o gptoggle_enhanced.js
+```
+
+Then use it in your code:
+
+```javascript
+const { GPToggle } = require('./gptoggle_enhanced.js');
+
+// Setup your API keys
+const apiKeys = {
+  openai: process.env.OPENAI_API_KEY
+  // Add other providers as needed
+};
+
+// Create a GPToggle instance
+const gptoggle = new GPToggle({}, apiKeys);
+
+// Get a response with auto-model selection
+const response = await gptoggle.getResponse("What is quantum computing?");
+```
+
+## Features in Detail
+
+### Task-Specific Recommendations
+
+GPToggle can identify different task components in a complex prompt and recommend the best model for each:
 
 ```python
-from gptoggle import Config
+from gptoggle_enhanced import get_task_recommendations
 
-config = Config()
+prompt = "Design a marketing campaign for our eco-friendly product line and implement a landing page"
+recommendations = get_task_recommendations(prompt)
 
-# Enable only certain providers
-config.disable_provider("openai")
-config.disable_provider("grok")
-
-# Set provider priority (highest first)
-config.set_provider_priority(["claude", "gemini"])
-
-# Set active provider for direct calls
-config.set_active_provider("claude")
+# This will show recommendations specifically for the marketing and coding components
+print(recommendations)
 ```
 
-## Model Auto-Selection
+### Follow-up Task Suggestions
 
-GPToggle can intelligently select models based on prompt characteristics:
+GPToggle can predict likely follow-up tasks and suggest the best models for them:
 
-- Long context (>10K tokens) → Models with large context windows
-- Code-related content → Models with strong coding abilities
-- Creative writing → Models with strong creative capabilities
-- Image analysis → Models with vision capabilities
-- Short, simple queries → Faster, more efficient models
+```python
+from gptoggle_enhanced import get_followup_recommendations
 
-## Contributing
+# Get follow-up recommendations based on detected tasks
+followups = get_followup_recommendations(recommendations["task_recommendations"])
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+# This will show recommendations for tasks like "content creation", "deployment", etc.
+print(followups)
+```
+
+## Documentation
+
+For more detailed instructions, see the following guides:
+
+- [CHANGELOG.md](docs/CHANGELOG.md): Version history and feature updates
+- [JS_INSTALLATION.md](docs/JS_INSTALLATION.md): Detailed JavaScript installation guide
+- [REPLIT_INSTALLATION.md](docs/REPLIT_INSTALLATION.md): Installation guide for Replit environments
+
+## Examples
+
+Check out the example scripts in the `examples` directory:
+
+- `gptoggle_enhanced_example.py`: Demonstrates multi-task detection
+- `gptoggle_followup_example.py`: Shows follow-up task recommendations
+- `gptoggle-enhanced-example.js`: JavaScript example for all features
+
+## API Keys
+
+GPToggle requires API keys for the providers you want to use:
+
+- OpenAI: Set as environment variable `OPENAI_API_KEY`
+- Claude: Set as environment variable `ANTHROPIC_API_KEY`
+- Gemini: Set as environment variable `GOOGLE_API_KEY`
+- Grok: Set as environment variable `XAI_API_KEY`
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+MIT
 
 ## Contact
 
-For questions or support, contact lano@docdel.io.
+For questions or support, please contact:
+- Email: lano@docdel.io
+- GitHub: [github.com/onalius/gptoggle-core](https://github.com/onalius/gptoggle-core)
