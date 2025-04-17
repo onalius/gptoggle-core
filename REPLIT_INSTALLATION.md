@@ -14,8 +14,8 @@ The simplest approach is to use our installation helper script:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/gptoggle.git
-cd gptoggle
+git clone https://github.com/onalius/gptoggle-core.git
+cd gptoggle-core
 
 # Run the installation helper
 python install.py
@@ -127,7 +127,7 @@ If you continue having issues with direct installation, you can use the REST API
    from client_library import GPToggleClient
    
    # Get the URL of the Repl running the GPToggle REST API
-   client = GPToggleClient("https://gptoggle.yourusername.repl.co")
+   client = GPToggleClient("https://gptoggle.onalius.repl.co")
    
    # Use the client
    response = client.generate_response("What is the meaning of life?")

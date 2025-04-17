@@ -17,7 +17,7 @@ setup(
     description="A multi-provider wrapper for AI model APIs with auto-model selection and comparison",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/gptoggle",
+    url="https://github.com/onalius/gptoggle-core",
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

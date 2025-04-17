@@ -32,8 +32,8 @@ pip install gptoggle
 Or for development:
 
 ```bash
-git clone https://github.com/yourusername/gptoggle.git
-cd gptoggle
+git clone https://github.com/onalius/gptoggle-core.git
+cd gptoggle-core
 pip install -e .
 ```
 
