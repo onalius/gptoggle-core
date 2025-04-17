@@ -5,6 +5,30 @@ All notable changes to the GPToggle project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2025-04-17 - Improved Installation & Cross-Platform Compatibility
+
+GPToggle v1.0.1 focuses on improving installation and compatibility across different environments, including Replit.
+
+### Added
+- Built-in Replit environment detection in setup.py
+- REST API example in examples/rest_api.py for HTTP-based access
+- Client libraries in both Python and Node.js 
+- Installation helper script (install.py) for automatic environment detection
+- Detailed Replit-specific installation guide (REPLIT_INSTALLATION.md)
+- Recommend_model function for backward compatibility
+
+### Fixed
+- Self-dependency installation issues in Replit
+- Package naming conflicts through environment detection
+- Documentation gaps for installation across platforms
+- Circular import issues with utils.py module
+- Missing package data and templates
+
+### Changed
+- Improved dependency management with optional components
+- Setup.py now adapts to different environments
+- Better error handling during installation
+
 ## [1.0.0] - 2025-04-16 - Multi-Provider Architecture
 
 GPToggle v1.0.0 introduces a complete overhaul with a new multi-provider architecture. This version expands beyond the initial OpenAI-only implementation to include support for multiple AI providers (Claude, Gemini, and Grok).

@@ -42,6 +42,25 @@ pip install -e .
 
 For detailed installation instructions and troubleshooting, see [INSTALLATION.md](INSTALLATION.md).
 
+### Platform-Specific Guides
+
+- **Replit Users**: If you're using Replit, see [REPLIT_INSTALLATION.md](REPLIT_INSTALLATION.md) for Replit-specific installation instructions.
+
+### Easy Installation Script
+
+We provide an installation script that automatically detects your environment and handles installation appropriately:
+
+```bash
+# Basic installation
+python install.py
+
+# Installation with specific components
+python install.py --web     # Install with web interface support
+python install.py --ui      # Install with terminal UI support
+python install.py --all     # Install all optional components
+python install.py --dev     # Install in development mode
+```
+
 ### Installation Issues
 
 If you encounter installation issues with "self-dependencies" errors:
