@@ -5,6 +5,29 @@ All notable changes to the GPToggle project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.3] - 2025-04-17 - Task-Specific Recommendations & Component Suggestions
+
+GPToggle v1.0.3 introduces advanced recommendation capabilities for multi-faceted prompts, including task-specific model recommendations and component-specific suggestions within responses.
+
+### Added
+- Task-specific model recommendations for multi-faceted prompts
+- Component-specific model suggestions embedded in responses
+- Enhanced model selection rationale with detailed task analysis
+- Task detection system with four main categories (marketing, coding, data analysis, creative writing)
+- Provider strength profiles for different task types
+- New API methods:
+  - `getTaskRecommendations()` - Get recommendations for each task component in a prompt
+  - `generateModelSuggestions()` - Generate component-specific suggestions for responses
+- Enhanced configuration with specialized model categories (creative, technical, analytical)
+- Example scripts demonstrating the new features:
+  - `gptoggle_enhanced_example.py` - Python example
+  - `gptoggle-enhanced-example.js` - JavaScript example
+
+### Changed
+- Improved model recommendation rationale with task-specific context
+- Enhanced response generation to include model suggestions
+- Expanded provider priority system to include task-specific rankings
+
 ## [1.0.2] - 2025-04-17 - Enhanced JavaScript Support & Documentation
 
 GPToggle v1.0.2 adds better JavaScript support with npm package compatibility and improved documentation.
