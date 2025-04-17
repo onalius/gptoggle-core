@@ -5,6 +5,23 @@ All notable changes to the GPToggle project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2025-04-17 - Enhanced JavaScript Support & Documentation
+
+GPToggle v1.0.2 adds better JavaScript support with npm package compatibility and improved documentation.
+
+### Added
+- Added package.json file for npm installation support
+- Detailed JavaScript installation guide (JS_INSTALLATION.md)
+- Web interface documentation (WEB_INTERFACE.md)
+- Browser-based example with localStorage API key storage
+- Enhanced README with both Python and JavaScript usage examples
+- Expanded Replit installation guide to cover both Python and JavaScript
+
+### Fixed
+- Fixed repository URLs across all documentation files
+- Improved installation instructions for JavaScript environments
+- Fixed npm installation issues with proper package configuration
+
 ## [1.0.1] - 2025-04-17 - Improved Installation & Cross-Platform Compatibility
 
 GPToggle v1.0.1 focuses on improving installation and compatibility across different environments, including Replit.
