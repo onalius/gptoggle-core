@@ -1,21 +1,32 @@
 {
-  "name": "workspace",
-  "version": "1.0.0",
-  "description": "GPToggle is a sophisticated multi-provider Python tool for intelligent AI API interactions, designed to simplify and enhance AI-powered conversations through dynamic model selection and user-friendly interfaces.",
+  "name": "gptoggle-js",
+  "version": "1.0.1",
+  "description": "JavaScript implementation of GPToggle - A multi-provider wrapper for AI model APIs with auto-model selection",
   "main": "gptoggle.js",
-  "directories": {
-    "example": "examples",
-    "test": "tests"
-  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/onalius/gptoggle-core.git"
+  },
+  "keywords": [
+    "ai",
+    "openai",
+    "claude",
+    "gemini",
+    "grok",
+    "gpt",
+    "gptoggle",
+    "wrapper"
+  ],
+  "author": "GPToggle Team <lano@docdel.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/onalius/gptoggle-core/issues"
+  },
+  "homepage": "https://github.com/onalius/gptoggle-core#readme",
   "dependencies": {
-    "anthropic": "^0.0.0",
-    "axios": "^1.8.4",
-    "openai": "^4.95.0"
+    "axios": "^1.4.0"
   }
 }

@@ -1,211 +1,149 @@
-# GPToggle
+# GPToggle: Multi-Provider AI Model Wrapper
 
-GPToggle is a sophisticated multi-provider Python tool for intelligent AI API interactions, designed to simplify and enhance AI-powered conversations through dynamic model selection and user-friendly interfaces.
+GPToggle is a comprehensive wrapper for multiple AI providers including OpenAI, Anthropic Claude, Google Gemini, and xAI Grok. It simplifies working with various AI APIs by providing automatic model selection, unified interface, and response comparison.
 
 ## Features
 
-- **Multi-Provider Support**: Access models from OpenAI, Anthropic (Claude), Google (Gemini), and xAI (Grok) through a unified interface
-- **Intelligent Model Selection**: Automatically choose the best AI model based on your prompt
-- **Model Comparison**: Compare responses from different providers and models side-by-side
-- **Provider Management**: Enable, disable, and prioritize specific providers
-- **CLI & Python API**: Use as a command-line tool or integrate into your Python projects
-- **Web Interface**: Interactive web UI for prompt submission and model comparison
-
-## Project Structure
-
-The project is organized into two main components:
-
-### gptoggle-core
-The core library containing the provider implementations and base functionality:
-- Provider interfaces and implementations
-- Configuration management
-- Model selection and comparison logic
-- Utility functions
-- Python API
-
-### gptoggle
-The complete application including:
-- Command-line interface
-- Web interface (Flask)
-- Installation utilities
-- Documentation
-
-## Installation
-
-```bash
-# Install the complete package from PyPI
-pip install gptoggle-package
-
-# For developers working on the core library
-pip install -e .
-```
-
-For detailed installation instructions and troubleshooting, see [INSTALLATION.md](INSTALLATION.md).
-
-### Platform-Specific Guides
-
-- **Replit Users**: If you're using Replit, see [REPLIT_INSTALLATION.md](REPLIT_INSTALLATION.md) for Replit-specific installation instructions. We provide multiple options for Replit:
-
-1. **One-line installer**: Install in Replit with this command:
-   ```bash
-   curl -sSL https://raw.githubusercontent.com/onalius/gptoggle-core/main/replit_install.sh | bash
-   ```
-
-2. **Standalone Python module**: If you're having trouble with installation, you can use [gptoggle_minimal.py](gptoggle_minimal.py), a single-file version with the core functionality.
-
-3. **JavaScript implementation**: For web environments, we offer [gptoggle.js](gptoggle.js), a browser and Node.js compatible implementation.
-
-4. **REST API**: Use the REST API as described in [REST_API_DOCS.md](REST_API_DOCS.md).
-
-### Easy Installation Script
-
-We provide an installation script that automatically detects your environment and handles installation appropriately:
-
-```bash
-# Basic installation
-python install.py
-
-# Installation with specific components
-python install.py --web     # Install with web interface support
-python install.py --ui      # Install with terminal UI support
-python install.py --all     # Install all optional components
-python install.py --dev     # Install in development mode
-```
-
-### Installation Issues
-
-If you encounter installation issues with "self-dependencies" errors:
-
-```bash
-# Use this specific package name for Replit
-pip install gptoggle-ai-wrapper-library-pkg --no-deps
-pip install openai anthropic google-generativeai
-
-# Or for development installation
-pip install -e . --no-deps
-pip install openai anthropic google-generativeai rich flask
-```
+- 🤖 **Multi-Provider Support**: Use OpenAI (GPT models), Anthropic Claude, Google Gemini, and xAI Grok with a single interface
+- 🔄 **Auto-Model Selection**: Intelligently chooses the best model based on prompt characteristics
+- 📊 **Response Comparison**: Compare responses from different models side by side
+- 🌐 **Multiple Implementations**: Available as Python package, standalone Python file, or JavaScript library
+- 🚀 **Simple Installation**: Multiple installation options for different environments
 
 ## Quick Start
 
+### Python Installation
+
+#### Option 1: Install via pip (Recommended)
+
+```bash
+pip install gptoggle-core
+```
+
+#### Option 2: Standalone File (No Installation)
+
+Download the standalone Python file:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/onalius/gptoggle-core/main/gptoggle_minimal.py -o gptoggle_minimal.py
+```
+
+### JavaScript Installation
+
+#### Option 1: Install via npm (For Node.js Projects)
+
+```bash
+npm install github:onalius/gptoggle-core
+```
+
+#### Option 2: Standalone File (For Any Environment)
+
+Download the standalone JavaScript file:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/onalius/gptoggle-core/main/gptoggle.js -o gptoggle.js
+```
+
+## Basic Usage
+
+### Python
+
+```python
+# With installed package
+from gptoggle import get_response
+
+# Or with standalone file
+from gptoggle_minimal import get_response
+
+# Auto-select provider and model
+response = get_response("Explain quantum computing in simple terms")
+
+# Specify provider and/or model
+response = get_response("Write a Python function", provider_name="openai", model_name="gpt-4o")
+```
+
+### JavaScript
+
+```javascript
+// With npm installation
+const { GPToggle } = require('gptoggle-js');
+
+// Or with standalone file
+const { GPToggle } = require('./gptoggle.js');
+
+// Setup API keys
+const apiKeys = {
+  openai: process.env.OPENAI_API_KEY,
+  claude: process.env.ANTHROPIC_API_KEY,
+  gemini: process.env.GOOGLE_AI_API_KEY,
+  grok: process.env.GROK_API_KEY
+};
+
+// Create GPToggle instance
+const gptoggle = new GPToggle({}, apiKeys);
+
+// Auto-select model
+const response = await gptoggle.getResponse("Explain quantum computing in simple terms");
+
+// Specify provider and model
+const response = await gptoggle.getResponse("Write a Python function", "openai", "gpt-4o");
+```
+
+## Advanced Usage
+
+### Model Comparison
+
+#### Python
+
+```python
+from gptoggle import compare_models
+
+compare_models("Explain quantum computing", ["gpt-4o", "claude-3-opus-20240229"])
+```
+
+#### JavaScript
+
+```javascript
+const responses = {};
+responses.gpt4 = await gptoggle.getResponse("Explain quantum computing", "openai", "gpt-4o");
+responses.claude = await gptoggle.getResponse("Explain quantum computing", "claude", "claude-3-opus-20240229");
+console.log("GPT-4o:", responses.gpt4);
+console.log("Claude:", responses.claude);
+```
+
+### Custom Provider Priority
+
+#### Python
+
 ```python
 import os
-from gptoggle import get_response, choose_provider_and_model, recommend_model
+from gptoggle import set_provider_priority
 
-# Set up API keys for providers you want to use
-os.environ["OPENAI_API_KEY"] = "your-openai-key"
-os.environ["ANTHROPIC_API_KEY"] = "your-anthropic-key"
-os.environ["GOOGLE_API_KEY"] = "your-google-key"
-os.environ["XAI_API_KEY"] = "your-xai-key"
-
-# Auto-select the best provider and model for your prompt (detailed method)
-provider, model, reason = choose_provider_and_model("Create a Python function to calculate the Fibonacci sequence")
-print(f"Selected {provider}:{model} because {reason}")
-
-# Or use the simpler recommend_model function
-recommended = recommend_model("Explain quantum computing")
-print(f"Recommended model: {recommended}")
-
-# Get a response from any provider and model
-response = get_response(
-    "What are the ethical implications of AI?",
-    provider_name="claude",
-    model="claude-3-opus-20240229"
-)
-print(response)
+# Prioritize Claude over OpenAI
+set_provider_priority(["claude", "openai", "gemini", "grok"])
 ```
 
-## CLI Usage
+#### JavaScript
 
-```bash
-# Auto-select provider and model
-gptoggle "Explain quantum computing in simple terms"
+```javascript
+const config = {
+  providerPriority: ['claude', 'openai', 'gemini', 'grok']
+};
 
-# Specify provider and model
-gptoggle "Write a poem about AI" --provider openai --model gpt-4o
-
-# Compare models from different providers
-gptoggle "Debate the pros and cons of remote work" --compare openai:gpt-4o,claude:claude-3-opus-20240229
+const gptoggle = new GPToggle(config, apiKeys);
 ```
 
-## Configuration
+## Documentation
 
-GPToggle uses environment variables for API keys:
-
-- `OPENAI_API_KEY` - For OpenAI provider (GPT models)
-- `ANTHROPIC_API_KEY` - For Claude provider
-- `GOOGLE_API_KEY` - For Gemini provider
-- `XAI_API_KEY` - For Grok provider
-
-## Web Interface
-
-GPToggle comes with a web interface built on Flask:
-
-```bash
-# Start the web server
-python -m gptoggle.web
-
-# Or run the main.py directly
-python main.py
-```
-
-The web interface will be available at http://localhost:5000 by default.
-
-## Developer Guide
-
-### Project Organization
-
-The project follows a modular architecture to ensure maintainability and extensibility:
-
-```
-gptoggle/
-├── __init__.py            # Package exports
-├── config.py              # Configuration management
-├── utils.py               # Utility functions to avoid circular imports
-├── chat.py                # CLI functionality
-├── compare.py             # Model comparison functionality
-├── providers/             # Provider implementations
-│   ├── __init__.py        # Provider registry
-│   ├── base_provider.py   # Abstract base class for providers
-│   ├── openai_provider.py # OpenAI provider implementation
-│   ├── claude_provider.py # Anthropic Claude provider
-│   ├── gemini_provider.py # Google Gemini provider
-│   └── grok_provider.py   # xAI Grok provider
-└── triage.py              # Auto-selection logic
-
-tests/                     # Test suite
-├── __init__.py
-├── test_config.py
-└── test_triage.py
-
-main.py                    # Flask web interface
-static/                    # Web assets
-templates/                 # HTML templates
-```
-
-### Adding a New Provider
-
-To add a new provider:
-
-1. Create a new provider class in the `providers/` directory
-2. Inherit from `BaseProvider` and implement all required methods
-3. Register the provider in `providers/__init__.py`
-4. Add any provider-specific environment variables to the documentation
-
-### Running Tests
-
-```bash
-# Run all tests
-pytest
-
-# Run specific test
-pytest tests/test_config.py
-```
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+- [Python Installation](INSTALLATION.md) - Detailed Python installation guide
+- [JavaScript Installation](JS_INSTALLATION.md) - Detailed JavaScript installation guide
+- [API Reference](API_REFERENCE.md) - Complete API documentation
+- [Replit Installation](REPLIT_INSTALLATION.md) - Special instructions for Replit environments
 
 ## License
 
-MIT
+MIT License
+
+## Contact
+
+For questions or support, contact lano@docdel.io

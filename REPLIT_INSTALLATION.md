@@ -1,193 +1,178 @@
-# Installing GPToggle in Replit
+# GPToggle Installation Guide for Replit
 
-This guide provides special instructions for installing and using the GPToggle package specifically in Replit environments.
+This guide provides special instructions for installing and using GPToggle in Replit environments.
 
-## Important: Installation Challenges in Replit
+## Python Installation in Replit
 
-Replit environments have unique characteristics that can cause conflicts with Python package installation. The most common issue is **self-dependency errors**, which occur when Replit's project name conflicts with the package name.
+### Option 1: Install via pip
 
-To address this, we use a very distinctive package name (`gptoggle-ai-wrapper-library-pkg`) that's unlikely to conflict with any Replit project name.
-
-## Option 1: Using the Installation Helper Script
-
-The simplest approach is to use our installation helper script:
+In some Replit environments, you might face self-dependency issues. Try one of these methods:
 
 ```bash
-# Clone the repository
-git clone https://github.com/onalius/gptoggle-core.git
-cd gptoggle-core
+# Method 1: Standard installation
+pip install gptoggle-core
 
-# Run the installation helper
-python install.py
+# Method 2: Installation with renamed package (if you face dependency issues)
+pip install gptoggle-ai-wrapper-library-pkg
 ```
 
-This script automatically detects the Replit environment and handles all the necessary adjustments.
-
-## Option 2: Direct Installation (Core Functionality Only)
-
-For basic usage in Replit, install the core package:
+### Option 2: Use One-Line Installation Script
 
 ```bash
-# Install with minimal dependencies to avoid conflicts
-pip install gptoggle-ai-wrapper-library-pkg --no-deps
-pip install openai anthropic google-generativeai
+curl -sSL https://raw.githubusercontent.com/onalius/gptoggle-core/main/replit_install.sh | bash
 ```
 
-This installs only the essential AI provider libraries. You won't have the CLI formatting or web interface, but the core API functionality will work.
+### Option 3: Standalone Python File (No Installation)
 
-## Option 2: Installation with Specific Features
-
-You can install specific optional components:
+Download the standalone file directly:
 
 ```bash
-# Install with web interface support
-pip install gptoggle-ai-wrapper-library-pkg[web] --no-deps
-pip install openai anthropic google-generativeai flask flask-cors
-
-# Install with terminal UI support
-pip install gptoggle-ai-wrapper-library-pkg[ui] --no-deps
-pip install openai anthropic google-generativeai rich
-```
-
-## Option 3: Using the Standalone File
-
-If you're having trouble with package installation, use the standalone Python file:
-
-```bash
-# Download the standalone file
 curl -sSL https://raw.githubusercontent.com/onalius/gptoggle-core/main/gptoggle_minimal.py -o gptoggle_minimal.py
-
-# Use directly in your code
-python -c "from gptoggle_minimal import get_response; print(get_response('Hello, world!'))"
 ```
 
-The standalone file includes the core functionality of GPToggle without requiring installation.
+Then use it in your Python code:
 
-## Option 4: Using the JavaScript Implementation
+```python
+from gptoggle_minimal import get_response, recommend_model
 
-For web projects or if you prefer JavaScript, use our JavaScript implementation:
+response = get_response("Your prompt here")
+```
+
+## JavaScript Installation in Replit
+
+### Option 1: NPM Installation
 
 ```bash
-# Download the JavaScript file
+npm install github:onalius/gptoggle-core
+```
+
+Then use it in your JavaScript code:
+
+```javascript
+const { GPToggle } = require('gptoggle-js');
+
+// Setup API keys
+const apiKeys = {
+  openai: process.env.OPENAI_API_KEY
+  // Add other providers as needed
+};
+
+// Create a GPToggle instance
+const gptoggle = new GPToggle({}, apiKeys);
+```
+
+### Option 2: Standalone JavaScript File
+
+Download the standalone file directly:
+
+```bash
 curl -sSL https://raw.githubusercontent.com/onalius/gptoggle-core/main/gptoggle.js -o gptoggle.js
 ```
 
-In Node.js:
+Make sure to install axios:
+
+```bash
+npm install axios
+```
+
+Then use it in your JavaScript code:
+
 ```javascript
-const GPToggle = require('./gptoggle');
-const gptoggle = new GPToggle({}, {
-  openai: process.env.OPENAI_API_KEY,
-  claude: process.env.ANTHROPIC_API_KEY
-});
+const { GPToggle } = require('./gptoggle.js');
 
-async function example() {
-  const response = await gptoggle.getResponse('What is quantum computing?');
-  console.log(response);
-}
+// Setup API keys
+const apiKeys = {
+  openai: process.env.OPENAI_API_KEY
+  // Add other providers as needed
+};
 
-example().catch(console.error);
+// Create a GPToggle instance
+const gptoggle = new GPToggle({}, apiKeys);
 ```
 
-In a browser:
-```html
-<script src="gptoggle.js"></script>
-<script>
-  const gptoggle = new GPToggle({}, {
-    openai: 'your-openai-key', // Be careful with API keys in frontend code!
-    claude: 'your-claude-key'
-  });
-  
-  async function askAI() {
-    const response = await gptoggle.getResponse(
-      document.getElementById('prompt').value
-    );
-    document.getElementById('response').textContent = response;
-  }
-</script>
+## Setting Up API Keys in Replit
+
+In Replit, you should set your API keys as environment variables:
+
+1. Go to the "Secrets" tab in your Repl
+2. Add the following keys:
+   - `OPENAI_API_KEY` for OpenAI
+   - `ANTHROPIC_API_KEY` for Claude
+   - `GOOGLE_AI_API_KEY` for Gemini
+   - `GROK_API_KEY` for Grok
+
+## Web Interface in Replit
+
+If you want to use the web interface, create a new file called `app.py` with this content:
+
+```python
+import os
+from flask import Flask, render_template, request, jsonify
+from gptoggle_minimal import get_response, recommend_model, get_available_providers
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    providers = get_available_providers()
+    return render_template('index.html', providers=providers)
+
+@app.route('/chat', methods=['POST'])
+def chat():
+    data = request.json
+    prompt = data.get('prompt')
+    provider = data.get('provider') if data.get('provider') != 'auto' else None
+    model = data.get('model') if data.get('model') != 'auto' else None
+    
+    try:
+        response = get_response(prompt, provider, model)
+        return jsonify({'response': response})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/recommend', methods=['POST'])
+def recommend():
+    data = request.json
+    prompt = data.get('prompt')
+    
+    try:
+        provider, model = recommend_model(prompt)
+        return jsonify({'provider': provider, 'model': model})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080)
 ```
 
-## Option 5: Using GPToggle as a REST API Service
+And make sure to install Flask:
 
-If you continue having issues with direct installation, you can use the REST API approach:
-
-1. Clone and run the GPToggle REST API in one Repl:
-   ```bash
-   git clone https://github.com/onalius/gptoggle-core.git
-   cd gptoggle-core
-   python examples/rest_api.py
-   ```
-
-2. In your client Repl, use one of these client libraries:
-   - For Python: [examples/client_library.py](examples/client_library.py)
-   - For Node.js: [examples/client_library.js](examples/client_library.js)
-
-3. Connect to the API using the Replit domain:
-   ```python
-   # Python example
-   from client_library import GPToggleClient
-   
-   # Get the URL of the Repl running the GPToggle REST API
-   client = GPToggleClient("https://gptoggle.onalius.repl.co")
-   
-   # Use the client
-   response = client.generate_response("What is the meaning of life?")
-   print(response)
-   ```
-
-## Troubleshooting Replit-Specific Issues
-
-### Self-Dependency Errors
-
-If you see errors about self-dependencies:
-
-```
-error: Requirement name matches project name, but self-dependencies are not permitted without the `--dev` or `--optional` flags.
+```bash
+pip install flask
 ```
 
-Try one of these approaches:
+## Troubleshooting in Replit
 
-1. Install with the `--no-deps` flag as shown above
+### Python Installation Issues
 
-2. Use a different package name:
-   ```bash
-   pip install git+https://github.com/onalius/gptoggle-core.git@main#egg=gptoggle-ai-wrapper-library-pkg --no-deps
-   ```
+If you encounter issues with pip installation, try:
 
-3. Clone the repository and use it without installation:
-   ```bash
-   git clone https://github.com/onalius/gptoggle-core.git
-   cd gptoggle-core
-   # Then import from this local directory
-   ```
+```bash
+# Remove any previous installations
+pip uninstall -y gptoggle-core gptoggle-ai-wrapper-library-pkg
 
-### Import Errors After Installation
+# Install with --no-deps flag to avoid dependency conflicts
+pip install --no-deps gptoggle-core
+```
 
-If you installed successfully but see import errors:
+### JavaScript/npm Installation Issues
 
-1. Check that you installed all required dependencies:
-   ```bash
-   pip install openai anthropic google-generativeai
-   ```
+If you encounter issues with npm installation, use the standalone file method instead:
 
-2. Verify the package is installed:
-   ```bash
-   pip list | grep gptoggle
-   ```
+```bash
+curl -sSL https://raw.githubusercontent.com/onalius/gptoggle-core/main/gptoggle.js -o gptoggle.js
+```
 
-3. Try importing specific modules instead of the whole package:
-   ```python
-   # Instead of 
-   import gptoggle
-   
-   # Try
-   from gptoggle import get_response, recommend_model
-   ```
+## Need More Help?
 
-## Getting API Keys
-
-Remember, you'll need API keys for whichever AI providers you want to use:
-
-- OpenAI API key from [platform.openai.com](https://platform.openai.com/api-keys)
-- Anthropic API key from [console.anthropic.com](https://console.anthropic.com/)
-- Google API key from [makersuite.google.com](https://makersuite.google.com/)
-- xAI API key (contact xAI directly)
+For more detailed instructions and examples, check the main [README.md](README.md) and [API_REFERENCE.md](API_REFERENCE.md).
