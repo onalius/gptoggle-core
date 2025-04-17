@@ -114,7 +114,7 @@ def demo_get_response():
     print(f"\nResponse from {provider}:{model}:")
     print(f"{response}\n")
     
-    # Try with a specific provider if available
+    # Try with specific providers if available
     config = Config()
     if "claude" in config.get_enabled_providers():
         response = get_response(
@@ -123,6 +123,24 @@ def demo_get_response():
             model="claude-3-sonnet-20240229"
         )
         print("Response from claude:claude-3-sonnet-20240229:")
+        print(f"{response}\n")
+        
+    if "llama" in config.get_enabled_providers():
+        response = get_response(
+            prompt, 
+            provider_name="llama", 
+            model="llama-3-8b-instruct"
+        )
+        print("Response from llama:llama-3-8b-instruct:")
+        print(f"{response}\n")
+        
+    if "perplexity" in config.get_enabled_providers():
+        response = get_response(
+            prompt, 
+            provider_name="perplexity", 
+            model="llama-3.1-sonar-small-128k-online"
+        )
+        print("Response from perplexity:llama-3.1-sonar-small-128k-online:")
         print(f"{response}\n")
 
 
@@ -147,6 +165,12 @@ def demo_compare():
     elif "openai" in enabled_providers and "gemini" in enabled_providers:
         provider_pairs.append(("openai", "gpt-4o"))
         provider_pairs.append(("gemini", "gemini-1.5-pro"))
+    elif "openai" in enabled_providers and "llama" in enabled_providers:
+        provider_pairs.append(("openai", "gpt-4o"))
+        provider_pairs.append(("llama", "llama-3-70b-instruct"))
+    elif "openai" in enabled_providers and "perplexity" in enabled_providers:
+        provider_pairs.append(("openai", "gpt-4o"))
+        provider_pairs.append(("perplexity", "llama-3.1-sonar-large-128k-online"))
     
     if not provider_pairs:
         print("No suitable provider pairs found for comparison.")
@@ -181,7 +205,7 @@ def demo_provider_customization():
     
     config = Config()
     
-    # Get a specific provider config
+    # Get config for OpenAI
     openai_config = config.get_provider_config("openai")
     print(f"OpenAI temperature: {openai_config.temperature}")
     print(f"OpenAI max_tokens: {openai_config.max_tokens}")
@@ -189,6 +213,26 @@ def demo_provider_customization():
     # Modify provider settings (temporary for this session)
     openai_config.temperature = 0.9
     print(f"Modified OpenAI temperature: {openai_config.temperature}")
+    
+    # Check if Llama is available and get its config
+    if "llama" in config.get_enabled_providers():
+        llama_config = config.get_provider_config("llama")
+        print(f"\nLlama temperature: {llama_config.temperature}")
+        print(f"Llama max_tokens: {llama_config.max_tokens}")
+        
+        # Modify settings
+        llama_config.temperature = 0.8
+        print(f"Modified Llama temperature: {llama_config.temperature}")
+    
+    # Check if Perplexity is available and get its config
+    if "perplexity" in config.get_enabled_providers():
+        perplexity_config = config.get_provider_config("perplexity")
+        print(f"\nPerplexity temperature: {perplexity_config.temperature}")
+        print(f"Perplexity max_tokens: {perplexity_config.max_tokens}")
+        
+        # Modify settings
+        perplexity_config.temperature = 0.5
+        print(f"Modified Perplexity temperature: {perplexity_config.temperature}")
 
 
 def main():

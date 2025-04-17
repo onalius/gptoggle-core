@@ -1,8 +1,15 @@
 # GPToggle: Multi-Provider AI Model Wrapper
 
-GPToggle is a comprehensive wrapper for multiple AI providers including OpenAI, Anthropic Claude, Google Gemini, and xAI Grok. It simplifies working with various AI APIs by providing automatic model selection, unified interface, and response comparison.
+GPToggle is a comprehensive wrapper for multiple AI providers including OpenAI, Anthropic Claude, Google Gemini, Meta's Llama, Perplexity, and xAI Grok. It simplifies working with various AI APIs by providing automatic model selection, unified interface, and response comparison.
 
-## Latest Version: 1.0.3 - Task-Specific Recommendations & Follow-up Task Suggestions
+## Latest Version: 1.0.4 - Meta Llama and Perplexity Integration
+
+**New in 1.0.4:**
+- Added support for Meta's Llama API (llama-3-8b-instruct, llama-3-70b-instruct, llama-3-vision)
+- Added support for Perplexity API (llama-3.1-sonar models with up-to-date web information)
+- Updated provider priority ranking to include new providers
+- Created dedicated example files for Llama and Perplexity integrations
+- Task-specific recommendations now include the new providers
 
 **New in 1.0.3:**
 - Task-specific model recommendations for multi-faceted prompts
@@ -13,7 +20,7 @@ GPToggle is a comprehensive wrapper for multiple AI providers including OpenAI, 
 
 ## Core Features
 
-- 🤖 **Multi-Provider Support**: OpenAI (GPT models), Anthropic Claude, Google Gemini, and xAI Grok
+- 🤖 **Multi-Provider Support**: OpenAI (GPT models), Anthropic Claude, Google Gemini, Meta's Llama, Perplexity, and xAI Grok
 - 🔄 **Auto-Model Selection**: Intelligently chooses the best model based on prompt characteristics
 - 📊 **Task-Specific Recommendations**: Specific model recommendations for different components in a prompt
 - 🔮 **Follow-up Task Suggestions**: Optimal models for likely follow-up tasks
@@ -63,6 +70,8 @@ For more detailed information:
 Check out the example scripts:
 - `gptoggle_enhanced_example.py`: Demonstrates multi-task detection
 - `gptoggle_followup_example.py`: Shows follow-up task recommendations
+- `llama_example.py`: Demonstrates Meta's Llama API integration
+- `perplexity_example.py`: Shows Perplexity API with real-time web search
 - `gptoggle-enhanced-example.js`: JavaScript example with all features
 
 ## License
