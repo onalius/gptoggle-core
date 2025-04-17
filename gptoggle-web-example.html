@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GPToggle Web Example</title>
+  <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+  <style>
+    body {
+      padding: 20px;
+    }
+    .result-box {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: rgba(0, 0, 0, 0.1);
+      border-radius: 5px;
+      white-space: pre-wrap;
+    }
+    .api-key-form {
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body data-bs-theme="dark">
+  <div class="container">
+    <h1 class="mt-4 mb-4">GPToggle Web Demo</h1>
+    <p class="lead">A JavaScript implementation of the GPToggle multi-provider AI wrapper</p>
+    
+    <div class="api-key-form">
+      <h3>API Keys</h3>
+      <div class="alert alert-warning">
+        <strong>Note:</strong> API keys are stored in your browser's local storage and are never sent to our server.
+      </div>
+      
+      <div class="mb-3">
+        <label for="openai-key" class="form-label">OpenAI API Key</label>
+        <input type="password" class="form-control" id="openai-key" placeholder="sk-...">
+      </div>
+      
+      <div class="mb-3">
+        <label for="claude-key" class="form-label">Anthropic Claude API Key</label>
+        <input type="password" class="form-control" id="claude-key" placeholder="sk-ant-...">
+      </div>
+      
+      <div class="mb-3">
+        <label for="gemini-key" class="form-label">Google Gemini API Key</label>
+        <input type="password" class="form-control" id="gemini-key" placeholder="AIza...">
+      </div>
+      
+      <button class="btn btn-primary" id="save-keys">Save API Keys</button>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-12">
+        <div class="mb-3">
+          <label for="prompt" class="form-label">Your prompt</label>
+          <textarea class="form-control" id="prompt" rows="4" placeholder="Enter your prompt here..."></textarea>
+        </div>
+        
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <button class="btn btn-info w-100" id="recommend-model">Recommend Model</button>
+          </div>
+          <div class="col-md-6">
+            <button class="btn btn-success w-100" id="get-response">Get Response</button>
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label for="provider" class="form-label">Provider</label>
+          <select class="form-select" id="provider">
+            <option value="auto">Auto-select</option>
+            <option value="openai">OpenAI</option>
+            <option value="claude">Claude</option>
+            <option value="gemini">Gemini</option>
+          </select>
+        </div>
+        
+        <div class="mb-3">
+          <label for="model" class="form-label">Model</label>
+          <select class="form-select" id="model">
+            <option value="auto">Auto-select</option>
+            <option value="openai:gpt-3.5-turbo">OpenAI: GPT-3.5 Turbo</option>
+            <option value="openai:gpt-4o">OpenAI: GPT-4o</option>
+            <option value="claude:claude-3-sonnet-20240229">Claude: Sonnet</option>
+            <option value="claude:claude-3-opus-20240229">Claude: Opus</option>
+            <option value="gemini:gemini-pro">Gemini: Pro</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    
+    <h3>Result</h3>
+    <div class="result-box" id="result">
+      Results will appear here...
+    </div>
+  </div>
+
+  <!-- Include the GPToggle library -->
+  <script src="gptoggle.js"></script>
+  
+  <script>
+    // Load API keys from localStorage
+    document.addEventListener('DOMContentLoaded', () => {
+      const openaiKey = localStorage.getItem('openaiKey');
+      const claudeKey = localStorage.getItem('claudeKey');
+      const geminiKey = localStorage.getItem('geminiKey');
+      
+      if (openaiKey) document.getElementById('openai-key').value = openaiKey;
+      if (claudeKey) document.getElementById('claude-key').value = claudeKey;
+      if (geminiKey) document.getElementById('gemini-key').value = geminiKey;
+    });
+    
+    // Save API keys to localStorage
+    document.getElementById('save-keys').addEventListener('click', () => {
+      const openaiKey = document.getElementById('openai-key').value;
+      const claudeKey = document.getElementById('claude-key').value;
+      const geminiKey = document.getElementById('gemini-key').value;
+      
+      if (openaiKey) localStorage.setItem('openaiKey', openaiKey);
+      if (claudeKey) localStorage.setItem('claudeKey', claudeKey);
+      if (geminiKey) localStorage.setItem('geminiKey', geminiKey);
+      
+      document.getElementById('result').textContent = 'API keys saved successfully!';
+    });
+    
+    // Get GPToggle instance
+    function getGPToggle() {
+      const apiKeys = {
+        openai: localStorage.getItem('openaiKey'),
+        claude: localStorage.getItem('claudeKey'),
+        gemini: localStorage.getItem('geminiKey')
+      };
+      
+      return new GPToggle({}, apiKeys);
+    }
+    
+    // Recommend model
+    document.getElementById('recommend-model').addEventListener('click', () => {
+      const prompt = document.getElementById('prompt').value;
+      if (!prompt) {
+        document.getElementById('result').textContent = 'Please enter a prompt first.';
+        return;
+      }
+      
+      const gptoggle = getGPToggle();
+      const recommendation = gptoggle.recommendModel(prompt);
+      
+      document.getElementById('result').innerHTML = `
+        <strong>Recommended Provider:</strong> ${recommendation.provider}
+        <strong>Recommended Model:</strong> ${recommendation.model}
+        <strong>Reason:</strong> ${recommendation.reason || 'Default selection based on available providers'}
+        
+        <div class="mt-3">
+          <strong>Available Providers:</strong> ${gptoggle.getAvailableProviders().join(', ')}
+        </div>
+      `;
+    });
+    
+    // Get response
+    document.getElementById('get-response').addEventListener('click', async () => {
+      const prompt = document.getElementById('prompt').value;
+      if (!prompt) {
+        document.getElementById('result').textContent = 'Please enter a prompt first.';
+        return;
+      }
+      
+      const providerSelect = document.getElementById('provider');
+      const modelSelect = document.getElementById('model');
+      
+      const provider = providerSelect.value === 'auto' ? null : providerSelect.value;
+      let model = null;
+      
+      if (modelSelect.value !== 'auto') {
+        const parts = modelSelect.value.split(':');
+        if (parts.length === 2) {
+          model = parts[1];
+        }
+      }
+      
+      document.getElementById('result').textContent = 'Generating response...';
+      
+      try {
+        const gptoggle = getGPToggle();
+        const response = await gptoggle.getResponse(prompt, provider, model);
+        document.getElementById('result').textContent = response;
+      } catch (error) {
+        document.getElementById('result').textContent = `Error: ${error.message}`;
+      }
+    });
+  </script>
+</body>
+</html>
