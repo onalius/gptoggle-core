@@ -37,6 +37,8 @@ def check_api_keys():
         "Claude": os.environ.get("ANTHROPIC_API_KEY", ""),
         "Gemini": os.environ.get("GOOGLE_API_KEY", ""),
         "Grok": os.environ.get("XAI_API_KEY", ""),
+        "Llama": os.environ.get("META_AI_API_KEY", ""),
+        "Perplexity": os.environ.get("PERPLEXITY_API_KEY", ""),
     }
 
     available_providers = [name for name, key in api_keys.items() if key]
@@ -48,6 +50,8 @@ def check_api_keys():
         print("  - ANTHROPIC_API_KEY: For Claude provider")
         print("  - GOOGLE_API_KEY: For Gemini provider")
         print("  - XAI_API_KEY: For Grok provider")
+        print("  - META_AI_API_KEY: For Meta's Llama provider")
+        print("  - PERPLEXITY_API_KEY: For Perplexity provider")
         return False
     
     print(f"Available providers: {', '.join(available_providers)}")
