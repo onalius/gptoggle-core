@@ -57,11 +57,13 @@ def install_gptoggle(dev=False, web=False, ui=False, all_deps=False, no_deps=Fal
     if extras:
         extras_str = f"[{','.join(extras)}]"
     
-    # Special handling for Replit
+    # Special handling for Replit to avoid self-dependency issues
     if IN_REPLIT:
-        package_name = "gptoggle-package"
+        package_name = "gptoggle-ai-wrapper-library-pkg"
         no_deps = True
-        print("Detected Replit environment, adjusting installation...")
+        print("📝 Detected Replit environment, adjusting installation...")
+        print("⚠️ Using distinctive package name to avoid self-dependency conflicts")
+        print("⚠️ Using --no-deps flag to prevent dependency resolution issues")
     
     # Build installation command
     if dev:
@@ -127,14 +129,30 @@ def install_gptoggle(dev=False, web=False, ui=False, all_deps=False, no_deps=Fal
         print(output)
         print("✅ GPToggle imported successfully")
     else:
-        print("❌ Failed to import GPToggle. This might be because of PATH issues.")
-        print("Try starting a new terminal or Python session.")
+        print("❌ Failed to import GPToggle.")
+        if IN_REPLIT:
+            print("\n⚠️ Replit-Specific Troubleshooting:")
+            print("1. Try using the REST API approach instead of direct import.")
+            print("   See examples/rest_api.py for details")
+            print("2. If you're developing a client application, use the client libraries:")
+            print("   - examples/client_library.py (Python)")
+            print("   - examples/client_library.js (JavaScript/Node.js)")
+            print("3. If you still need direct import, try this manual installation:")
+            print("   pip install -e . --no-deps")
+            print("   pip install openai anthropic google-generativeai rich flask")
+        else:
+            print("This might be because of PATH issues.")
+            print("Try starting a new terminal or Python session.")
         return False
     
     # Print environment info
     if IN_REPLIT:
         print("\n📝 Replit Environment Detected")
         print("For Replit-specific installation information, see REPLIT_INSTALLATION.md")
+        print("⚠️ For optimal Replit compatibility:")
+        print("1. Consider using the REST API example (examples/rest_api.py)")
+        print("2. Or use the client libraries in examples/ directory")
+        print("3. Avoid direct imports of the package in Replit environments")
     
     print("\n✨ Installation Complete!")
     print("To get started, run:")

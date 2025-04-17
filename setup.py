@@ -63,9 +63,9 @@ try:
 except FileNotFoundError:
     long_description = "GPToggle: A multi-provider wrapper for AI model APIs"
 
-# Package naming to avoid conflicts
-# In Replit we use a different name to avoid self-dependency issues
-package_name = "gptoggle" if not IN_REPLIT else "gptoggle-package"
+# Package naming to avoid conflicts with Replit environment
+# Use a very distinctive name that won't conflict with any Replit project name
+package_name = "gptoggle" if not IN_REPLIT else "gptoggle-ai-wrapper-library-pkg"
 
 setup(
     name=package_name,

@@ -2,13 +2,34 @@
 
 This guide provides special instructions for installing and using the GPToggle package specifically in Replit environments.
 
-## Option 1: Direct Installation (Core Functionality Only)
+## Important: Installation Challenges in Replit
+
+Replit environments have unique characteristics that can cause conflicts with Python package installation. The most common issue is **self-dependency errors**, which occur when Replit's project name conflicts with the package name.
+
+To address this, we use a very distinctive package name (`gptoggle-ai-wrapper-library-pkg`) that's unlikely to conflict with any Replit project name.
+
+## Option 1: Using the Installation Helper Script
+
+The simplest approach is to use our installation helper script:
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/gptoggle.git
+cd gptoggle
+
+# Run the installation helper
+python install.py
+```
+
+This script automatically detects the Replit environment and handles all the necessary adjustments.
+
+## Option 2: Direct Installation (Core Functionality Only)
 
 For basic usage in Replit, install the core package:
 
 ```bash
 # Install with minimal dependencies to avoid conflicts
-pip install gptoggle-package --no-deps
+pip install gptoggle-ai-wrapper-library-pkg --no-deps
 pip install openai anthropic google-generativeai
 ```
 
@@ -20,12 +41,12 @@ You can install specific optional components:
 
 ```bash
 # Install with web interface support
-pip install gptoggle-package[web] --no-deps
-pip install openai anthropic google-generativeai
+pip install gptoggle-ai-wrapper-library-pkg[web] --no-deps
+pip install openai anthropic google-generativeai flask flask-cors
 
 # Install with terminal UI support
-pip install gptoggle-package[ui] --no-deps
-pip install openai anthropic google-generativeai
+pip install gptoggle-ai-wrapper-library-pkg[ui] --no-deps
+pip install openai anthropic google-generativeai rich
 ```
 
 ## Option 3: Using GPToggle as a REST API Service
@@ -72,7 +93,7 @@ Try one of these approaches:
 
 2. Use a different package name:
    ```bash
-   pip install git+https://github.com/yourusername/gptoggle.git@main#egg=gptoggle-package --no-deps
+   pip install git+https://github.com/yourusername/gptoggle.git@main#egg=gptoggle-ai-wrapper-library-pkg --no-deps
    ```
 
 3. Clone the repository and use it without installation:
