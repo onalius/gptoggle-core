@@ -93,11 +93,9 @@ API_KEY_ENV_VARS = {
     "claude": "ANTHROPIC_API_KEY",
     "gemini": "GOOGLE_API_KEY",
     "grok": "XAI_API_KEY",
-    "perplexity": "PERPLEXITY_API_KEY"
+    "perplexity": "PERPLEXITY_API_KEY",
+    "llama": "META_AI_API_KEY"  # Meta AI's hosted API key
 }
-
-# For local Llama models, specify the model path
-LLAMA_MODEL_PATH = os.environ.get("LLAMA_MODEL_PATH", "")
 
 # Default generation parameters
 DEFAULT_PARAMS = {
@@ -159,7 +157,7 @@ TASK_CATEGORIES = [
         "keywords": ["marketing plan", "campaign", "advertising", "brand", "market analysis", 
                      "audience", "promotion", "SEO", "social media", "content strategy", 
                      "marketing campaign"],
-        "provider_ranking": ["claude", "openai", "gemini", "grok"],
+        "provider_ranking": ["claude", "openai", "gemini", "llama", "perplexity", "grok"],
         "likely_followups": [
             "audience_research", "competitive_analysis", "content_creation", 
             "social_media_strategy", "advertising_budget"
@@ -171,7 +169,7 @@ TASK_CATEGORIES = [
         "keywords": ["code", "function", "algorithm", "programming", "debug", "software", 
                      "develop", "implementation", "script", "module", "library", "API", 
                      "database", "framework", "html", "css", "javascript", "landing page", "webpage"],
-        "provider_ranking": ["openai", "gemini", "claude", "grok"],
+        "provider_ranking": ["openai", "gemini", "claude", "llama", "perplexity", "grok"],
         "likely_followups": [
             "debugging", "testing", "deployment", "optimization", 
             "security", "database_design", "api_integration"
@@ -183,7 +181,7 @@ TASK_CATEGORIES = [
         "keywords": ["analyze data", "statistics", "dataset", "correlation", "trends", 
                      "metrics", "dashboard", "visualization", "forecast", "insights", 
                      "patterns", "regression"],
-        "provider_ranking": ["gemini", "openai", "claude", "grok"],
+        "provider_ranking": ["gemini", "openai", "claude", "llama", "perplexity", "grok"],
         "likely_followups": [
             "data_visualization", "predictive_modeling", "statistical_testing", 
             "report_generation", "insights_interpretation", "trend_analysis"
@@ -831,6 +829,10 @@ def get_response(
         return gemini_get_response(augmented_prompt, model_name, temperature, max_tokens)
     elif provider_name == "grok":
         return grok_get_response(augmented_prompt, model_name, temperature, max_tokens)
+    elif provider_name == "llama":
+        return llama_get_response(augmented_prompt, model_name, temperature, max_tokens)
+    elif provider_name == "perplexity":
+        return perplexity_get_response(augmented_prompt, model_name, temperature, max_tokens)
     else:
         raise Exception(f"Provider {provider_name} not supported")
 
@@ -941,6 +943,63 @@ def grok_get_response(
         sys.exit(1)
     except Exception as e:
         raise Exception(f"Grok API error: {str(e)}")
+        
+def llama_get_response(
+    prompt: str, 
+    model: str = "llama-3-8b-instruct",
+    temperature: float = 0.7,
+    max_tokens: int = 1000
+) -> str:
+    """Get a response from Meta's hosted Llama API."""
+    try:
+        import openai
+        client = openai.OpenAI(base_url="https://llama.meta.ai/v1", api_key=os.environ.get("META_AI_API_KEY"))
+        
+        response = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=temperature,
+            max_tokens=max_tokens
+        )
+        
+        return response.choices[0].message.content
+    except ImportError:
+        print("OpenAI Python package not found. Installing...")
+        os.system(f"{sys.executable} -m pip install openai")
+        print("Please run your code again.")
+        sys.exit(1)
+    except Exception as e:
+        raise Exception(f"Meta Llama API error: {str(e)}")
+        
+def perplexity_get_response(
+    prompt: str, 
+    model: str = "llama-3.1-sonar-small-128k-online",
+    temperature: float = 0.7,
+    max_tokens: int = 1000
+) -> str:
+    """Get a response from the Perplexity API."""
+    try:
+        import openai
+        client = openai.OpenAI(base_url="https://api.perplexity.ai", api_key=os.environ.get("PERPLEXITY_API_KEY"))
+        
+        response = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=temperature,
+            max_tokens=max_tokens,
+            search_domain_filter=["perplexity.ai"],
+            search_recency_filter="month",
+            frequency_penalty=1
+        )
+        
+        return response.choices[0].message.content
+    except ImportError:
+        print("OpenAI Python package not found. Installing...")
+        os.system(f"{sys.executable} -m pip install openai")
+        print("Please run your code again.")
+        sys.exit(1)
+    except Exception as e:
+        raise Exception(f"Perplexity API error: {str(e)}")
 
 #################################################
 # CLI Interface
