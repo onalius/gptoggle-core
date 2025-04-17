@@ -33,7 +33,7 @@ __version__ = "1.0.2"
 #################################################
 
 # Provider priority for auto-selection (in descending order)
-PROVIDER_PRIORITY = ["openai", "claude", "gemini", "grok"]
+PROVIDER_PRIORITY = ["openai", "claude", "gemini", "grok", "llama", "perplexity"]
 
 # Model mappings for each provider
 MODELS = {
@@ -68,6 +68,22 @@ MODELS = {
         "creative": "grok-2-1212",
         "technical": "grok-2-1212",
         "analytical": "grok-2-1212"
+    },
+    "llama": {
+        "default": "llama-3-8b-instruct",
+        "advanced": "llama-3-70b-instruct",
+        "vision": "llama-3-vision",
+        "creative": "llama-3-70b-instruct",
+        "technical": "llama-3-70b-instruct",
+        "analytical": "llama-3-70b-instruct"
+    },
+    "perplexity": {
+        "default": "llama-3.1-sonar-small-128k-online",
+        "advanced": "llama-3.1-sonar-large-128k-online",
+        "vision": "llama-3.1-sonar-small-128k-online",  # Limited vision capability
+        "creative": "llama-3.1-sonar-large-128k-online",
+        "technical": "llama-3.1-sonar-large-128k-online",
+        "analytical": "llama-3.1-sonar-large-128k-online"
     }
 }
 
@@ -76,8 +92,12 @@ API_KEY_ENV_VARS = {
     "openai": "OPENAI_API_KEY",
     "claude": "ANTHROPIC_API_KEY",
     "gemini": "GOOGLE_API_KEY",
-    "grok": "XAI_API_KEY"
+    "grok": "XAI_API_KEY",
+    "perplexity": "PERPLEXITY_API_KEY"
 }
+
+# For local Llama models, specify the model path
+LLAMA_MODEL_PATH = os.environ.get("LLAMA_MODEL_PATH", "")
 
 # Default generation parameters
 DEFAULT_PARAMS = {
@@ -114,6 +134,20 @@ PROVIDER_STRENGTHS = {
         "data_analysis": "Grok offers straightforward data insights with good technical precision.",
         "creative_writing": "Grok generates creative content with a distinct voice and contemporary references.",
         "general": "Grok delivers concise, practical responses with current information."
+    },
+    "llama": {
+        "marketing": "Llama models provide balanced marketing advice with strong contextual understanding.",
+        "coding": "Llama models offer robust code generation with clean implementations.",
+        "data_analysis": "Llama models deliver clear explanations of data patterns with solid technical foundations.",
+        "creative_writing": "Llama models generate coherent creative content with good narrative flow.",
+        "general": "Llama models give well-balanced responses with strong reasoning and knowledge application."
+    },
+    "perplexity": {
+        "marketing": "Perplexity (via Llama-Sonar) provides research-based marketing insights with current web information.",
+        "coding": "Perplexity (via Llama-Sonar) offers up-to-date code solutions from modern references.",
+        "data_analysis": "Perplexity (via Llama-Sonar) combines strong analytical skills with access to recent data sources.",
+        "creative_writing": "Perplexity (via Llama-Sonar) generates creative content informed by diverse online references.",
+        "general": "Perplexity (via Llama-Sonar) excels at retrieving and synthesizing current information from the web."
     }
 }
 
