@@ -5,28 +5,39 @@ All notable changes to the GPToggle project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.3] - 2025-04-17 - Task-Specific Recommendations & Component Suggestions
+## [1.0.3] - 2025-04-17 - Task-Specific Recommendations & Follow-up Task Suggestions
 
-GPToggle v1.0.3 introduces advanced recommendation capabilities for multi-faceted prompts, including task-specific model recommendations and component-specific suggestions within responses.
+GPToggle v1.0.3 introduces advanced recommendation capabilities for multi-faceted prompts, including task-specific model recommendations, component-specific suggestions within responses, and recommendations for likely follow-up tasks.
 
 ### Added
 - Task-specific model recommendations for multi-faceted prompts
 - Component-specific model suggestions embedded in responses
+- Follow-up task recommendations based on detected prompt components
 - Enhanced model selection rationale with detailed task analysis
-- Task detection system with four main categories (marketing, coding, data analysis, creative writing)
+- Task detection system with six main categories:
+  - Marketing plans and strategies
+  - Code implementation and technical development
+  - Data analysis and statistical interpretation
+  - Creative content and narrative
+  - Business strategy and planning
+  - Product design and development
 - Provider strength profiles for different task types
+- Follow-up task categories with provider-specific model recommendations
 - New API methods:
   - `getTaskRecommendations()` - Get recommendations for each task component in a prompt
-  - `generateModelSuggestions()` - Generate component-specific suggestions for responses
+  - `getFollowupRecommendations()` - Get recommendations for likely follow-up tasks
+  - `generateModelSuggestions()` - Generate component and follow-up suggestions for responses
 - Enhanced configuration with specialized model categories (creative, technical, analytical)
 - Example scripts demonstrating the new features:
-  - `gptoggle_enhanced_example.py` - Python example
+  - `gptoggle_enhanced_example.py` - Python example for multi-task detection
+  - `gptoggle_followup_example.py` - Python example for follow-up task recommendations
   - `gptoggle-enhanced-example.js` - JavaScript example
 
 ### Changed
 - Improved model recommendation rationale with task-specific context
-- Enhanced response generation to include model suggestions
+- Enhanced response generation to include model suggestions for both current and follow-up tasks
 - Expanded provider priority system to include task-specific rankings
+- Added rich metadata for tasks including likely follow-up activities
 
 ## [1.0.2] - 2025-04-17 - Enhanced JavaScript Support & Documentation
 

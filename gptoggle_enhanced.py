@@ -125,7 +125,11 @@ TASK_CATEGORIES = [
         "keywords": ["marketing plan", "campaign", "advertising", "brand", "market analysis", 
                      "audience", "promotion", "SEO", "social media", "content strategy", 
                      "marketing campaign"],
-        "provider_ranking": ["claude", "openai", "gemini", "grok"]
+        "provider_ranking": ["claude", "openai", "gemini", "grok"],
+        "likely_followups": [
+            "audience_research", "competitive_analysis", "content_creation", 
+            "social_media_strategy", "advertising_budget"
+        ]
     },
     {
         "name": "coding",
@@ -133,7 +137,11 @@ TASK_CATEGORIES = [
         "keywords": ["code", "function", "algorithm", "programming", "debug", "software", 
                      "develop", "implementation", "script", "module", "library", "API", 
                      "database", "framework", "html", "css", "javascript", "landing page", "webpage"],
-        "provider_ranking": ["openai", "gemini", "claude", "grok"]
+        "provider_ranking": ["openai", "gemini", "claude", "grok"],
+        "likely_followups": [
+            "debugging", "testing", "deployment", "optimization", 
+            "security", "database_design", "api_integration"
+        ]
     },
     {
         "name": "data_analysis",
@@ -141,16 +149,278 @@ TASK_CATEGORIES = [
         "keywords": ["analyze data", "statistics", "dataset", "correlation", "trends", 
                      "metrics", "dashboard", "visualization", "forecast", "insights", 
                      "patterns", "regression"],
-        "provider_ranking": ["gemini", "openai", "claude", "grok"]
+        "provider_ranking": ["gemini", "openai", "claude", "grok"],
+        "likely_followups": [
+            "data_visualization", "predictive_modeling", "statistical_testing", 
+            "report_generation", "insights_interpretation", "trend_analysis"
+        ]
     },
     {
         "name": "creative_writing",
         "description": "Creative content or narrative",
         "keywords": ["story", "creative", "narrative", "write", "content", "article", 
                      "blog post", "fiction", "poem", "script", "essay", "copywriting"],
-        "provider_ranking": ["claude", "openai", "gemini", "grok"]
+        "provider_ranking": ["claude", "openai", "gemini", "grok"],
+        "likely_followups": [
+            "content_editing", "story_continuation", "character_development", 
+            "dialogue_creation", "narrative_structure", "style_refinement"
+        ]
+    },
+    {
+        "name": "business_strategy",
+        "description": "Business strategy or planning",
+        "keywords": ["business plan", "strategy", "startup", "venture", "business model",
+                    "revenue", "profit", "market entry", "scaling", "growth", "ROI", 
+                    "investment", "financial projection"],
+        "provider_ranking": ["claude", "openai", "gemini", "grok"],
+        "likely_followups": [
+            "financial_modeling", "competitive_analysis", "market_sizing", 
+            "funding_strategy", "operational_planning", "risk_assessment"
+        ]
+    },
+    {
+        "name": "product_development",
+        "description": "Product design or development",
+        "keywords": ["product design", "UX", "UI", "user experience", "product management",
+                    "feature", "prototype", "MVP", "product roadmap", "user testing", "design"],
+        "provider_ranking": ["openai", "claude", "gemini", "grok"],
+        "likely_followups": [
+            "user_research", "wireframing", "prototyping", "usability_testing", 
+            "feature_prioritization", "design_system_creation"
+        ]
     }
 ]
+
+# Followup task categories
+FOLLOWUP_CATEGORIES = {
+    # Marketing followups
+    "audience_research": {
+        "description": "Market and audience research",
+        "provider_ranking": ["claude", "openai", "gemini"],
+        "suggested_models": {
+            "claude": "claude-3-opus-20240229", 
+            "openai": "gpt-4o",
+            "gemini": "gemini-1.5-pro"
+        }
+    },
+    "competitive_analysis": {
+        "description": "Competitive analysis and positioning",
+        "provider_ranking": ["openai", "claude", "gemini"],
+        "suggested_models": {
+            "claude": "claude-3-opus-20240229", 
+            "openai": "gpt-4o",
+            "gemini": "gemini-1.5-pro"
+        }
+    },
+    "content_creation": {
+        "description": "Content creation and copywriting",
+        "provider_ranking": ["claude", "openai", "gemini"],
+        "suggested_models": {
+            "claude": "claude-3-opus-20240229", 
+            "openai": "gpt-4o",
+            "gemini": "gemini-1.5-pro"
+        }
+    },
+    "social_media_strategy": {
+        "description": "Social media strategy and planning",
+        "provider_ranking": ["claude", "openai", "gemini"],
+        "suggested_models": {
+            "claude": "claude-3-opus-20240229", 
+            "openai": "gpt-4o",
+            "gemini": "gemini-1.5-pro"
+        }
+    },
+    "advertising_budget": {
+        "description": "Advertising budget allocation",
+        "provider_ranking": ["openai", "claude", "gemini"],
+        "suggested_models": {
+            "claude": "claude-3-opus-20240229", 
+            "openai": "gpt-4o",
+            "gemini": "gemini-1.5-pro"
+        }
+    },
+    
+    # Coding followups
+    "debugging": {
+        "description": "Code debugging and error fixing",
+        "provider_ranking": ["openai", "gemini", "claude"],
+        "suggested_models": {
+            "openai": "gpt-4o",
+            "gemini": "gemini-1.5-pro",
+            "claude": "claude-3-opus-20240229"
+        }
+    },
+    "testing": {
+        "description": "Unit testing and test strategy",
+        "provider_ranking": ["openai", "gemini", "claude"],
+        "suggested_models": {
+            "openai": "gpt-4o",
+            "gemini": "gemini-1.5-pro",
+            "claude": "claude-3-opus-20240229"
+        }
+    },
+    "deployment": {
+        "description": "Deployment and DevOps",
+        "provider_ranking": ["openai", "gemini", "claude"],
+        "suggested_models": {
+            "openai": "gpt-4o",
+            "gemini": "gemini-1.5-pro",
+            "claude": "claude-3-opus-20240229"
+        }
+    },
+    "optimization": {
+        "description": "Code optimization and performance",
+        "provider_ranking": ["openai", "gemini", "claude"],
+        "suggested_models": {
+            "openai": "gpt-4o",
+            "gemini": "gemini-1.5-pro",
+            "claude": "claude-3-opus-20240229"
+        }
+    },
+    "security": {
+        "description": "Security and vulnerability assessment",
+        "provider_ranking": ["openai", "gemini", "claude"],
+        "suggested_models": {
+            "openai": "gpt-4o",
+            "gemini": "gemini-1.5-pro",
+            "claude": "claude-3-opus-20240229"
+        }
+    },
+    "database_design": {
+        "description": "Database design and optimization",
+        "provider_ranking": ["openai", "gemini", "claude"],
+        "suggested_models": {
+            "openai": "gpt-4o",
+            "gemini": "gemini-1.5-pro",
+            "claude": "claude-3-opus-20240229"
+        }
+    },
+    "api_integration": {
+        "description": "API design and integration",
+        "provider_ranking": ["openai", "gemini", "claude"],
+        "suggested_models": {
+            "openai": "gpt-4o",
+            "gemini": "gemini-1.5-pro",
+            "claude": "claude-3-opus-20240229"
+        }
+    },
+    
+    # Data analysis followups
+    "data_visualization": {
+        "description": "Data visualization techniques",
+        "provider_ranking": ["gemini", "openai", "claude"],
+        "suggested_models": {
+            "gemini": "gemini-1.5-pro",
+            "openai": "gpt-4o",
+            "claude": "claude-3-opus-20240229"
+        }
+    },
+    "predictive_modeling": {
+        "description": "Predictive modeling and forecasting",
+        "provider_ranking": ["gemini", "openai", "claude"],
+        "suggested_models": {
+            "gemini": "gemini-1.5-pro",
+            "openai": "gpt-4o",
+            "claude": "claude-3-opus-20240229"
+        }
+    },
+    "statistical_testing": {
+        "description": "Statistical hypothesis testing",
+        "provider_ranking": ["gemini", "openai", "claude"],
+        "suggested_models": {
+            "gemini": "gemini-1.5-pro",
+            "openai": "gpt-4o",
+            "claude": "claude-3-opus-20240229"
+        }
+    },
+    "report_generation": {
+        "description": "Data report generation",
+        "provider_ranking": ["claude", "openai", "gemini"],
+        "suggested_models": {
+            "claude": "claude-3-opus-20240229",
+            "openai": "gpt-4o",
+            "gemini": "gemini-1.5-pro"
+        }
+    },
+    
+    # Creative writing followups
+    "content_editing": {
+        "description": "Content editing and refinement",
+        "provider_ranking": ["claude", "openai", "gemini"],
+        "suggested_models": {
+            "claude": "claude-3-opus-20240229",
+            "openai": "gpt-4o",
+            "gemini": "gemini-1.5-pro"
+        }
+    },
+    "story_continuation": {
+        "description": "Story continuation and development",
+        "provider_ranking": ["claude", "openai", "gemini"],
+        "suggested_models": {
+            "claude": "claude-3-opus-20240229",
+            "openai": "gpt-4o",
+            "gemini": "gemini-1.5-pro"
+        }
+    },
+    
+    # Business strategy followups
+    "financial_modeling": {
+        "description": "Financial modeling and projections",
+        "provider_ranking": ["openai", "claude", "gemini"],
+        "suggested_models": {
+            "openai": "gpt-4o",
+            "claude": "claude-3-opus-20240229",
+            "gemini": "gemini-1.5-pro"
+        }
+    },
+    "market_sizing": {
+        "description": "Market sizing and opportunity assessment",
+        "provider_ranking": ["claude", "openai", "gemini"],
+        "suggested_models": {
+            "claude": "claude-3-opus-20240229",
+            "openai": "gpt-4o",
+            "gemini": "gemini-1.5-pro"
+        }
+    },
+    "funding_strategy": {
+        "description": "Funding strategy and investor relations",
+        "provider_ranking": ["claude", "openai", "gemini"],
+        "suggested_models": {
+            "claude": "claude-3-opus-20240229",
+            "openai": "gpt-4o",
+            "gemini": "gemini-1.5-pro"
+        }
+    },
+    
+    # Product development followups
+    "user_research": {
+        "description": "User research and interviews",
+        "provider_ranking": ["claude", "openai", "gemini"],
+        "suggested_models": {
+            "claude": "claude-3-opus-20240229",
+            "openai": "gpt-4o",
+            "gemini": "gemini-1.5-pro"
+        }
+    },
+    "wireframing": {
+        "description": "Wireframing and prototyping",
+        "provider_ranking": ["openai", "gemini", "claude"],
+        "suggested_models": {
+            "openai": "gpt-4o",
+            "gemini": "gemini-1.5-pro",
+            "claude": "claude-3-opus-20240229"
+        }
+    },
+    "usability_testing": {
+        "description": "Usability testing planning",
+        "provider_ranking": ["claude", "openai", "gemini"],
+        "suggested_models": {
+            "claude": "claude-3-opus-20240229",
+            "openai": "gpt-4o",
+            "gemini": "gemini-1.5-pro"
+        }
+    }
+}
 
 #################################################
 # Auto-Triage Functions
@@ -344,6 +614,65 @@ def get_task_recommendations(prompt: str) -> Dict[str, Any]:
         "task_recommendations": task_recommendations
     }
 
+def get_followup_recommendations(detected_tasks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Generate recommendations for likely follow-up tasks based on detected tasks.
+    
+    Args:
+        detected_tasks: List of tasks detected in the prompt
+        
+    Returns:
+        List of follow-up task recommendations
+    """
+    followup_recommendations = []
+    available_providers = get_available_providers()
+    
+    # Get likely follow-ups for each detected task
+    for task in detected_tasks:
+        task_name = task.get("task_name", "")
+        
+        # Find the original task category to get likely follow-ups
+        for category in TASK_CATEGORIES:
+            if category["name"] == task_name:
+                # Get the likely follow-up tasks for this category
+                for followup_id in category.get("likely_followups", [])[:3]:  # Limit to top 3
+                    # Skip if this followup is already in our recommendations
+                    if any(f["followup_id"] == followup_id for f in followup_recommendations):
+                        continue
+                    
+                    # Get the follow-up details
+                    followup = FOLLOWUP_CATEGORIES.get(followup_id)
+                    if not followup:
+                        continue
+                    
+                    # Generate provider-specific recommendations
+                    provider_recommendations = []
+                    for provider in followup["provider_ranking"]:
+                        if provider not in available_providers:
+                            continue
+                            
+                        model = followup["suggested_models"].get(provider)
+                        if not model:
+                            continue
+                            
+                        provider_recommendations.append({
+                            "provider": provider,
+                            "model": model,
+                            "strength": PROVIDER_STRENGTHS[provider].get(task_name, PROVIDER_STRENGTHS[provider]["general"])
+                        })
+                    
+                    if provider_recommendations:
+                        followup_recommendations.append({
+                            "followup_id": followup_id,
+                            "description": followup["description"],
+                            "related_to": task_name,
+                            "recommendations": provider_recommendations
+                        })
+                
+                break
+    
+    return followup_recommendations
+
 def generate_model_suggestions(prompt: str, selected_provider: str, selected_model: str) -> str:
     """
     Generate component-specific model suggestions to be included in a response.
@@ -364,6 +693,7 @@ def generate_model_suggestions(prompt: str, selected_provider: str, selected_mod
     
     suggestions = "\n\n---\n**GPToggle Model Recommendations:**\n\n"
     
+    # Part 1: Current Task Recommendations
     if len(task_recommendations["task_recommendations"]) == 1:
         task = task_recommendations["task_recommendations"][0]
         suggestions += f"For this {task['task_description'].lower()} task:\n\n"
@@ -389,6 +719,23 @@ def generate_model_suggestions(prompt: str, selected_provider: str, selected_mod
                     suggestions += f"- **Recommended: {top_rec['provider'].capitalize()}'s {top_rec['model']}** might provide better results.\n  {top_rec['strength']}\n\n"
         
         suggestions += "For optimal results, consider breaking your request into separate prompts targeted at the recommended models for each component.\n"
+    
+    # Part 2: Follow-up Task Recommendations
+    followup_recommendations = get_followup_recommendations(task_recommendations["task_recommendations"])
+    
+    if followup_recommendations:
+        suggestions += "\n**For potential follow-up tasks, consider these model recommendations:**\n\n"
+        
+        for followup in followup_recommendations[:3]:  # Limit to top 3 follow-ups
+            suggestions += f"**{followup['description']}:** "
+            
+            # Get the top recommendation
+            top_rec = followup["recommendations"][0]
+            model_suggestion = f"{top_rec['provider'].capitalize()}'s {top_rec['model']}"
+            
+            suggestions += f"{model_suggestion} would be ideal for this follow-up task.\n"
+        
+        suggestions += "\nThese recommendations are based on the specific strengths of different AI models for various task types.\n"
     
     return suggestions
 
