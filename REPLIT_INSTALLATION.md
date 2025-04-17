@@ -55,7 +55,7 @@ If you're having trouble with package installation, use the standalone Python fi
 
 ```bash
 # Download the standalone file
-curl -s https://raw.githubusercontent.com/yourusername/gptoggle/main/gptoggle_minimal.py -o gptoggle_minimal.py
+curl -sSL https://raw.githubusercontent.com/onalius/gptoggle-core/main/gptoggle_minimal.py -o gptoggle_minimal.py
 
 # Use directly in your code
 python -c "from gptoggle_minimal import get_response; print(get_response('Hello, world!'))"
@@ -69,7 +69,7 @@ For web projects or if you prefer JavaScript, use our JavaScript implementation:
 
 ```bash
 # Download the JavaScript file
-curl -s https://raw.githubusercontent.com/yourusername/gptoggle/main/gptoggle.js -o gptoggle.js
+curl -sSL https://raw.githubusercontent.com/onalius/gptoggle-core/main/gptoggle.js -o gptoggle.js
 ```
 
 In Node.js:
@@ -112,8 +112,8 @@ If you continue having issues with direct installation, you can use the REST API
 
 1. Clone and run the GPToggle REST API in one Repl:
    ```bash
-   git clone https://github.com/yourusername/gptoggle.git
-   cd gptoggle
+   git clone https://github.com/onalius/gptoggle-core.git
+   cd gptoggle-core
    python examples/rest_api.py
    ```
 
@@ -150,13 +150,13 @@ Try one of these approaches:
 
 2. Use a different package name:
    ```bash
-   pip install git+https://github.com/yourusername/gptoggle.git@main#egg=gptoggle-ai-wrapper-library-pkg --no-deps
+   pip install git+https://github.com/onalius/gptoggle-core.git@main#egg=gptoggle-ai-wrapper-library-pkg --no-deps
    ```
 
 3. Clone the repository and use it without installation:
    ```bash
-   git clone https://github.com/yourusername/gptoggle.git
-   cd gptoggle
+   git clone https://github.com/onalius/gptoggle-core.git
+   cd gptoggle-core
    # Then import from this local directory
    ```
 

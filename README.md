@@ -48,7 +48,7 @@ For detailed installation instructions and troubleshooting, see [INSTALLATION.md
 
 1. **One-line installer**: Install in Replit with this command:
    ```bash
-   curl -s https://raw.githubusercontent.com/yourusername/gptoggle/main/replit_install.sh | bash
+   curl -sSL https://raw.githubusercontent.com/onalius/gptoggle-core/main/replit_install.sh | bash
    ```
 
 2. **Standalone Python module**: If you're having trouble with installation, you can use [gptoggle_minimal.py](gptoggle_minimal.py), a single-file version with the core functionality.

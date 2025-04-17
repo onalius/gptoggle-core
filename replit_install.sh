@@ -13,7 +13,7 @@ fi
 
 # Install with --no-deps to avoid self-dependency issues
 echo "📦 Installing package with --no-deps flag to avoid self-dependency conflicts..."
-pip install git+https://github.com/yourusername/gptoggle.git@main#egg=gptoggle-ai-wrapper-library-pkg --no-deps
+pip install git+https://github.com/onalius/gptoggle-core.git@main#egg=gptoggle-ai-wrapper-library-pkg --no-deps
 
 # Install required core dependencies separately
 echo "📦 Installing core dependencies..."
@@ -38,8 +38,8 @@ if python -c "import gptoggle; print(f'✅ GPToggle version {gptoggle.__version_
 else
     echo "⚠️ Installation may have partially succeeded, but importing failed."
     echo "📝 Try one of these alternative approaches:"
-    echo "1. Use the REST API approach (see https://github.com/yourusername/gptoggle#rest-api)"
+    echo "1. Use the REST API approach (see https://github.com/onalius/gptoggle-core#rest-api)"
     echo "2. Download the standalone Python file: gptoggle_minimal.py"
 fi
 
-echo "For more information, visit: https://github.com/yourusername/gptoggle"
+echo "For more information, visit: https://github.com/onalius/gptoggle-core"
