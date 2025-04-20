@@ -58,6 +58,30 @@ claudetoggle-core/
 gptoggle-core/
 .replit
 .upm/
+replit.nix
+.replitenv
+.config/
+.breakpoints
+.replit.backup
+poetry.lock
+uv.lock
+
+# API keys and secrets
+*config.local.js
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+secrets.json
+.secrets
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+
 # Editor files
 *.pyc
 __pycache__/
+.DS_Store
+.history/
