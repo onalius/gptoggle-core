@@ -5,6 +5,36 @@ All notable changes to the GPToggle project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.4] - 2025-04-17 - Meta Llama and Perplexity Integration
+
+GPToggle v1.0.4 adds support for two new providers: Meta's Llama API and Perplexity API, expanding the multi-provider architecture to cover more AI services and capabilities.
+
+### Added
+- Meta's Llama API integration with support for:
+  - llama-3-8b-instruct: Lightweight 8B parameter model for fast responses
+  - llama-3-70b-instruct: Advanced 70B parameter model for complex tasks
+  - llama-3-vision: Multimodal model capable of image analysis
+- Perplexity API integration with support for:
+  - llama-3.1-sonar-small-128k-online: Fast model with up-to-date web search
+  - llama-3.1-sonar-large-128k-online: Powerful model with comprehensive web search
+  - llama-3.1-sonar-huge-128k-online: Most capable model with deep web search
+- Updated provider priority system to include Llama and Perplexity in the hierarchy
+- Enhanced task category provider rankings to include strengths of Llama and Perplexity models
+- Created dedicated example files:
+  - llama_example.py: Demonstrates Meta's Llama API integration
+  - perplexity_example.py: Shows Perplexity API with real-time web search capabilities
+- Updated task-specific model recommendation system to include the new providers
+- Added environment variables for the new APIs:
+  - META_AI_API_KEY: For Meta's Llama provider
+  - PERPLEXITY_API_KEY: For Perplexity provider
+
+### Changed
+- Updated provider architecture to support new API formats and parameters
+- Enhanced model selection logic to include capabilities of Llama and Perplexity
+- Expanded comparison system to support comparing the new providers with existing ones
+- Improved task detection system with refined provider strength profiles
+- Updated example.py to demonstrate the full range of providers
+
 ## [1.0.3] - 2025-04-17 - Task-Specific Recommendations & Follow-up Task Suggestions
 
 GPToggle v1.0.3 introduces advanced recommendation capabilities for multi-faceted prompts, including task-specific model recommendations, component-specific suggestions within responses, and recommendations for likely follow-up tasks.
