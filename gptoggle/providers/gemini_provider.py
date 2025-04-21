@@ -1,5 +1,8 @@
 """
-Google Vertex AI Gemini provider implementation.
+Google Gemini provider implementation.
+
+This provider integrates with Google's consumer-facing Gemini API
+using the google.generativeai package and GOOGLE_API_KEY.
 """
 
 import os
