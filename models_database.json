@@ -1,0 +1,356 @@
+{
+  "models": [
+    {
+      "provider": "openai",
+      "model_id": "gpt-4o",
+      "display_name": "GPT-4o",
+      "capabilities": ["text", "vision", "code", "reasoning", "creativity"],
+      "strengths": {
+        "general": 5,
+        "code": 5,
+        "math": 4,
+        "creativity": 4,
+        "reasoning": 5
+      },
+      "weaknesses": ["hallucination"],
+      "context_window": 128000,
+      "intelligence": 5,
+      "speed": 4,
+      "tiers": ["standard"],
+      "pricing": {
+        "input_tokens": 0.00005,
+        "output_tokens": 0.00015
+      },
+      "knowledge_cutoff": "2023-04",
+      "released": "2023-05-13",
+      "deprecated": false
+    },
+    {
+      "provider": "openai",
+      "model_id": "gpt-4",
+      "display_name": "GPT-4",
+      "capabilities": ["text", "code", "reasoning", "creativity"],
+      "strengths": {
+        "general": 4,
+        "code": 4,
+        "math": 4,
+        "creativity": 4,
+        "reasoning": 4
+      },
+      "weaknesses": ["hallucination", "speed"],
+      "context_window": 8192,
+      "intelligence": 4,
+      "speed": 2,
+      "tiers": ["standard"],
+      "pricing": {
+        "input_tokens": 0.00003,
+        "output_tokens": 0.00006
+      },
+      "knowledge_cutoff": "2021-09",
+      "released": "2022-11-30",
+      "deprecated": false
+    },
+    {
+      "provider": "openai",
+      "model_id": "gpt-3.5-turbo",
+      "display_name": "GPT-3.5 Turbo",
+      "capabilities": ["text", "code"],
+      "strengths": {
+        "general": 3,
+        "code": 3,
+        "speed": 4
+      },
+      "weaknesses": ["reasoning", "hallucination"],
+      "context_window": 16000,
+      "intelligence": 3,
+      "speed": 5,
+      "tiers": ["free", "standard"],
+      "pricing": {
+        "input_tokens": 0.000005,
+        "output_tokens": 0.000015
+      },
+      "knowledge_cutoff": "2021-09",
+      "released": "2022-03-15",
+      "deprecated": false
+    },
+    {
+      "provider": "anthropic",
+      "model_id": "claude-3-opus",
+      "display_name": "Claude 3 Opus",
+      "capabilities": ["text", "vision", "reasoning", "creativity"],
+      "strengths": {
+        "general": 5,
+        "reasoning": 5,
+        "math": 4,
+        "creativity": 5
+      },
+      "weaknesses": ["code"],
+      "context_window": 200000,
+      "intelligence": 5,
+      "speed": 3,
+      "tiers": ["standard"],
+      "pricing": {
+        "input_tokens": 0.00005,
+        "output_tokens": 0.00015
+      },
+      "knowledge_cutoff": "2023-08",
+      "released": "2024-03-04",
+      "deprecated": false
+    },
+    {
+      "provider": "anthropic",
+      "model_id": "claude-3-sonnet",
+      "display_name": "Claude 3 Sonnet",
+      "capabilities": ["text", "vision", "reasoning", "creativity"],
+      "strengths": {
+        "general": 4,
+        "reasoning": 4,
+        "math": 3,
+        "creativity": 4
+      },
+      "weaknesses": ["code"],
+      "context_window": 200000,
+      "intelligence": 4,
+      "speed": 4,
+      "tiers": ["standard"],
+      "pricing": {
+        "input_tokens": 0.00003,
+        "output_tokens": 0.00010
+      },
+      "knowledge_cutoff": "2023-08",
+      "released": "2024-03-04",
+      "deprecated": false
+    },
+    {
+      "provider": "anthropic",
+      "model_id": "claude-3-haiku",
+      "display_name": "Claude 3 Haiku",
+      "capabilities": ["text", "vision", "reasoning"],
+      "strengths": {
+        "general": 3,
+        "reasoning": 3,
+        "speed": 5
+      },
+      "weaknesses": ["code", "complex-reasoning"],
+      "context_window": 200000,
+      "intelligence": 3,
+      "speed": 5,
+      "tiers": ["standard"],
+      "pricing": {
+        "input_tokens": 0.00000125,
+        "output_tokens": 0.00000375
+      },
+      "knowledge_cutoff": "2023-08",
+      "released": "2024-03-04",
+      "deprecated": false
+    },
+    {
+      "provider": "google",
+      "model_id": "gemini-1.5-pro",
+      "display_name": "Gemini 1.5 Pro",
+      "capabilities": ["text", "vision", "code", "reasoning", "creativity"],
+      "strengths": {
+        "general": 5,
+        "math": 4,
+        "multimodal": 5,
+        "context": 5
+      },
+      "weaknesses": [],
+      "context_window": 1000000,
+      "intelligence": 5,
+      "speed": 4,
+      "tiers": ["standard"],
+      "pricing": {
+        "input_tokens": 0.00000625,
+        "output_tokens": 0.00001875
+      },
+      "knowledge_cutoff": "2023-04",
+      "released": "2024-02-15",
+      "deprecated": false
+    },
+    {
+      "provider": "google",
+      "model_id": "gemini-1.5-flash",
+      "display_name": "Gemini 1.5 Flash",
+      "capabilities": ["text", "vision", "code"],
+      "strengths": {
+        "general": 4,
+        "multimodal": 4,
+        "context": 5,
+        "speed": 5
+      },
+      "weaknesses": ["complex-reasoning"],
+      "context_window": 1000000,
+      "intelligence": 4,
+      "speed": 5,
+      "tiers": ["standard"],
+      "pricing": {
+        "input_tokens": 0.00000035,
+        "output_tokens": 0.00000105
+      },
+      "knowledge_cutoff": "2023-04",
+      "released": "2024-02-15",
+      "deprecated": false
+    },
+    {
+      "provider": "google",
+      "model_id": "gemini-pro",
+      "display_name": "Gemini Pro",
+      "capabilities": ["text", "code"],
+      "strengths": {
+        "general": 4,
+        "speed": 4
+      },
+      "weaknesses": ["vision"],
+      "context_window": 32000,
+      "intelligence": 4,
+      "speed": 4,
+      "tiers": ["standard"],
+      "pricing": {
+        "input_tokens": 0.000005,
+        "output_tokens": 0.000015
+      },
+      "knowledge_cutoff": "2023-02",
+      "released": "2023-12-13",
+      "deprecated": false
+    },
+    {
+      "provider": "xai",
+      "model_id": "grok-2",
+      "display_name": "Grok 2",
+      "capabilities": ["text", "code", "reasoning"],
+      "strengths": {
+        "general": 4,
+        "reasoning": 4,
+        "code": 3
+      },
+      "weaknesses": ["vision"],
+      "context_window": 130000,
+      "intelligence": 4,
+      "speed": 4,
+      "tiers": ["standard"],
+      "pricing": {
+        "input_tokens": 0.00003,
+        "output_tokens": 0.00010
+      },
+      "knowledge_cutoff": "2023-12",
+      "released": "2024-04-11",
+      "deprecated": false
+    },
+    {
+      "provider": "xai",
+      "model_id": "grok-2-vision",
+      "display_name": "Grok 2 Vision",
+      "capabilities": ["text", "vision", "reasoning"],
+      "strengths": {
+        "general": 4,
+        "reasoning": 4,
+        "vision": 3
+      },
+      "weaknesses": [],
+      "context_window": 8192,
+      "intelligence": 4,
+      "speed": 3,
+      "tiers": ["standard"],
+      "pricing": {
+        "input_tokens": 0.0001,
+        "output_tokens": 0.0002
+      },
+      "knowledge_cutoff": "2023-12",
+      "released": "2024-04-12",
+      "deprecated": false
+    },
+    {
+      "provider": "meta",
+      "model_id": "llama-3-70b-instruct",
+      "display_name": "Llama 3 (70B) Instruct",
+      "capabilities": ["text", "code", "reasoning"],
+      "strengths": {
+        "general": 4,
+        "math": 3,
+        "code": 4,
+        "reasoning": 4
+      },
+      "weaknesses": ["vision"],
+      "context_window": 8192,
+      "intelligence": 4,
+      "speed": 3,
+      "tiers": ["free"],
+      "pricing": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "knowledge_cutoff": "2023-07",
+      "released": "2024-04-18",
+      "deprecated": false
+    },
+    {
+      "provider": "meta",
+      "model_id": "llama-3-8b-instruct",
+      "display_name": "Llama 3 (8B) Instruct",
+      "capabilities": ["text", "code"],
+      "strengths": {
+        "general": 3,
+        "code": 2
+      },
+      "weaknesses": ["complex-reasoning", "vision"],
+      "context_window": 8192,
+      "intelligence": 2,
+      "speed": 5,
+      "tiers": ["free"],
+      "pricing": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "knowledge_cutoff": "2023-07",
+      "released": "2024-04-18",
+      "deprecated": false
+    },
+    {
+      "provider": "perplexity",
+      "model_id": "llama-3.1-sonar-small-128k-online",
+      "display_name": "Perplexity Small",
+      "capabilities": ["text", "web-search"],
+      "strengths": {
+        "general": 3,
+        "web-search": 5,
+        "citations": 5
+      },
+      "weaknesses": ["creativity", "vision"],
+      "context_window": 128000,
+      "intelligence": 3,
+      "speed": 4,
+      "tiers": ["standard"],
+      "pricing": {
+        "input_tokens": 0.00002,
+        "output_tokens": 0.00008
+      },
+      "knowledge_cutoff": "realtime",
+      "released": "2024-03-15",
+      "deprecated": false
+    },
+    {
+      "provider": "perplexity",
+      "model_id": "llama-3.1-sonar-large-128k-online",
+      "display_name": "Perplexity Large",
+      "capabilities": ["text", "web-search"],
+      "strengths": {
+        "general": 4,
+        "web-search": 5,
+        "citations": 5
+      },
+      "weaknesses": ["vision"],
+      "context_window": 128000,
+      "intelligence": 4,
+      "speed": 3,
+      "tiers": ["standard"],
+      "pricing": {
+        "input_tokens": 0.00006,
+        "output_tokens": 0.00024
+      },
+      "knowledge_cutoff": "realtime",
+      "released": "2024-03-15",
+      "deprecated": false
+    }
+  ]
+}
