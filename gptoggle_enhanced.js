@@ -532,10 +532,6 @@ class GPToggle {
       detectedTasks: detectedTasks,
       followupTasks: followupTasks
     };
-  } component.\n';
-    }
-    
-    return suggestions;
   }
 
   /**

@@ -97,8 +97,19 @@ GPToggle is a comprehensive multi-provider AI model wrapper that provides intell
 
 ## Changelog
 
-- June 20, 2025. Initial setup
+- June 20, 2025: Initial setup
+- June 20, 2025: Enhanced core GPToggle functionality with model-agnostic architecture and advanced task analysis
+
+## Recent Changes
+
+✓ Enhanced JavaScript implementations with task-specific recommendations
+✓ Model-agnostic architecture with dynamic registry and capability-based selection  
+✓ TypeScript model metadata definitions with pricing and capability information
+✓ Comprehensive example files demonstrating enhanced features
+✓ Updated documentation structure with quick start guide
+→ Core GPToggle library now provides foundation for others to build upon
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Focus: Providing core GPToggle functionality as a reusable foundation library, not full-stack application architecture.
