@@ -1,12 +1,14 @@
 /**
- * GPToggle.js - A JavaScript implementation of core GPToggle functionality
+ * GPToggle Enhanced - A JavaScript implementation of core GPToggle functionality
  * 
  * This library provides browser and Node.js compatible functions for:
  * - Auto-selecting the appropriate model based on prompt content
  * - Accessing multiple AI providers through their APIs
  * - Task-specific model recommendations
+ * - Component-specific model suggestions
+ * - Follow-up task recommendations
  * 
- * @version 1.0.2
+ * @version 1.0.3
  */
 
 /**
@@ -426,7 +428,111 @@ class GPToggle {
         }
       }
       
-      suggestions += 'For optimal results, consider breaking your request into separate prompts targeted at the recommended models for each component.\n';
+      suggestions += 'For optimal results, consider breaking your request into separate prompts targeted at the recommended models for each component.';
+    }
+    
+    return suggestions;
+  }
+
+  /**
+   * Get follow-up task recommendations based on the current prompt
+   * 
+   * @param {string} prompt - User prompt
+   * @returns {Object} Follow-up recommendations
+   */
+  getFollowupRecommendations(prompt) {
+    const detectedTasks = this.identifyTasks(prompt);
+    const followupTasks = [];
+    
+    // Define likely follow-up tasks for each main task type
+    const followupMapping = {
+      'marketing': [
+        { name: 'content_creation', description: 'Create marketing content', providerRanking: ['claude', 'openai', 'gemini', 'grok'] },
+        { name: 'data_analysis', description: 'Analyze campaign performance', providerRanking: ['gemini', 'openai', 'claude', 'grok'] },
+        { name: 'coding', description: 'Implement tracking or automation', providerRanking: ['openai', 'gemini', 'claude', 'grok'] }
+      ],
+      'coding': [
+        { name: 'testing', description: 'Write tests for the code', providerRanking: ['openai', 'gemini', 'claude', 'grok'] },
+        { name: 'documentation', description: 'Document the implementation', providerRanking: ['claude', 'openai', 'gemini', 'grok'] },
+        { name: 'optimization', description: 'Optimize performance', providerRanking: ['openai', 'gemini', 'claude', 'grok'] }
+      ],
+      'data_analysis': [
+        { name: 'visualization', description: 'Create data visualizations', providerRanking: ['gemini', 'openai', 'claude', 'grok'] },
+        { name: 'reporting', description: 'Generate analysis reports', providerRanking: ['claude', 'gemini', 'openai', 'grok'] },
+        { name: 'prediction', description: 'Build predictive models', providerRanking: ['gemini', 'openai', 'claude', 'grok'] }
+      ],
+      'creative_writing': [
+        { name: 'editing', description: 'Edit and refine content', providerRanking: ['claude', 'openai', 'gemini', 'grok'] },
+        { name: 'formatting', description: 'Format for publication', providerRanking: ['openai', 'claude', 'gemini', 'grok'] },
+        { name: 'promotion', description: 'Create promotional materials', providerRanking: ['claude', 'openai', 'gemini', 'grok'] }
+      ]
+    };
+    
+    // Generate follow-up recommendations based on detected tasks
+    for (const task of detectedTasks) {
+      const followups = followupMapping[task.taskName] || [];
+      
+      for (const followup of followups) {
+        const availableProviders = this.getAvailableProviders();
+        const recommendations = [];
+        
+        // Get recommendations for each provider
+        for (const provider of availableProviders) {
+          let modelType;
+          switch (followup.name) {
+            case 'content_creation':
+            case 'creative_writing':
+            case 'editing':
+              modelType = 'creative';
+              break;
+            case 'coding':
+            case 'testing':
+            case 'optimization':
+              modelType = 'technical';
+              break;
+            case 'data_analysis':
+            case 'visualization':
+            case 'prediction':
+              modelType = 'analytical';
+              break;
+            default:
+              modelType = 'default';
+          }
+          
+          const model = this.config.models[provider][modelType] || this.config.models[provider].default;
+          const strength = this.config.providerStrengths[provider][followup.name] || 
+                           this.config.providerStrengths[provider].general;
+          
+          recommendations.push({
+            provider: provider,
+            model: model,
+            strength: strength
+          });
+        }
+        
+        // Sort by the followup task's provider ranking
+        if (followup.providerRanking) {
+          recommendations.sort((a, b) => {
+            const aIndex = followup.providerRanking.indexOf(a.provider);
+            const bIndex = followup.providerRanking.indexOf(b.provider);
+            return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex);
+          });
+        }
+        
+        followupTasks.push({
+          originalTask: task.taskName,
+          followupName: followup.name,
+          followupDescription: followup.description,
+          recommendations: recommendations
+        });
+      }
+    }
+    
+    return {
+      detectedTasks: detectedTasks,
+      followupTasks: followupTasks
+    };
+  } component.\n';
     }
     
     return suggestions;

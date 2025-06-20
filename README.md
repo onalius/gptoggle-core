@@ -30,13 +30,30 @@ Read the [MODEL_REGISTRY.md](MODEL_REGISTRY.md) documentation for details on the
 
 ## Core Features
 
-- 🤖 **Multi-Provider Support**: OpenAI (GPT models), Anthropic Claude, Google Gemini, Meta's Llama, Perplexity, and xAI Grok
-- 🔄 **Auto-Model Selection**: Intelligently chooses the best model based on prompt characteristics
-- 📊 **Task-Specific Recommendations**: Specific model recommendations for different components in a prompt
-- 🔮 **Follow-up Task Suggestions**: Optimal models for likely follow-up tasks
-- 🌐 **Multiple Implementations**: Python package, standalone file, or JavaScript library
-- 🚀 **Simple Installation**: Multiple options for different environments
-- 🧩 **Model Registry System**: Dynamic runtime registration of models with rich metadata (v2.0)
+### 🤖 Multi-Provider Support
+Support for major AI providers: OpenAI (GPT models), Anthropic Claude, Google Gemini, Meta's Llama, Perplexity, and xAI Grok
+
+### 🧠 Intelligent Model Selection
+- **Auto-Selection**: Automatically chooses the best model based on prompt characteristics
+- **Capability-Based Selection**: Models chosen based on specific requirements (vision, code, math, reasoning)
+- **Context-Aware Recommendations**: Considers prompt length, complexity, and task type
+
+### 📊 Advanced Task Analysis
+- **Multi-Task Detection**: Identifies different task types within a single prompt
+- **Component-Specific Recommendations**: Suggests optimal models for each part of complex requests
+- **Follow-up Task Suggestions**: Recommends models for likely next steps in your workflow
+
+### 🔧 Multiple Implementation Options
+- **JavaScript/TypeScript**: Browser and Node.js compatible with enhanced features
+- **Python Package**: Full-featured package with provider integrations
+- **Standalone Files**: Self-contained implementations requiring no installation
+- **Model-Agnostic Architecture**: Dynamic model registry with rich metadata (v2.0+)
+
+### 🚀 Developer-Friendly
+- **Simple API**: Easy-to-use interface for all skill levels
+- **Rich Documentation**: Comprehensive guides and examples
+- **Flexible Configuration**: Customizable provider priorities and model mappings
+- **TypeScript Support**: Full type definitions for model metadata and capabilities
 
 ## Installation
 
