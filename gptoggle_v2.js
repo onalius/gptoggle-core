@@ -98,6 +98,111 @@ class UserProfile {
 
     this.metadata.lastUpdated = new Date().toISOString();
   }
+
+  updateProfileAdaptively(query, queryType, modelUsed = null) {
+    const timestamp = new Date().toISOString();
+
+    // Add to recent queries (FIFO with max 10)
+    if (!this.context.recentQueries) {
+      this.context.recentQueries = [];
+    }
+    this.context.recentQueries.unshift({
+      query,
+      type: queryType,
+      timestamp
+    });
+    this.context.recentQueries = this.context.recentQueries.slice(0, 10);
+
+    // Update interaction history
+    if (!this.context.interactionHistory) {
+      this.context.interactionHistory = {
+        queryTypes: {},
+        lastModelUsed: null,
+        lastInteraction: null
+      };
+    }
+
+    // Increment query type counter
+    this.context.interactionHistory.queryTypes[queryType] = 
+      (this.context.interactionHistory.queryTypes[queryType] || 0) + 1;
+
+    // Update last used model and interaction time
+    if (modelUsed) {
+      this.context.interactionHistory.lastModelUsed = modelUsed;
+    }
+    this.context.interactionHistory.lastInteraction = timestamp;
+
+    // Adaptive domain expertise detection
+    this._updateDomainExpertise(query);
+
+    // Adaptive tone analysis
+    this._updateCommunicationTone(query);
+
+    // Update metadata
+    this.metadata.lastUpdated = timestamp;
+  }
+
+  _updateDomainExpertise(query) {
+    const queryLower = query.toLowerCase();
+
+    // Domain keyword mapping
+    const domainKeywords = {
+      'technology': ['code', 'programming', 'software', 'api', 'database', 'javascript', 'python', 'algorithm'],
+      'business': ['contract', 'revenue', 'strategy', 'marketing', 'sales', 'finance', 'budget', 'roi'],
+      'creative': ['design', 'art', 'story', 'creative', 'poem', 'music', 'melody', 'composition'],
+      'education': ['learn', 'teach', 'study', 'lesson', 'tutorial', 'course', 'homework', 'assignment'],
+      'science': ['research', 'experiment', 'data', 'analysis', 'hypothesis', 'theory', 'scientific'],
+      'health': ['medical', 'health', 'nutrition', 'exercise', 'wellness', 'therapy', 'treatment'],
+      'cooking': ['recipe', 'cook', 'ingredient', 'food', 'meal', 'kitchen', 'bake', 'prepare']
+    };
+
+    // Count domain matches
+    Object.entries(domainKeywords).forEach(([domain, keywords]) => {
+      const matches = keywords.filter(keyword => queryLower.includes(keyword)).length;
+      if (matches > 0) {
+        if (!this.expertise.domains.includes(domain)) {
+          // Add new domain if multiple keywords detected
+          if (matches >= 2) {
+            this.expertise.domains.push(domain);
+          }
+        }
+
+        // Update skill level based on frequency
+        const currentLevel = this.expertise.skillLevel[domain] || 0;
+        this.expertise.skillLevel[domain] = Math.min(currentLevel + matches, 10);
+      }
+    });
+  }
+
+  _updateCommunicationTone(query) {
+    const queryLower = query.toLowerCase();
+
+    // Casual indicators
+    const casualIndicators = ['hey', 'hi', 'thanks', 'cool', 'awesome', 'lol', 'btw', 'gonna', 'wanna'];
+    const casualCount = casualIndicators.filter(indicator => queryLower.includes(indicator)).length;
+
+    // Formal indicators
+    const formalIndicators = ['please', 'would you', 'could you', 'kindly', 'respectfully', 'sincerely'];
+    const formalCount = formalIndicators.filter(indicator => queryLower.includes(indicator)).length;
+
+    // Professional indicators
+    const professionalIndicators = ['analyze', 'evaluate', 'assess', 'provide', 'demonstrate', 'implement'];
+    const professionalCount = professionalIndicators.filter(indicator => queryLower.includes(indicator)).length;
+
+    // Adaptive tone adjustment
+    const totalInteractions = Object.values(this.context.interactionHistory?.queryTypes || {})
+      .reduce((sum, count) => sum + count, 0);
+
+    if (totalInteractions >= 3) { // Only adjust after sufficient interactions
+      if (casualCount > formalCount + professionalCount) {
+        this.communicationStyle.tone = 'casual';
+      } else if (professionalCount > casualCount) {
+        this.communicationStyle.tone = 'professional';
+      } else if (formalCount > casualCount) {
+        this.communicationStyle.tone = 'formal';
+      }
+    }
+  }
 }
 
 /**

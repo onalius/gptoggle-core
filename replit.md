@@ -117,6 +117,7 @@ GPToggle is a comprehensive multi-provider AI model wrapper that provides intell
 ✓ **Standalone Library**: Created lib/contextualized-intelligence.js for easy adoption by other services
 → GPToggle v2.0 now provides universal contextualized intelligence foundation for GitHub distribution
 → Integration complete: Contextualized intelligence fully integrated into existing GPToggle core files (Python & JavaScript) with proper v2.0 versioning
+→ Adaptive Learning: Added adaptive profile updating directly to core functions with tone detection, domain expertise inference, and query history management
 
 ## User Preferences
 

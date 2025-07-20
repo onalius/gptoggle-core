@@ -143,6 +143,100 @@ class UserProfile:
             self.context['learningPatterns']['commonTopics'] = common_topics[:20]
         
         self.metadata['lastUpdated'] = datetime.now().isoformat()
+    
+    def update_profile_adaptively(self, query: str, query_type: str, model_used: str = None):
+        """Adaptively update user profile based on interaction patterns"""
+        timestamp = datetime.now().isoformat()
+        
+        # Add to recent queries (FIFO with max 10)
+        if 'recentQueries' not in self.context:
+            self.context['recentQueries'] = []
+        self.context['recentQueries'].insert(0, {
+            'query': query,
+            'type': query_type,
+            'timestamp': timestamp
+        })
+        self.context['recentQueries'] = self.context['recentQueries'][:10]
+        
+        # Update interaction history
+        if 'interactionHistory' not in self.context:
+            self.context['interactionHistory'] = {
+                'queryTypes': {},
+                'lastModelUsed': None,
+                'lastInteraction': None
+            }
+        
+        # Increment query type counter
+        self.context['interactionHistory']['queryTypes'][query_type] = \
+            self.context['interactionHistory']['queryTypes'].get(query_type, 0) + 1
+        
+        # Update last used model and interaction time
+        if model_used:
+            self.context['interactionHistory']['lastModelUsed'] = model_used
+        self.context['interactionHistory']['lastInteraction'] = timestamp
+        
+        # Adaptive domain expertise detection
+        self._update_domain_expertise(query)
+        
+        # Adaptive tone analysis
+        self._update_communication_tone(query)
+        
+        # Update metadata
+        self.metadata['lastUpdated'] = timestamp
+    
+    def _update_domain_expertise(self, query: str):
+        """Update domain expertise based on query content"""
+        query_lower = query.lower()
+        
+        # Domain keyword mapping
+        domain_keywords = {
+            'technology': ['code', 'programming', 'software', 'api', 'database', 'javascript', 'python', 'algorithm'],
+            'business': ['contract', 'revenue', 'strategy', 'marketing', 'sales', 'finance', 'budget', 'roi'],
+            'creative': ['design', 'art', 'story', 'creative', 'poem', 'music', 'melody', 'composition'],
+            'education': ['learn', 'teach', 'study', 'lesson', 'tutorial', 'course', 'homework', 'assignment'],
+            'science': ['research', 'experiment', 'data', 'analysis', 'hypothesis', 'theory', 'scientific'],
+            'health': ['medical', 'health', 'nutrition', 'exercise', 'wellness', 'therapy', 'treatment'],
+            'cooking': ['recipe', 'cook', 'ingredient', 'food', 'meal', 'kitchen', 'bake', 'prepare']
+        }
+        
+        # Count domain matches
+        for domain, keywords in domain_keywords.items():
+            matches = sum(1 for keyword in keywords if keyword in query_lower)
+            if matches > 0:
+                if domain not in self.expertise['domains']:
+                    # Add new domain if multiple keywords detected
+                    if matches >= 2:
+                        self.expertise['domains'].append(domain)
+                
+                # Update skill level based on frequency
+                current_level = self.expertise['skillLevel'].get(domain, 0)
+                self.expertise['skillLevel'][domain] = min(current_level + matches, 10)
+    
+    def _update_communication_tone(self, query: str):
+        """Adaptively update communication tone based on query style"""
+        query_lower = query.lower()
+        
+        # Casual indicators
+        casual_indicators = ['hey', 'hi', 'thanks', 'cool', 'awesome', 'lol', 'btw', 'gonna', 'wanna']
+        casual_count = sum(1 for indicator in casual_indicators if indicator in query_lower)
+        
+        # Formal indicators  
+        formal_indicators = ['please', 'would you', 'could you', 'kindly', 'respectfully', 'sincerely']
+        formal_count = sum(1 for indicator in formal_indicators if indicator in query_lower)
+        
+        # Professional indicators
+        professional_indicators = ['analyze', 'evaluate', 'assess', 'provide', 'demonstrate', 'implement']
+        professional_count = sum(1 for indicator in professional_indicators if indicator in query_lower)
+        
+        # Adaptive tone adjustment
+        total_interactions = sum(self.context.get('interactionHistory', {}).get('queryTypes', {}).values())
+        if total_interactions >= 3:  # Only adjust after sufficient interactions
+            if casual_count > formal_count + professional_count:
+                self.communicationStyle['tone'] = 'casual'
+            elif professional_count > casual_count:
+                self.communicationStyle['tone'] = 'professional'
+            elif formal_count > casual_count:
+                self.communicationStyle['tone'] = 'formal'
 
 class QueryClassifier:
     """Intelligent query classification system"""
