@@ -30,28 +30,52 @@ The new user profile system is designed to be universally applicable across diff
 ## Architecture
 
 ```
-src/
-├── core/
-│   ├── toggle.ts              # Main contextualized intelligence engine
-│   └── modelRegistry.ts       # Model management and selection
-├── profile/
-│   ├── userProfileSchema.json # Universal user profile schema
-│   └── userProfileService.ts  # Profile management service
-├── context/
-│   ├── queryClassifier.ts     # Query type classification
-│   └── contextualHelpers.ts   # Context-aware query enhancement
-└── utils/
-    ├── logger.ts              # Logging utilities
-    └── config.ts              # Configuration management
+lib/
+└── contextualized-intelligence.js  # Complete contextualized intelligence system
+
+TypeScript Modules (for advanced integration):
+├── toggle.ts                      # Main contextualized intelligence engine
+├── modelRegistry.ts               # Model management and selection
+├── userProfileSchema.json         # Universal user profile schema
+├── userProfileService.ts          # Profile management service
+├── queryClassifier.ts             # Query type classification
+├── contextualHelpers.ts           # Context-aware query enhancement
+├── logger.ts                      # Logging utilities
+└── config.ts                      # Configuration management
+
+Examples:
+├── contextualized-demo-simple.js  # JavaScript demo
+└── contextualized-intelligence-demo.ts  # TypeScript demo
 ```
 
 ## Quick Start
 
 ### Basic Usage
 
+```javascript
+// Using the standalone library
+const { ContextualizedIntelligence } = require('./lib/contextualized-intelligence');
+
+// Initialize the system
+const ci = new ContextualizedIntelligence();
+
+// Process a query with contextualized intelligence
+const result = await ci.processQuery(
+  'Explain machine learning algorithms',
+  'user-123'
+);
+
+console.log(`Query Type: ${result.queryType}`);
+console.log(`Confidence: ${result.confidence}`);
+console.log(`Enhancements: ${result.enhancements.join(', ')}`);
+console.log(`Enhanced Query: ${result.enhancedQuery}`);
+```
+
+### Advanced Integration with GPToggle
+
 ```typescript
-import { Toggle, ToggleRequest } from './src/core/toggle';
-import { UserProfileService } from './src/profile/userProfileService';
+import { Toggle, ToggleRequest } from './toggle';
+import { UserProfileService } from './userProfileService';
 
 // Initialize the system
 const toggle = new Toggle();
@@ -81,51 +105,48 @@ console.log(`Response: ${response.response}`);
 
 ### User Profile Management
 
-```typescript
-// Create a custom user profile
-const customProfile = {
-  userId: 'developer-alice',
-  communicationStyle: {
-    tone: 'casual',
-    verbosity: 'detailed',
-    language: 'en',
-    includeExplanations: true
-  },
-  expertise: {
-    domains: ['technology', 'engineering'],
-    skillLevel: { 'javascript': 'expert', 'python': 'advanced' },
-    interests: ['AI', 'web development', 'data science']
-  },
-  preferences: {
-    prioritizeSpeed: false,
-    adaptivePersonalization: true,
-    contextualAwareness: true,
-    privacyLevel: 'standard'
-  },
-  // ... rest of profile structure
+```javascript
+// Load or create a user profile
+const userProfile = await ci.loadUserProfile('developer-alice');
+
+// Customize the profile
+userProfile.communicationStyle.tone = 'casual';
+userProfile.communicationStyle.verbosity = 'detailed';
+userProfile.expertise.domains = ['technology', 'engineering'];
+userProfile.expertise.skillLevel = { 
+  'javascript': 'expert', 
+  'python': 'advanced' 
 };
 
-await profileService.saveProfile(customProfile);
+// Add interactions to build context
+userProfile.addInteraction(
+  'How do I optimize database queries?',
+  'technical',
+  'my-service'
+);
+
+// Save the profile
+await ci.saveUserProfile(userProfile);
 ```
 
 ### Service-Specific Integration
 
-```typescript
-// Add GPToggle-specific configuration to user profile
-const profile = await profileService.loadProfile('user-123');
-profile.serviceSpecific['gptoggle'] = {
-  enabled: true,
-  configuration: {
-    preferredModels: ['gpt-4o', 'claude-3-opus'],
-    accessLevel: 'premium'
-  },
-  preferences: {
-    enableFollowUpSuggestions: true,
-    trackModelPerformance: true
-  }
-};
+```javascript
+// Configure service-specific settings
+const profile = await ci.loadUserProfile('user-123');
 
-await profileService.saveProfile(profile);
+profile.configureService('gptoggle', {
+  preferredModels: ['gpt-4o', 'claude-3-opus'],
+  accessLevel: 'premium',
+  enableFollowUpSuggestions: true
+});
+
+profile.configureService('my-ai-service', {
+  customSetting: 'value',
+  featureFlags: ['advanced_analysis', 'real_time_learning']
+});
+
+await ci.saveUserProfile(profile);
 ```
 
 ## Universal Profile Schema
@@ -182,11 +203,14 @@ Enhanced model selection considers:
 
 ## Examples and Demos
 
-Run the comprehensive demo to see all features in action:
+Run the demos to see all features in action:
 
 ```bash
-cd examples
-npx ts-node contextualized-intelligence-demo.ts
+# JavaScript demo (no dependencies required)
+node examples/contextualized-demo-simple.js
+
+# TypeScript demo (requires ts-node)
+npx ts-node examples/contextualized-intelligence-demo.ts
 ```
 
 The demo showcases:
