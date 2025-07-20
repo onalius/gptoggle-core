@@ -1,14 +1,269 @@
 /**
- * GPToggle v2.0 - Model-Agnostic Implementation
+ * GPToggle v2.0 - Model-Agnostic Implementation with Contextualized Intelligence
  * 
  * This module implements a model-agnostic version of GPToggle that features:
  * - Dynamic model registry
  * - Capability-based model selection
  * - Rich attribute scoring system
  * - Provider-agnostic interface
+ * - Universal user profiles for personalization
+ * - Query classification and contextual enhancement
+ * - Adaptive learning from user interactions
  * 
  * @version 2.0.0
  */
+
+/**
+ * Universal User Profile class for contextualized AI interactions
+ */
+class UserProfile {
+  constructor(userId) {
+    this.userId = userId;
+    this.communicationStyle = {
+      tone: 'casual',
+      verbosity: 'moderate',
+      language: 'en',
+      includeExplanations: true
+    };
+    this.expertise = {
+      domains: [],
+      skillLevel: {},
+      interests: []
+    };
+    this.preferences = {
+      prioritizeSpeed: false,
+      adaptivePersonalization: true,
+      contextualAwareness: true,
+      privacyLevel: 'standard'
+    };
+    this.context = {
+      recentInteractions: [],
+      savedItems: [],
+      learningPatterns: {
+        commonTopics: [],
+        timePatterns: {},
+        contextualPreferences: {}
+      }
+    };
+    this.serviceSpecific = {
+      gptoggle: {
+        enabled: true,
+        configuration: { accessLevel: 'basic' },
+        preferences: {}
+      }
+    };
+    this.metadata = {
+      createdAt: new Date().toISOString(),
+      lastUpdated: new Date().toISOString(),
+      version: '2.0.0',
+      services: ['gptoggle']
+    };
+  }
+
+  static createDefault(userId) {
+    return new UserProfile(userId);
+  }
+
+  addInteraction(content, category = null, service = 'gptoggle') {
+    const interaction = {
+      content,
+      timestamp: new Date().toISOString(),
+      category,
+      service
+    };
+
+    this.context.recentInteractions.unshift(interaction);
+    this.context.recentInteractions = this.context.recentInteractions.slice(0, 100);
+
+    // Update learning patterns
+    if (category) {
+      const commonTopics = this.context.learningPatterns.commonTopics;
+      const existing = commonTopics.find(t => t.topic === category);
+
+      if (existing) {
+        existing.frequency += 1;
+        existing.lastSeen = new Date().toISOString();
+      } else {
+        commonTopics.push({
+          topic: category,
+          frequency: 1,
+          lastSeen: new Date().toISOString()
+        });
+      }
+
+      // Sort by frequency and limit
+      commonTopics.sort((a, b) => b.frequency - a.frequency);
+      this.context.learningPatterns.commonTopics = commonTopics.slice(0, 20);
+    }
+
+    this.metadata.lastUpdated = new Date().toISOString();
+  }
+}
+
+/**
+ * Query Classification system
+ */
+class QueryClassifier {
+  constructor() {
+    this.patterns = {
+      'code': {
+        keywords: ['code', 'program', 'function', 'debug', 'javascript', 'python', 'html', 'css', 'sql', 'api'],
+        phrases: ['write a function', 'debug this', 'how to code', 'programming help'],
+      },
+      'creative': {
+        keywords: ['write', 'create', 'imagine', 'story', 'poem', 'brainstorm', 'design', 'creative'],
+        phrases: ['write a story', 'create content', 'brainstorm ideas'],
+      },
+      'factual': {
+        keywords: ['what', 'when', 'where', 'who', 'how', 'explain', 'define', 'information', 'facts'],
+        phrases: ['what is', 'explain to me', 'tell me about'],
+      },
+      'analytical': {
+        keywords: ['analyze', 'compare', 'evaluate', 'assess', 'examine', 'review', 'study'],
+        phrases: ['compare and contrast', 'analyze this', 'evaluate the'],
+      },
+      'business': {
+        keywords: ['business', 'strategy', 'marketing', 'sales', 'profit', 'revenue', 'company'],
+        phrases: ['business plan', 'marketing strategy', 'increase sales'],
+      },
+      'educational': {
+        keywords: ['learn', 'teach', 'explain', 'lesson', 'tutorial', 'course', 'study'],
+        phrases: ['teach me', 'learn about', 'tutorial on'],
+      }
+    };
+  }
+
+  classifyQuery(query) {
+    const queryLower = query.toLowerCase();
+    const scores = {};
+
+    Object.entries(this.patterns).forEach(([queryType, config]) => {
+      let score = 0;
+
+      // Keyword matching
+      const keywordMatches = config.keywords.filter(keyword => 
+        queryLower.includes(keyword)
+      ).length;
+      score += keywordMatches * 2;
+
+      // Phrase matching
+      const phraseMatches = config.phrases.filter(phrase => 
+        queryLower.includes(phrase)
+      ).length;
+      score += phraseMatches * 3;
+
+      scores[queryType] = score;
+    });
+
+    // Find best match
+    const sortedTypes = Object.entries(scores).sort(([,a], [,b]) => b - a);
+    const bestType = sortedTypes[0];
+
+    return {
+      queryType: bestType[1] > 0 ? bestType[0] : 'general',
+      confidence: bestType[1] > 0 ? Math.min(bestType[1] / 10, 1) : 0.5,
+      scores
+    };
+  }
+}
+
+/**
+ * Contextual Enhancement system
+ */
+class ContextualEnhancer {
+  enhanceQuery(query, queryType, userProfile) {
+    const enhancements = [];
+    let enhancedQuery = query;
+
+    // Apply query type enhancement
+    const typeEnhancement = this.getTypeEnhancement(queryType);
+    if (typeEnhancement) {
+      enhancedQuery = `${typeEnhancement} ${enhancedQuery}`;
+      enhancements.push(`Query type: ${queryType}`);
+    }
+
+    // Apply communication style
+    const style = userProfile.communicationStyle;
+    if (style.tone !== 'casual') {
+      const toneInstruction = this.getToneInstruction(style.tone);
+      enhancedQuery = `${toneInstruction} ${enhancedQuery}`;
+      enhancements.push(`Tone: ${style.tone}`);
+    }
+
+    if (style.verbosity !== 'moderate') {
+      const verbosityInstruction = this.getVerbosityInstruction(style.verbosity);
+      enhancedQuery = `${verbosityInstruction} ${enhancedQuery}`;
+      enhancements.push(`Verbosity: ${style.verbosity}`);
+    }
+
+    // Apply domain expertise
+    if (userProfile.expertise.domains.length > 0) {
+      const expertiseContext = `Context: User has expertise in ${userProfile.expertise.domains.join(', ')}. `;
+      enhancedQuery = expertiseContext + enhancedQuery;
+      enhancements.push('Domain expertise');
+    }
+
+    // Apply recent context
+    const recentTopics = this.extractRecentTopics(userProfile.context.recentInteractions);
+    if (recentTopics.length > 0) {
+      const topicsStr = recentTopics.map(([topic, count]) => `${topic} (${count}x)`).join(', ');
+      const contextNote = `Recent discussion topics: ${topicsStr}. `;
+      enhancedQuery = contextNote + enhancedQuery;
+      enhancements.push('Recent context');
+    }
+
+    return {
+      enhanced: enhancedQuery,
+      enhancements,
+      original: query
+    };
+  }
+
+  getTypeEnhancement(queryType) {
+    const enhancements = {
+      'code': 'You are a programming expert. Provide working code with best practices.',
+      'creative': 'You are a creative assistant. Think imaginatively and provide original content.',
+      'factual': 'Provide accurate, well-sourced factual information.',
+      'analytical': 'Provide structured, logical analysis with clear reasoning.',
+      'business': 'You are a business consultant. Provide practical, actionable advice.',
+      'educational': 'You are a patient educator. Explain concepts clearly with examples.'
+    };
+    return enhancements[queryType] || '';
+  }
+
+  getToneInstruction(tone) {
+    const instructions = {
+      'formal': 'Please respond in a professional, formal tone.',
+      'friendly': 'Please respond in a warm, friendly manner.',
+      'professional': 'Please respond professionally and concisely.',
+      'witty': 'Please respond with appropriate wit and clever insights.',
+      'empathetic': 'Please respond with empathy and understanding.'
+    };
+    return instructions[tone] || '';
+  }
+
+  getVerbosityInstruction(verbosity) {
+    const instructions = {
+      'concise': 'Please provide a brief, focused response.',
+      'detailed': 'Please provide a comprehensive, detailed response with examples.',
+      'comprehensive': 'Please provide an exhaustive response covering all aspects.'
+    };
+    return instructions[verbosity] || '';
+  }
+
+  extractRecentTopics(interactions) {
+    const topicCounts = {};
+    interactions.slice(0, 10).forEach(interaction => {
+      if (interaction.category) {
+        topicCounts[interaction.category] = (topicCounts[interaction.category] || 0) + 1;
+      }
+    });
+
+    return Object.entries(topicCounts)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 3);
+  }
+}
 
 /**
  * Model registry and selection system
@@ -393,11 +648,11 @@ class ModelScorer {
 }
 
 /**
- * GPToggle class with model-agnostic implementation
+ * Main GPToggle v2.0 class with model-agnostic implementation and contextualized intelligence
  */
 class GPToggle {
   /**
-   * Initialize GPToggle with API keys and configuration
+   * Initialize GPToggle v2.0 with API keys, configuration, and contextualized intelligence
    * 
    * @param {Object} config - Configuration object
    * @param {Object} apiKeys - API keys for different providers
@@ -409,6 +664,14 @@ class GPToggle {
     this.analyzer = new InputAnalyzer();
     this.scorer = new ModelScorer();
     this.providerHandlers = new Map();
+    
+    // Contextualized Intelligence v2.0 components
+    this.queryClassifier = new QueryClassifier();
+    this.contextualEnhancer = new ContextualEnhancer();
+    this.userProfiles = new Map(); // Store user profiles
+    
+    // Version info
+    this.version = "2.0.0";
     
     // Register built-in fallback models
     this.registerFallbackModels();

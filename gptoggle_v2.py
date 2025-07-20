@@ -1,20 +1,25 @@
 """
-GPToggle v2.0 - Model-Agnostic Implementation
+GPToggle v2.0 - Model-Agnostic Implementation with Contextualized Intelligence
 
 This module implements a model-agnostic version of GPToggle that features:
 - Dynamic model registry
 - Capability-based model selection
 - Rich attribute scoring system
 - Provider-agnostic interface
+- Universal user profiles for personalization
+- Query classification and contextual enhancement
+- Adaptive learning from user interactions
 
 This implementation allows for:
 - Runtime registration of models and providers
 - Detailed model metadata and capabilities
 - Sophisticated scoring and selection algorithms
 - Clear explanation of model selection
+- Contextualized AI interactions based on user profiles
+- Cross-service compatible user profiling
 
 Usage:
-    from gptoggle_v2 import GPToggle
+    from gptoggle_v2 import GPToggle, UserProfile
     
     # Initialize with API keys
     gptoggle = GPToggle(api_keys={
@@ -25,17 +30,261 @@ Usage:
     # Register models
     gptoggle.register_models(sample_models)
     
-    # Get model recommendation
-    recommendation = gptoggle.recommend_model("Create a Python function...")
+    # Create or load user profile
+    user_profile = UserProfile.create_default("user-123")
+    user_profile.expertise['domains'] = ['technology']
     
-    # Get response
-    response = gptoggle.get_response("Create a Python function...")
+    # Get contextualized response
+    response = gptoggle.get_response(
+        "Create a Python function...", 
+        user_profile=user_profile
+    )
 """
 
 import os
 import sys
 import re
+import json
 from typing import List, Dict, Any, Tuple, Callable, Optional, Union
+from dataclasses import dataclass, asdict
+from datetime import datetime
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+@dataclass
+class UserProfile:
+    """Universal User Profile for contextualized AI interactions"""
+    userId: str
+    communicationStyle: Dict[str, Any]
+    expertise: Dict[str, Any] 
+    preferences: Dict[str, Any]
+    context: Dict[str, Any]
+    serviceSpecific: Dict[str, Any]
+    metadata: Dict[str, Any]
+    
+    @classmethod
+    def create_default(cls, user_id: str):
+        """Create a default universal user profile"""
+        return cls(
+            userId=user_id,
+            communicationStyle={
+                'tone': 'casual',
+                'verbosity': 'moderate', 
+                'language': 'en',
+                'includeExplanations': True
+            },
+            expertise={
+                'domains': [],
+                'skillLevel': {},
+                'interests': []
+            },
+            preferences={
+                'prioritizeSpeed': False,
+                'adaptivePersonalization': True,
+                'contextualAwareness': True,
+                'privacyLevel': 'standard'
+            },
+            context={
+                'recentInteractions': [],
+                'savedItems': [],
+                'learningPatterns': {
+                    'commonTopics': [],
+                    'timePatterns': {},
+                    'contextualPreferences': {}
+                }
+            },
+            serviceSpecific={
+                'gptoggle': {
+                    'enabled': True,
+                    'configuration': {'accessLevel': 'basic'},
+                    'preferences': {}
+                }
+            },
+            metadata={
+                'createdAt': datetime.now().isoformat(),
+                'lastUpdated': datetime.now().isoformat(),
+                'version': '2.0.0',
+                'services': ['gptoggle']
+            }
+        )
+    
+    def add_interaction(self, content: str, category: str = None, service: str = 'gptoggle'):
+        """Add an interaction to user context"""
+        interaction = {
+            'content': content,
+            'timestamp': datetime.now().isoformat(),
+            'category': category,
+            'service': service
+        }
+        
+        self.context['recentInteractions'].insert(0, interaction)
+        self.context['recentInteractions'] = self.context['recentInteractions'][:100]
+        
+        # Update learning patterns
+        if category:
+            common_topics = self.context['learningPatterns']['commonTopics']
+            existing = next((t for t in common_topics if t['topic'] == category), None)
+            
+            if existing:
+                existing['frequency'] += 1
+                existing['lastSeen'] = datetime.now().isoformat()
+            else:
+                common_topics.append({
+                    'topic': category,
+                    'frequency': 1,
+                    'lastSeen': datetime.now().isoformat()
+                })
+            
+            # Sort by frequency and limit
+            common_topics.sort(key=lambda x: x['frequency'], reverse=True)
+            self.context['learningPatterns']['commonTopics'] = common_topics[:20]
+        
+        self.metadata['lastUpdated'] = datetime.now().isoformat()
+
+class QueryClassifier:
+    """Intelligent query classification system"""
+    
+    def __init__(self):
+        self.patterns = {
+            'code': {
+                'keywords': ['code', 'program', 'function', 'debug', 'javascript', 'python', 'html', 'css', 'sql', 'api'],
+                'phrases': ['write a function', 'debug this', 'how to code', 'programming help'],
+            },
+            'creative': {
+                'keywords': ['write', 'create', 'imagine', 'story', 'poem', 'brainstorm', 'design', 'creative'],
+                'phrases': ['write a story', 'create content', 'brainstorm ideas'],
+            },
+            'factual': {
+                'keywords': ['what', 'when', 'where', 'who', 'how', 'explain', 'define', 'information', 'facts'],
+                'phrases': ['what is', 'explain to me', 'tell me about'],
+            },
+            'analytical': {
+                'keywords': ['analyze', 'compare', 'evaluate', 'assess', 'examine', 'review', 'study'],
+                'phrases': ['compare and contrast', 'analyze this', 'evaluate the'],
+            },
+            'business': {
+                'keywords': ['business', 'strategy', 'marketing', 'sales', 'profit', 'revenue', 'company'],
+                'phrases': ['business plan', 'marketing strategy', 'increase sales'],
+            },
+            'educational': {
+                'keywords': ['learn', 'teach', 'explain', 'lesson', 'tutorial', 'course', 'study'],
+                'phrases': ['teach me', 'learn about', 'tutorial on'],
+            }
+        }
+    
+    def classify_query(self, query: str) -> Dict[str, Any]:
+        """Classify a query and return type with confidence"""
+        query_lower = query.lower()
+        scores = {}
+        
+        for query_type, config in self.patterns.items():
+            score = 0
+            
+            # Keyword matching
+            keyword_matches = sum(1 for keyword in config['keywords'] if keyword in query_lower)
+            score += keyword_matches * 2
+            
+            # Phrase matching  
+            phrase_matches = sum(1 for phrase in config['phrases'] if phrase in query_lower)
+            score += phrase_matches * 3
+            
+            scores[query_type] = score
+        
+        # Find best match
+        best_type = max(scores.items(), key=lambda x: x[1])
+        
+        return {
+            'queryType': best_type[0] if best_type[1] > 0 else 'general',
+            'confidence': min(best_type[1] / 10, 1.0) if best_type[1] > 0 else 0.5,
+            'scores': scores
+        }
+
+class ContextualEnhancer:
+    """Contextual query enhancement system"""
+    
+    def enhance_query(self, query: str, query_type: str, user_profile: UserProfile) -> Dict[str, Any]:
+        """Enhance query based on context and user profile"""
+        enhancements = []
+        enhanced_query = query
+        
+        # Apply query type enhancement
+        type_enhancement = self._get_type_enhancement(query_type)
+        if type_enhancement:
+            enhanced_query = f"{type_enhancement} {enhanced_query}"
+            enhancements.append(f"Query type: {query_type}")
+        
+        # Apply communication style
+        style = user_profile.communicationStyle
+        if style['tone'] != 'casual':
+            tone_instruction = self._get_tone_instruction(style['tone'])
+            enhanced_query = f"{tone_instruction} {enhanced_query}"
+            enhancements.append(f"Tone: {style['tone']}")
+        
+        if style['verbosity'] != 'moderate':
+            verbosity_instruction = self._get_verbosity_instruction(style['verbosity'])
+            enhanced_query = f"{verbosity_instruction} {enhanced_query}"
+            enhancements.append(f"Verbosity: {style['verbosity']}")
+        
+        # Apply domain expertise
+        if user_profile.expertise['domains']:
+            expertise_context = f"Context: User has expertise in {', '.join(user_profile.expertise['domains'])}. "
+            enhanced_query = expertise_context + enhanced_query
+            enhancements.append('Domain expertise')
+        
+        # Apply recent context
+        recent_topics = self._extract_recent_topics(user_profile.context['recentInteractions'])
+        if recent_topics:
+            topics_str = ', '.join([f"{topic[0]} ({topic[1]}x)" for topic in recent_topics])
+            context_note = f"Recent discussion topics: {topics_str}. "
+            enhanced_query = context_note + enhanced_query
+            enhancements.append('Recent context')
+        
+        return {
+            'enhanced': enhanced_query,
+            'enhancements': enhancements,
+            'original': query
+        }
+    
+    def _get_type_enhancement(self, query_type: str) -> str:
+        enhancements = {
+            'code': 'You are a programming expert. Provide working code with best practices.',
+            'creative': 'You are a creative assistant. Think imaginatively and provide original content.',
+            'factual': 'Provide accurate, well-sourced factual information.',
+            'analytical': 'Provide structured, logical analysis with clear reasoning.',
+            'business': 'You are a business consultant. Provide practical, actionable advice.',
+            'educational': 'You are a patient educator. Explain concepts clearly with examples.'
+        }
+        return enhancements.get(query_type, '')
+    
+    def _get_tone_instruction(self, tone: str) -> str:
+        instructions = {
+            'formal': 'Please respond in a professional, formal tone.',
+            'friendly': 'Please respond in a warm, friendly manner.',
+            'professional': 'Please respond professionally and concisely.',
+            'witty': 'Please respond with appropriate wit and clever insights.',
+            'empathetic': 'Please respond with empathy and understanding.'
+        }
+        return instructions.get(tone, '')
+    
+    def _get_verbosity_instruction(self, verbosity: str) -> str:
+        instructions = {
+            'concise': 'Please provide a brief, focused response.',
+            'detailed': 'Please provide a comprehensive, detailed response with examples.',
+            'comprehensive': 'Please provide an exhaustive response covering all aspects.'
+        }
+        return instructions.get(verbosity, '')
+    
+    def _extract_recent_topics(self, interactions: List[Dict]) -> List[Tuple[str, int]]:
+        topic_counts = {}
+        for interaction in interactions[:10]:
+            if 'category' in interaction and interaction['category']:
+                topic = interaction['category']
+                topic_counts[topic] = topic_counts.get(topic, 0) + 1
+        
+        return sorted(topic_counts.items(), key=lambda x: x[1], reverse=True)[:3]
 
 
 class ModelRegistry:
@@ -457,12 +706,18 @@ class ModelScorer:
 
 class GPToggle:
     """
-    Main GPToggle class with model-agnostic implementation.
+    Main GPToggle v2.0 class with model-agnostic implementation and contextualized intelligence.
+    
+    New in v2.0:
+    - Universal user profiles for personalization
+    - Query classification and contextual enhancement
+    - Adaptive learning from user interactions
+    - Cross-service compatible profiling system
     """
     
     def __init__(self, config: Dict[str, Any] = None, api_keys: Dict[str, str] = None):
         """
-        Initialize GPToggle with API keys and configuration.
+        Initialize GPToggle v2.0 with API keys, configuration, and contextualized intelligence.
         
         Args:
             config: Configuration dictionary
@@ -474,6 +729,14 @@ class GPToggle:
         self.analyzer = InputAnalyzer()
         self.scorer = ModelScorer()
         self.provider_handlers = {}
+        
+        # Contextualized Intelligence v2.0 components
+        self.query_classifier = QueryClassifier()
+        self.contextual_enhancer = ContextualEnhancer()
+        self.user_profiles = {}  # Store user profiles in memory
+        
+        # Version info
+        self.version = "2.0.0"
         
         # Register built-in fallback models
         self.register_fallback_models()
@@ -604,6 +867,61 @@ class GPToggle:
             "score": selected["score"]
         }
     
+    def get_or_create_user_profile(self, user_id: str) -> UserProfile:
+        """
+        Get an existing user profile or create a new one.
+        
+        Args:
+            user_id: Unique identifier for the user
+            
+        Returns:
+            UserProfile instance
+        """
+        if user_id not in self.user_profiles:
+            self.user_profiles[user_id] = UserProfile.create_default(user_id)
+        return self.user_profiles[user_id]
+    
+    def save_user_profile(self, user_profile: UserProfile) -> None:
+        """
+        Save a user profile.
+        
+        Args:
+            user_profile: UserProfile instance to save
+        """
+        self.user_profiles[user_profile.userId] = user_profile
+    
+    def _generate_follow_up_suggestion(self, query_type: str, user_profile: UserProfile) -> str:
+        """
+        Generate follow-up suggestions based on query type and user profile.
+        
+        Args:
+            query_type: Type of the original query
+            user_profile: User's profile for personalization
+            
+        Returns:
+            Follow-up suggestion string
+        """
+        follow_ups = {
+            'code': "Would you like me to explain how this code works or help you test it?",
+            'creative': "Would you like me to expand on this idea or create variations?",
+            'factual': "Is there anything else you'd like to explore about this topic?",
+            'analytical': "Would you like me to dive deeper into any specific aspect?",
+            'business': "Would you like me to help with implementation strategies or risk analysis?",
+            'educational': "Would you like me to provide examples or practice exercises?",
+            'general': "How else can I help you with this topic?"
+        }
+        
+        base_suggestion = follow_ups.get(query_type, follow_ups['general'])
+        
+        # Personalize based on user's common topics
+        common_topics = user_profile.context['learningPatterns']['commonTopics']
+        if common_topics:
+            most_common = common_topics[0]['topic']
+            if most_common != query_type:
+                base_suggestion += f" Or would you like to explore how this relates to {most_common}?"
+        
+        return base_suggestion
+
     def get_task_recommendations(self, prompt: str, options: Dict[str, Any] = None) -> Dict[str, Any]:
         """
         Get recommendations for specific tasks within a prompt.
