@@ -99,6 +99,7 @@ GPToggle is a comprehensive multi-provider AI model wrapper that provides intell
 
 - June 20, 2025: Initial setup
 - June 20, 2025: Enhanced core GPToggle functionality with model-agnostic architecture and advanced task analysis
+- July 20, 2025: **Major v2.0 Upgrade**: Implemented contextualized intelligence system with universal user profiles, query classification, and contextual helpers for personalized AI interactions
 
 ## Recent Changes
 
@@ -107,7 +108,11 @@ GPToggle is a comprehensive multi-provider AI model wrapper that provides intell
 ✓ TypeScript model metadata definitions with pricing and capability information
 ✓ Comprehensive example files demonstrating enhanced features
 ✓ Updated documentation structure with quick start guide
-→ Core GPToggle library now provides foundation for others to build upon
+✓ **Contextualized Intelligence System v2.0**: Upgraded core to support user profiles, query classification, and contextual helpers
+✓ **Universal User Profile Schema**: Created service-agnostic profile system for broader adoption
+✓ **Intelligent Query Processing**: Added 13+ query type classification with contextual enhancement
+✓ **Adaptive Model Selection**: Implemented capability-based selection with user preference weighting
+→ GPToggle v2.0 now provides contextualized intelligence foundation for universal adoption
 
 ## User Preferences
 
