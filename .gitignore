@@ -110,14 +110,29 @@ user_profiles/
 user_data/
 modules_data/
 
-# Replit specific
+# Replit specific (DO NOT sync with GitHub)
 .replit
 replit.nix
 .config/
 .upm/
+.cache/
+.local/
+.pythonlibs/
+replit.md
+main.py
+install.py
+install_dev.py
+replit_install.sh
 
 # Attached assets (development artifacts)
 attached_assets/
+
+# Replit-specific configuration files
+package-lock.json
+uv.lock
+
+# Replit workflow and environment files
+*.crdownload
 
 # Test artifacts  
 .pytest_cache/

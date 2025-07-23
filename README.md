@@ -1,314 +1,347 @@
-# GPToggle - Intelligent Multi-Provider AI Assistant
+# GPToggle - Multi-Provider AI Model Wrapper
 
-[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.0-blue.svg)](https://github.com/yourusername/gptoggle/releases)
+[![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/)
+[![JavaScript](https://img.shields.io/badge/javascript-ES2020+-yellow.svg)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://python.org)
-[![TypeScript](https://img.shields.io/badge/typescript-4.5+-blue.svg)](https://typescriptlang.org)
+[![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](#testing)
 
-GPToggle is an advanced AI-powered development toolkit that revolutionizes coding workflows through intelligent, flexible multi-model interactions and comprehensive developer assistance. It features **Modular Adaptive Intelligence** - a groundbreaking system that automatically creates and manages specialized knowledge modules based on user interactions.
+**An advanced AI-powered development toolkit that revolutionizes coding workflows through intelligent, flexible multi-model interactions and comprehensive developer assistance.**
+
+GPToggle is a comprehensive multi-provider AI model wrapper that provides intelligent model selection and unified access to various AI providers including OpenAI, Anthropic Claude, Google Gemini, Meta Llama, Perplexity, and xAI Grok. Features both CLI and web interfaces with sophisticated auto-triage capabilities and revolutionary **Modular Adaptive Intelligence** system.
 
 ## 🌟 Key Features
 
-### Multi-Provider AI Integration
-- **6 AI Providers**: OpenAI, Anthropic Claude, Google Gemini, Meta Llama, Perplexity, xAI Grok
-- **Intelligent Model Selection**: Automatic provider selection based on prompt analysis
-- **Cross-Provider Comparison**: Compare responses across multiple models simultaneously
-- **Task-Specific Recommendations**: Smart model suggestions for different use cases
+### 🤖 Multi-Provider AI Access
+- **OpenAI**: GPT-4o, GPT-4-turbo, GPT-3.5-turbo
+- **Anthropic Claude**: Claude 3.5 Sonnet, Opus, Haiku
+- **Google Gemini**: Gemini 1.5 Pro/Flash, Gemini Pro/Vision
+- **xAI Grok**: Grok 2 and Grok Vision models
+- **Meta Llama**: Llama API with 8B, 70B, and vision models
+- **Perplexity**: Llama-Sonar models with real-time web search
 
-### Modular Adaptive Intelligence v2.0
+### 🧠 Modular Adaptive Intelligence v2.0
+- **Self-Creating Modules**: Automatically generate specialized knowledge containers from user interactions
 - **6 Module Types**: Lists, planners, calendars, interests, trackers, goals
-- **Automatic Creation**: Modules self-generate from natural language queries
-- **Cross-Platform UUIDs**: Universal Module Identifiers (UMID) for interoperability
-- **Intelligent Lifecycle**: 30-day archiving, 90-day cleanup with priority-based retention
-- **Context Awareness**: Modules learn and adapt to user patterns
+- **Universal Module IDs (UMID)**: Cross-platform module portability with standardized identification
+- **Intelligent Lifecycle**: Automatic aging, archiving, and cleanup based on usage patterns
+- **Cross-Service Export**: Export modules for use in ChatGPT, Notion, Slack, or any other platform
 
-### Universal Compatibility
-- **Multiple Interfaces**: CLI, Web UI, REST API, Python/JavaScript libraries
-- **Cross-Platform**: Works on Windows, macOS, Linux, and web browsers
-- **Zero Configuration**: Intelligent defaults with optional customization
-- **Easy Integration**: Drop-in enhancement for existing applications
+### 🎯 Intelligent Model Selection
+- **Auto-Triage**: Analyzes prompts to recommend optimal models
+- **Task Detection**: Six main categories (marketing, code, data analysis, etc.)
+- **Capability-Based Selection**: Models chosen based on specific requirements
+- **Provider Priority**: Configurable ordering for auto-selection
+
+### 🌐 Multiple Implementation Options
+- **Python Package**: Full-featured package via pip
+- **JavaScript Library**: Browser and Node.js compatible
+- **Standalone Files**: Self-contained implementation requiring no installation
+- **REST API**: HTTP interface for language-agnostic access
+- **Web Interface**: Flask-based UI with Bootstrap dark theme
 
 ## 🚀 Quick Start
 
 ### Installation
 
-#### Python Package
 ```bash
+# Python
 pip install gptoggle
-```
 
-#### JavaScript/TypeScript
-```bash
+# JavaScript/Node.js
 npm install gptoggle
 ```
 
-#### Standalone Files
-Download `gptoggle.py` or `gptoggle.js` for no-installation usage.
-
 ### Basic Usage
 
-#### Python
+**Python:**
 ```python
-from gptoggle_v2 import GPToggle
+from gptoggle import GPToggle
 
-# Initialize with automatic provider detection
+# Initialize GPToggle
 gpt = GPToggle()
 
-# Simple query with adaptive modules
-response = gpt.query("I need to buy milk, eggs, and bread for this week")
+# Simple query with automatic provider selection
+response = gpt.query("Explain quantum computing in simple terms")
 print(response['response'])
 
-# Check created modules
-print(f"Modules created: {len(response.get('moduleActions', []))}")
+# Automatic module creation
+response = gpt.query("I need to buy milk, eggs, and bread")
+# Creates a shopping list module automatically
+
+# Module management
+user_profile = gpt.get_user_profile()
+summary = user_profile.get_modules_summary()
+print(f"Total modules: {summary['totalModules']}")
 ```
 
-#### JavaScript/TypeScript
+**JavaScript:**
 ```javascript
 import { GPToggle } from 'gptoggle';
 
 const gpt = new GPToggle();
 
-// Query with module integration
-const result = await gpt.query("Plan my birthday party for March 15th with Alice and Bob");
-
+// Simple query
+const result = await gpt.query("Write a Python function to sort a list");
 console.log(result.response);
-console.log(`Modules: ${result.moduleActions.length}`);
+
+// Multi-provider comparison
+const comparison = await gpt.compareProviders(
+    "Explain the benefits of renewable energy",
+    ['openai', 'claude', 'gemini']
+);
 ```
 
 ### Web Interface
+
 ```bash
-python main.py
-# Visit http://localhost:5000
+# Start the web server
+python web/main.py
+
+# Open browser to http://localhost:5000
 ```
 
-## 📊 Modular Adaptive Intelligence
+## 🧩 Modular Adaptive Intelligence
 
-GPToggle v2.0 introduces revolutionary adaptive modules that automatically track user needs:
+GPToggle v2.0 introduces revolutionary adaptive modules that automatically emerge from user interactions:
 
-### Module Types
+### Automatic Module Creation
 
-| Type | Purpose | Auto-Created From |
-|------|---------|-------------------|
-| **List** | Shopping lists, todos, inventory | "I need to buy...", "Add to my list..." |
-| **Planner** | Events, parties, projects | "Plan my party...", "Organize meeting..." |
-| **Calendar** | Schedules, appointments | "Schedule for...", "My calendar..." |
-| **Interest** | Learning topics, hobbies | "I'm interested in...", "Learning about..." |
-| **Tracker** | Progress, metrics, habits | "Track my progress...", "Monitor..." |
-| **Goal** | Long-term objectives | "My goal is...", "I want to achieve..." |
-
-### Universal Module Identifiers (UMID)
-
-Every module receives a globally unique identifier that enables cross-platform compatibility:
-
-```
-Format: {service}.{type}.{context}.{timestamp}.{random}
-Example: gptoggle.list.a1b2c3d4.1721737200.x7z9
-```
-
-This allows modules to be shared between GPToggle, ChatGPT, Notion, Slack, and any other platform implementing the UMID schema.
-
-## 🛠️ Advanced Usage
-
-### Multi-Provider Comparison
 ```python
-# Compare responses across multiple providers
-comparison = gpt.compare_providers(
-    "Explain quantum computing", 
-    providers=['openai', 'claude', 'gemini']
-)
+# These queries automatically create specialized modules:
 
-for provider, response in comparison.items():
-    print(f"{provider}: {response[:100]}...")
+# Shopping List Module
+gpt.query("I need to buy milk, eggs, bread, and bananas")
+
+# Party Planning Module  
+gpt.query("I'm planning a birthday party for March 15th with Alice and Bob")
+
+# Learning Interest Module
+gpt.query("I'm fascinated by Virginia Woolf's stream of consciousness writing")
+
+# Exercise Tracker Module
+gpt.query("I want to track my daily exercise - goal is 30 minutes")
+
+# Goal Setting Module
+gpt.query("My goal is to learn Spanish and be conversational by year-end")
 ```
 
-### Custom Module Management
-```python
-from umidGenerator import UMIDGenerator
+### Universal Module IDs (UMID)
 
-# Create service-specific module generator
-generator = UMIDGenerator('my-app')
+Every module gets a globally unique identifier for cross-platform compatibility:
 
-# Generate universal module ID
-umid = generator.generate_umid('list', ['shopping', 'groceries'])
-print(f"Module ID: {umid}")
+```
+gptoggle.list.a1b2c3d4.1721737200.x7z9
+chatgpt.interest.e5f6g7h8.1721737201.m3p5
+notion.tracker.i9j0k1l2.1721737202.q8w2
 ```
 
-### REST API
-```bash
-# Start API server
-python -m gptoggle.api
+**Format**: `{service}.{moduleType}.{contextHash}.{timestamp}.{random}`
 
-# Query endpoint
-curl -X POST http://localhost:5000/api/query \
-  -H "Content-Type: application/json" \
-  -d '{"query": "Help me plan a weekend trip", "provider": "auto"}'
-```
+This enables seamless module export to any platform that adopts the UMID standard.
 
 ## 📁 Project Structure
 
 ```
 gptoggle/
-├── README.md                    # This file
-├── CHANGELOG.md                # Version history
-├── LICENSE                     # MIT license
-├── pyproject.toml              # Python package config
-├── package.json                # Node.js package config
-├── 
-├── core/                       # Core library files
-│   ├── gptoggle_v2.py         # Enhanced Python implementation
-│   ├── gptoggle.js            # JavaScript implementation
-│   └── providers/             # AI provider integrations
-│
-├── modules/                    # Modular Adaptive Intelligence
-│   ├── moduleService.py       # Python module service
-│   ├── moduleService.ts       # TypeScript module service  
-│   ├── umidGenerator.py       # Universal ID generator
-│   └── umidGenerator.ts       # TypeScript ID generator
-│
-├── web/                       # Web interface
-│   ├── main.py                # Flask application
-│   ├── templates/             # HTML templates
-│   └── static/                # CSS, JS assets
-│
-├── examples/                  # Usage examples
-│   ├── basic_usage.py         # Simple examples
-│   ├── advanced_features.js   # Advanced examples
-│   └── module_demos.py        # Module system demos
-│
-├── docs/                      # Documentation
-│   ├── QUICK_START.md         # Getting started guide
-│   ├── API_REFERENCE.md       # Complete API docs
-│   ├── MODULE_GUIDE.md        # Module system guide
-│   └── UMID_SPEC.md           # Universal ID specification
-│
-└── tests/                     # Test suite
-    ├── test_core.py           # Core functionality tests
-    ├── test_modules.py        # Module system tests
-    └── test_integration.py    # Integration tests
+├── core/                   # Core library implementation
+│   ├── gptoggle_v2.py     # Main Python library
+│   └── gptoggle.js        # JavaScript implementation
+├── modules/               # UMID system and module services
+│   ├── umidGenerator.py   # Python UMID implementation
+│   ├── umidGenerator.ts   # TypeScript UMID implementation
+│   └── moduleServiceUMID.py # Enhanced module service
+├── web/                   # Flask web interface
+│   ├── main.py           # Web application entry point
+│   ├── templates/        # HTML templates
+│   └── static/          # CSS, JavaScript assets
+├── docs/                  # Comprehensive documentation
+│   ├── QUICK_START.md    # Getting started guide
+│   ├── MODULE_GUIDE.md   # Modular intelligence guide
+│   └── UMID_SPEC.md      # Universal Module ID specification
+├── examples/             # Usage examples and demos
+│   ├── basic_usage.py    # Python examples
+│   ├── advanced_features.js # JavaScript examples
+│   └── module_demos.py   # Module system demonstrations
+└── tests/                # Test suite
+    ├── test_core.py      # Core functionality tests
+    └── test_modules.py   # Module system tests
 ```
 
 ## 🔧 Configuration
 
-### Environment Variables
+### API Keys Setup
+
 ```bash
-# AI Provider API Keys
-export OPENAI_API_KEY="your-key-here"
+# Required: At least one AI provider
+export OPENAI_API_KEY="sk-your-key-here"
 export ANTHROPIC_API_KEY="your-key-here"
 export GOOGLE_API_KEY="your-key-here"
+
+# Optional: Additional providers
 export XAI_API_KEY="your-key-here"
 export META_AI_API_KEY="your-key-here"
 export PERPLEXITY_API_KEY="your-key-here"
-
-# Optional Configuration
-export GPTOGGLE_DEFAULT_PROVIDER="openai"
-export GPTOGGLE_MODULE_CLEANUP_DAYS="30"
 ```
 
-### Provider Priorities
+### Provider Priority
+
 ```python
 # Customize provider selection order
 gpt = GPToggle(provider_priority=['claude', 'openai', 'gemini'])
+
+# Module cleanup settings
+gpt = GPToggle(module_cleanup_days=45)  # Default: 30 days
 ```
 
-## 📚 Documentation
+## 🧪 Testing
+
+Run the comprehensive test suite:
+
+```bash
+# All tests
+python -m pytest tests/ -v
+
+# Core functionality
+python tests/test_core.py
+
+# Module system
+python tests/test_modules.py
+
+# Examples
+python examples/basic_usage.py
+node examples/advanced_features.js
+```
+
+## 📖 Documentation
 
 - **[Quick Start Guide](docs/QUICK_START.md)** - Get up and running in 5 minutes
-- **[API Reference](docs/API_REFERENCE.md)** - Complete function documentation
-- **[Module System Guide](docs/MODULE_GUIDE.md)** - Deep dive into adaptive modules
-- **[UMID Specification](docs/UMID_SPEC.md)** - Universal identifier standard
-- **[Installation Guide](docs/INSTALLATION.md)** - Detailed setup instructions
-- **[Contributing Guide](CONTRIBUTING.md)** - How to contribute to the project
-
-## 🎯 Use Cases
-
-### Development Workflows
-- **Code Generation**: Multi-provider code suggestions with context awareness
-- **Bug Analysis**: Intelligent debugging with provider specialization
-- **Documentation**: Automatic documentation generation and maintenance
-- **Code Review**: Multi-perspective code analysis and improvement suggestions
-
-### Personal Productivity
-- **Smart Planning**: Automatic event and project organization
-- **Learning Paths**: Adaptive educational content based on interests
-- **Task Management**: Intelligent todo lists that evolve with usage
-- **Goal Tracking**: Long-term objective monitoring with progress insights
-
-### Business Applications
-- **Customer Support**: Multi-model response generation with quality comparison
-- **Content Creation**: Diverse content perspectives from multiple AI providers
-- **Research**: Comprehensive topic analysis across different AI models
-- **Decision Support**: Multi-perspective analysis for complex decisions
-
-## 🔒 Privacy & Security
-
-- **Local Processing**: All module data remains in user profiles
-- **API Key Security**: Secure environment variable handling
-- **No Data Collection**: GPToggle doesn't collect or store user data
-- **Configurable Retention**: User-controlled module lifecycle policies
+- **[Module Guide](docs/MODULE_GUIDE.md)** - Complete modular intelligence documentation
+- **[UMID Specification](docs/UMID_SPEC.md)** - Universal Module ID technical specification
+- **[Contributing Guidelines](CONTRIBUTING.md)** - How to contribute to the project
 
 ## 🤝 Contributing
 
-We welcome contributions! Please read our [Contributing Guide](CONTRIBUTING.md) for details on:
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on:
 
-- Code of conduct and community guidelines
-- Development setup and workflow
-- Testing requirements and procedures
-- Pull request process and review criteria
+- Setting up the development environment
+- Code style and testing requirements
+- Pull request process
+- Issue reporting guidelines
 
 ### Development Setup
+
 ```bash
-# Clone repository
+# Clone the repository
 git clone https://github.com/yourusername/gptoggle.git
 cd gptoggle
 
-# Install dependencies
+# Install development dependencies
 pip install -e .[dev]
 npm install
 
 # Run tests
-python -m pytest tests/
+python -m pytest tests/ -v
 npm test
 ```
 
-## 📈 Performance
+## 🌟 Advanced Features
 
-- **Module Operations**: < 10ms average processing time
-- **Query Analysis**: < 5ms for intent detection and relevance scoring
-- **Data Extraction**: 90%+ accuracy for natural language patterns
-- **Memory Efficiency**: Minimal impact with intelligent aging system
-- **Concurrency**: Thread-safe operations for multi-user environments
+### Cross-Provider Model Comparison
+
+```python
+comparison = gpt.compare_providers(
+    "Explain the benefits of renewable energy",
+    providers=['openai', 'claude', 'gemini']
+)
+
+for provider, response in comparison.items():
+    print(f"\n{provider.upper()}:")
+    print(response[:200] + "...")
+```
+
+### Module Export for Other Platforms
+
+```python
+# Export modules for use in other services
+export_data = module_service.export_modules_for_service(
+    user_profile, 
+    target_service='notion'
+)
+
+# Import modules from another service
+imported = module_service.import_modules_from_service(
+    export_data,
+    current_service='gptoggle'
+)
+```
+
+### Batch Operations
+
+```python
+queries = [
+    "Add cheese to my shopping list",
+    "Schedule gym session for tomorrow",
+    "Track my daily reading progress"
+]
+
+results = gpt.batch_query_with_modules(queries)
+```
+
+## 🎯 Use Cases
+
+- **Development Assistance**: Multi-model code generation and review
+- **Content Creation**: Leverage different AI strengths for various content types
+- **Research & Analysis**: Compare insights across multiple AI perspectives
+- **Personal Productivity**: Adaptive modules that grow with your needs
+- **Team Collaboration**: Shared modules and cross-platform compatibility
+- **Learning & Education**: Interest tracking and goal-oriented modules
+
+## 📊 Performance
+
+- **Module Operations**: < 10ms typical response time
+- **Query Analysis**: < 5ms for pattern recognition
+- **Data Extraction**: 90%+ accuracy for module creation
+- **Memory Efficiency**: Minimal impact on system resources
+- **Cross-Platform**: Native performance on all supported platforms
 
 ## 🗺️ Roadmap
 
 ### v2.1 (Q4 2025)
-- **Voice Integration**: Speech-to-text module creation
-- **Visual Modules**: Image and diagram-based planning tools
-- **Team Collaboration**: Shared modules across multiple users
-- **Advanced Analytics**: Deep insights into module usage patterns
+- Voice-activated module creation
+- Visual module planning with diagrams
+- Team collaboration features
+- Advanced pattern recognition
 
 ### v2.2 (Q1 2026)
-- **AI-Powered Suggestions**: Machine learning-based module recommendations
-- **Custom Module Types**: User-defined module categories and behaviors
-- **Integration APIs**: Direct connections to popular productivity tools
-- **Mobile Applications**: Native iOS and Android apps
+- AI-powered module suggestions
+- Custom module templates
+- Integration with external productivity tools
+- Mobile-optimized interfaces
+
+### Future Considerations
+- Emotional intelligence modules
+- Predictive module creation
+- Advanced analytics dashboard
+- Enterprise collaboration features
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## 🙋‍♂️ Support
 
-- OpenAI, Anthropic, Google, Meta, Perplexity, and xAI for their excellent APIs
-- The open-source community for inspiration and contributions
-- Our users and contributors who make GPToggle better every day
+- **GitHub Issues**: Bug reports and feature requests
+- **Documentation**: Comprehensive guides in the `docs/` directory
+- **Examples**: Working code examples in the `examples/` directory
+- **Community**: Join our discussions for questions and ideas
 
-## 📞 Support
+## 🏆 Acknowledgments
 
-- **Documentation**: [Full docs](docs/)
-- **Issues**: [GitHub Issues](https://github.com/yourusername/gptoggle/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/gptoggle/discussions)
-- **Email**: support@gptoggle.com
+- Built with love for the AI development community
+- Inspired by the need for intelligent, adaptive AI assistance
+- Thanks to all contributors and early adopters
 
 ---
 
-**GPToggle v2.0** - Where AI meets adaptive intelligence. Transform your workflow with modules that learn and grow with you.
+**GPToggle v2.0** - Revolutionizing AI interactions through modular adaptive intelligence. 🚀
