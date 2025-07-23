@@ -1,17 +1,14 @@
 /**
- * Query Type Classifier
+ * Query Classifier
  * 
- * Classifies user queries into different types to enable contextual enhancements
- * and appropriate model selection.
+ * Classifies user queries into specific types for better contextualized responses.
  * 
  * @version 2.0.0
  */
 
-import { Logger } from '../utils/logger';
-
 export type QueryType = 
   | 'factual'
-  | 'creative' 
+  | 'creative'
   | 'legal'
   | 'emotional'
   | 'analytical'
@@ -24,244 +21,221 @@ export type QueryType =
   | 'health'
   | 'general';
 
-export interface ClassificationResult {
-  queryType: QueryType;
-  confidence: number;
-  reasoning: string;
-  alternativeTypes?: QueryType[];
-}
+export class QueryClassifier {
+  /**
+   * Classify a query into one of the predefined types
+   */
+  classifyQuery(query: string): QueryType {
+    const queryLower = query.toLowerCase();
 
-export class QueryTypeClassifier {
-  private logger: Logger;
-  
-  // Keywords and patterns for each query type
-  private readonly patterns: Record<QueryType, {
-    keywords: string[];
-    patterns: RegExp[];
-    phrases: string[];
-  }> = {
-    factual: {
-      keywords: ['what', 'when', 'where', 'who', 'how many', 'facts', 'information', 'define', 'explain'],
-      patterns: [/^(what|when|where|who|how) (is|are|was|were|did|does|do)/i],
-      phrases: ['tell me about', 'information about', 'facts about']
-    },
-    creative: {
-      keywords: ['write', 'create', 'imagine', 'story', 'poem', 'creative', 'brainstorm', 'invent', 'design'],
-      patterns: [/^(write|create|imagine|design) (a|an|some)/i, /story|poem|creative|brainstorm/i],
-      phrases: ['write a', 'create a', 'come up with', 'think of']
-    },
-    legal: {
-      keywords: ['legal', 'law', 'court', 'contract', 'attorney', 'lawsuit', 'regulation', 'compliance', 'rights'],
-      patterns: [/legal|law|court|contract|attorney|lawsuit|regulation|compliance/i],
-      phrases: ['legal advice', 'according to law', 'contract terms']
-    },
-    emotional: {
-      keywords: ['feel', 'sad', 'happy', 'angry', 'worried', 'stressed', 'anxious', 'depressed', 'support'],
-      patterns: [/i feel|i'm (sad|happy|angry|worried|stressed|anxious|depressed)/i],
-      phrases: ['i feel', 'help me cope', 'emotional support']
-    },
-    analytical: {
-      keywords: ['analyze', 'compare', 'evaluate', 'assess', 'examine', 'study', 'research', 'data', 'statistics'],
-      patterns: [/^(analyze|compare|evaluate|assess|examine)/i, /data|statistics|research/i],
-      phrases: ['break down', 'pros and cons', 'analyze the']
-    },
-    code: {
-      keywords: ['code', 'program', 'function', 'algorithm', 'debug', 'javascript', 'python', 'html', 'css', 'api'],
-      patterns: [/^(write|create|debug|fix|optimize) .* (code|function|program|script)/i, /(javascript|python|html|css|java|c\+\+|api)/i],
-      phrases: ['write code', 'programming', 'software development']
-    },
-    mathematical: {
-      keywords: ['calculate', 'solve', 'equation', 'formula', 'mathematics', 'algebra', 'geometry', 'statistics'],
-      patterns: [/^(calculate|solve|compute)/i, /equation|formula|mathematics|algebra|geometry/i],
-      phrases: ['math problem', 'calculate the', 'solve for']
-    },
-    educational: {
-      keywords: ['learn', 'teach', 'explain', 'understand', 'lesson', 'tutorial', 'study', 'homework'],
-      patterns: [/^(teach|explain|help me understand)/i, /lesson|tutorial|study|homework/i],
-      phrases: ['help me learn', 'teach me', 'i need to understand']
-    },
-    conversational: {
-      keywords: ['hello', 'hi', 'chat', 'talk', 'conversation', 'discuss'],
-      patterns: [/^(hello|hi|hey)/i, /^(let's|can we) (chat|talk|discuss)/i],
-      phrases: ['just chatting', 'casual conversation']
-    },
-    technical: {
-      keywords: ['technical', 'engineering', 'system', 'architecture', 'implementation', 'infrastructure'],
-      patterns: [/technical|engineering|system|architecture|implementation|infrastructure/i],
-      phrases: ['technical details', 'system design', 'how does it work']
-    },
-    business: {
-      keywords: ['business', 'strategy', 'marketing', 'sales', 'profit', 'revenue', 'investment', 'finance'],
-      patterns: [/business|strategy|marketing|sales|profit|revenue|investment|finance/i],
-      phrases: ['business plan', 'market analysis', 'financial']
-    },
-    health: {
-      keywords: ['health', 'medical', 'doctor', 'symptoms', 'medicine', 'disease', 'treatment'],
-      patterns: [/health|medical|doctor|symptoms|medicine|disease|treatment/i],
-      phrases: ['health advice', 'medical question', 'symptoms of']
-    },
-    general: {
-      keywords: [],
-      patterns: [],
-      phrases: []
+    // Code-related queries
+    if (this.isCodeQuery(queryLower)) {
+      return 'code';
     }
-  };
 
-  constructor() {
-    this.logger = new Logger();
+    // Mathematical queries
+    if (this.isMathematicalQuery(queryLower)) {
+      return 'mathematical';
+    }
+
+    // Legal queries
+    if (this.isLegalQuery(queryLower)) {
+      return 'legal';
+    }
+
+    // Health queries
+    if (this.isHealthQuery(queryLower)) {
+      return 'health';
+    }
+
+    // Business queries
+    if (this.isBusinessQuery(queryLower)) {
+      return 'business';
+    }
+
+    // Emotional/support queries
+    if (this.isEmotionalQuery(queryLower)) {
+      return 'emotional';
+    }
+
+    // Creative queries
+    if (this.isCreativeQuery(queryLower)) {
+      return 'creative';
+    }
+
+    // Analytical queries
+    if (this.isAnalyticalQuery(queryLower)) {
+      return 'analytical';
+    }
+
+    // Technical queries
+    if (this.isTechnicalQuery(queryLower)) {
+      return 'technical';
+    }
+
+    // Educational queries
+    if (this.isEducationalQuery(queryLower)) {
+      return 'educational';
+    }
+
+    // Conversational queries
+    if (this.isConversationalQuery(queryLower)) {
+      return 'conversational';
+    }
+
+    // Factual queries
+    if (this.isFactualQuery(queryLower)) {
+      return 'factual';
+    }
+
+    return 'general';
   }
 
-  /**
-   * Classify a query and return the most likely type
-   */
-  async classifyQuery(query: string): Promise<QueryType> {
-    const result = await this.classifyQueryDetailed(query);
-    return result.queryType;
+  private isCodeQuery(query: string): boolean {
+    const codeKeywords = [
+      'code', 'program', 'function', 'class', 'method', 'algorithm',
+      'python', 'javascript', 'java', 'c++', 'sql', 'html', 'css',
+      'debug', 'error', 'syntax', 'compile', 'runtime', 'variable',
+      'array', 'object', 'string', 'integer', 'boolean', 'loop',
+      'if statement', 'for loop', 'while loop', 'api', 'framework',
+      'library', 'import', 'export', 'return', 'print', 'console.log'
+    ];
+    return codeKeywords.some(keyword => query.includes(keyword));
   }
 
-  /**
-   * Classify a query and return detailed classification information
-   */
-  async classifyQueryDetailed(query: string): Promise<ClassificationResult> {
-    if (!query || query.trim().length === 0) {
-      return {
-        queryType: 'general',
-        confidence: 1.0,
-        reasoning: 'Empty query defaults to general type'
-      };
-    }
-
-    const normalizedQuery = query.toLowerCase().trim();
-    const scores: Record<QueryType, number> = {} as Record<QueryType, number>;
-
-    // Initialize all scores to 0
-    Object.keys(this.patterns).forEach(type => {
-      scores[type as QueryType] = 0;
-    });
-
-    // Score each query type based on keyword matches, patterns, and phrases
-    for (const [type, config] of Object.entries(this.patterns)) {
-      const queryType = type as QueryType;
-      
-      if (queryType === 'general') continue; // Skip general, it's the fallback
-
-      let typeScore = 0;
-
-      // Keyword matching
-      for (const keyword of config.keywords) {
-        if (normalizedQuery.includes(keyword.toLowerCase())) {
-          typeScore += 1;
-        }
-      }
-
-      // Pattern matching
-      for (const pattern of config.patterns) {
-        if (pattern.test(normalizedQuery)) {
-          typeScore += 2; // Patterns are more specific than keywords
-        }
-      }
-
-      // Phrase matching
-      for (const phrase of config.phrases) {
-        if (normalizedQuery.includes(phrase.toLowerCase())) {
-          typeScore += 1.5;
-        }
-      }
-
-      scores[queryType] = typeScore;
-    }
-
-    // Find the highest scoring type
-    const sortedTypes = Object.entries(scores)
-      .filter(([_, score]) => score > 0)
-      .sort(([, a], [, b]) => b - a);
-
-    if (sortedTypes.length === 0) {
-      return {
-        queryType: 'general',
-        confidence: 0.8,
-        reasoning: 'No specific patterns matched, classified as general'
-      };
-    }
-
-    const [bestType, bestScore] = sortedTypes[0];
-    const maxPossibleScore = Math.max(
-      this.patterns[bestType as QueryType].keywords.length,
-      this.patterns[bestType as QueryType].patterns.length * 2,
-      this.patterns[bestType as QueryType].phrases.length * 1.5
-    );
-
-    const confidence = Math.min(0.95, bestScore / Math.max(maxPossibleScore, 1));
-    
-    const alternativeTypes = sortedTypes
-      .slice(1, 3)
-      .map(([type]) => type as QueryType);
-
-    this.logger.debug(`Query "${query.substring(0, 50)}..." classified as ${bestType} with confidence ${confidence.toFixed(2)}`);
-
-    return {
-      queryType: bestType as QueryType,
-      confidence,
-      reasoning: this.generateReasoning(bestType as QueryType, bestScore, normalizedQuery),
-      alternativeTypes: alternativeTypes.length > 0 ? alternativeTypes : undefined
-    };
+  private isMathematicalQuery(query: string): boolean {
+    const mathKeywords = [
+      'calculate', 'equation', 'formula', 'mathematics', 'algebra',
+      'geometry', 'calculus', 'statistics', 'probability', 'solve',
+      'derivative', 'integral', 'matrix', 'vector', 'theorem',
+      'proof', 'graph', 'plot', 'function', 'variable', 'coefficient'
+    ];
+    const mathSymbols = /[+\-*/=<>∑∏∂∫√π]/;
+    return mathKeywords.some(keyword => query.includes(keyword)) || mathSymbols.test(query);
   }
 
-  /**
-   * Generate human-readable reasoning for the classification
-   */
-  private generateReasoning(queryType: QueryType, score: number, query: string): string {
-    const config = this.patterns[queryType];
-    const matchedKeywords = config.keywords.filter(keyword => 
-      query.includes(keyword.toLowerCase())
-    );
-    const matchedPatterns = config.patterns.filter(pattern => 
-      pattern.test(query)
-    );
-
-    let reasoning = `Classified as ${queryType} based on `;
-    const reasons = [];
-
-    if (matchedKeywords.length > 0) {
-      reasons.push(`keywords: ${matchedKeywords.join(', ')}`);
-    }
-
-    if (matchedPatterns.length > 0) {
-      reasons.push(`pattern matches`);
-    }
-
-    if (reasons.length === 0) {
-      return `Classified as ${queryType} based on general characteristics`;
-    }
-
-    return reasoning + reasons.join(' and ');
+  private isLegalQuery(query: string): boolean {
+    const legalKeywords = [
+      'legal', 'law', 'attorney', 'lawyer', 'court', 'judge', 'trial',
+      'contract', 'agreement', 'lawsuit', 'regulation', 'statute',
+      'constitutional', 'rights', 'liability', 'negligence', 'tort',
+      'criminal', 'civil', 'defendant', 'plaintiff', 'evidence',
+      'jurisdiction', 'precedent', 'compliance', 'violation'
+    ];
+    return legalKeywords.some(keyword => query.includes(keyword));
   }
 
-  /**
-   * Get all supported query types
-   */
-  getSupportedTypes(): QueryType[] {
-    return Object.keys(this.patterns) as QueryType[];
+  private isHealthQuery(query: string): boolean {
+    const healthKeywords = [
+      'health', 'medical', 'doctor', 'medicine', 'disease', 'symptom',
+      'treatment', 'diagnosis', 'therapy', 'hospital', 'clinic',
+      'nutrition', 'diet', 'exercise', 'fitness', 'wellness',
+      'mental health', 'psychology', 'depression', 'anxiety',
+      'medication', 'prescription', 'vaccine', 'surgery', 'cancer'
+    ];
+    return healthKeywords.some(keyword => query.includes(keyword));
   }
 
-  /**
-   * Add custom patterns for a query type
-   */
-  addCustomPattern(queryType: QueryType, keywords?: string[], patterns?: RegExp[], phrases?: string[]): void {
-    if (!this.patterns[queryType]) {
-      this.patterns[queryType] = { keywords: [], patterns: [], phrases: [] };
-    }
+  private isBusinessQuery(query: string): boolean {
+    const businessKeywords = [
+      'business', 'company', 'revenue', 'profit', 'loss', 'investment',
+      'marketing', 'sales', 'customer', 'client', 'strategy', 'plan',
+      'budget', 'finance', 'accounting', 'economics', 'market',
+      'competition', 'startup', 'entrepreneur', 'management',
+      'leadership', 'team', 'project', 'meeting', 'presentation'
+    ];
+    return businessKeywords.some(keyword => query.includes(keyword));
+  }
 
-    if (keywords) {
-      this.patterns[queryType].keywords.push(...keywords);
-    }
-    if (patterns) {
-      this.patterns[queryType].patterns.push(...patterns);
-    }
-    if (phrases) {
-      this.patterns[queryType].phrases.push(...phrases);
-    }
+  private isEmotionalQuery(query: string): boolean {
+    const emotionalKeywords = [
+      'feel', 'feeling', 'emotion', 'sad', 'happy', 'angry', 'frustrated',
+      'worried', 'anxious', 'stressed', 'depressed', 'overwhelmed',
+      'excited', 'nervous', 'scared', 'afraid', 'love', 'hate',
+      'support', 'help me', 'advice', 'guidance', 'comfort',
+      'relationship', 'family', 'friend', 'personal'
+    ];
+    const emotionalPatterns = [
+      /i feel/i, /i'm feeling/i, /i am feeling/i, /makes me/i,
+      /i need help/i, /i don't know/i, /i'm confused/i, /i'm lost/i
+    ];
+    return emotionalKeywords.some(keyword => query.includes(keyword)) ||
+           emotionalPatterns.some(pattern => pattern.test(query));
+  }
 
-    this.logger.debug(`Added custom patterns for query type: ${queryType}`);
+  private isCreativeQuery(query: string): boolean {
+    const creativeKeywords = [
+      'creative', 'create', 'design', 'art', 'artistic', 'imagine',
+      'story', 'poem', 'song', 'music', 'paint', 'draw', 'sketch',
+      'novel', 'character', 'plot', 'narrative', 'fiction',
+      'brainstorm', 'ideas', 'inspiration', 'innovative', 'original',
+      'write', 'writing', 'compose', 'craft', 'invent'
+    ];
+    return creativeKeywords.some(keyword => query.includes(keyword));
+  }
+
+  private isAnalyticalQuery(query: string): boolean {
+    const analyticalKeywords = [
+      'analyze', 'analysis', 'compare', 'comparison', 'evaluate',
+      'assessment', 'data', 'statistics', 'trend', 'pattern',
+      'research', 'study', 'examine', 'investigate', 'breakdown',
+      'pros and cons', 'advantages', 'disadvantages', 'impact',
+      'correlation', 'causation', 'hypothesis', 'conclusion'
+    ];
+    return analyticalKeywords.some(keyword => query.includes(keyword));
+  }
+
+  private isTechnicalQuery(query: string): boolean {
+    const technicalKeywords = [
+      'technical', 'technology', 'engineering', 'system', 'network',
+      'server', 'database', 'architecture', 'infrastructure', 'protocol',
+      'configuration', 'setup', 'installation', 'deployment',
+      'security', 'performance', 'optimization', 'troubleshoot',
+      'specification', 'documentation', 'integration', 'platform'
+    ];
+    return technicalKeywords.some(keyword => query.includes(keyword));
+  }
+
+  private isEducationalQuery(query: string): boolean {
+    const educationalKeywords = [
+      'learn', 'teach', 'explain', 'understand', 'education', 'lesson',
+      'tutorial', 'guide', 'how to', 'what is', 'why does', 'when did',
+      'where is', 'who was', 'define', 'definition', 'concept',
+      'theory', 'principle', 'example', 'demonstrate', 'show me',
+      'step by step', 'instructions', 'course', 'training'
+    ];
+    const questionWords = /^(what|why|how|when|where|who|which)/i;
+    return educationalKeywords.some(keyword => query.includes(keyword)) ||
+           questionWords.test(query);
+  }
+
+  private isConversationalQuery(query: string): boolean {
+    const conversationalKeywords = [
+      'hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening',
+      'how are you', 'what\'s up', 'nice to meet', 'thanks', 'thank you',
+      'please', 'excuse me', 'sorry', 'goodbye', 'bye', 'see you',
+      'chat', 'talk', 'conversation', 'discuss', 'opinion', 'think'
+    ];
+    const conversationalPatterns = [
+      /^(hello|hi|hey)/i, /how are you/i, /what do you think/i,
+      /in your opinion/i, /let's talk/i, /can we chat/i
+    ];
+    return conversationalKeywords.some(keyword => query.includes(keyword)) ||
+           conversationalPatterns.some(pattern => pattern.test(query));
+  }
+
+  private isFactualQuery(query: string): boolean {
+    const factualKeywords = [
+      'fact', 'information', 'data', 'statistic', 'number', 'date',
+      'history', 'when', 'where', 'who', 'what', 'population',
+      'capital', 'country', 'city', 'president', 'government',
+      'discovery', 'invention', 'event', 'year', 'century'
+    ];
+    const factualPatterns = [
+      /when (was|did|is)/i, /where (is|was)/i, /who (is|was)/i,
+      /what (is|was) the/i, /how many/i, /how much/i
+    ];
+    return factualKeywords.some(keyword => query.includes(keyword)) ||
+           factualPatterns.some(pattern => pattern.test(query));
   }
 }

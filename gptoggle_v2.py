@@ -50,6 +50,12 @@ from dataclasses import dataclass, asdict
 from datetime import datetime
 import logging
 
+# Import the ModuleService
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), 'src', 'modules'))
+from moduleService import ModuleService
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -94,7 +100,8 @@ class UserProfile:
                     'commonTopics': [],
                     'timePatterns': {},
                     'contextualPreferences': {}
-                }
+                },
+                'modules': {}
             },
             serviceSpecific={
                 'gptoggle': {
@@ -184,6 +191,85 @@ class UserProfile:
         # Update metadata
         self.metadata['lastUpdated'] = timestamp
     
+    def update_profile_with_modules(self, query: str, query_type: str = None, model_used: str = None):
+        """Update profile with module integration - automatically detects and manages modules"""
+        # First do the regular adaptive update
+        self.update_profile_adaptively(query, query_type or 'general', model_used)
+        
+        # Initialize module service
+        module_service = ModuleService()
+        
+        # Analyze query for module relevance
+        profile_dict = asdict(self)
+        module_analysis = module_service.analyze_query_for_modules(query, profile_dict)
+        
+        module_actions = []
+        context = {
+            'query': query,
+            'queryType': query_type,
+            'detectedIntent': self._detect_intent(query)
+        }
+        
+        # Process suggested module actions
+        for suggestion in module_analysis['suggestedActions']:
+            try:
+                if suggestion['action'] == 'create' and 'moduleType' in suggestion:
+                    module_key = self._generate_module_key(query, suggestion['moduleType'])
+                    initial_data = self._extract_initial_module_data(query, suggestion['moduleType'])
+                    
+                    module_service.create_module(
+                        profile_dict,
+                        module_key,
+                        suggestion['moduleType'],
+                        initial_data,
+                        context
+                    )
+                    
+                    module_actions.append({
+                        'action': 'create',
+                        'moduleKey': module_key,
+                        'moduleType': suggestion['moduleType'],
+                        'success': True
+                    })
+                    
+                elif suggestion['action'] == 'update' and 'moduleKey' in suggestion:
+                    update_data = self._extract_module_update_data(query, suggestion['moduleKey'], profile_dict)
+                    
+                    module_service.update_module(
+                        profile_dict,
+                        suggestion['moduleKey'],
+                        update_data,
+                        context
+                    )
+                    
+                    module_actions.append({
+                        'action': 'update',
+                        'moduleKey': suggestion['moduleKey'],
+                        'success': True
+                    })
+                    
+            except Exception as e:
+                logger.error(f"Module {suggestion['action']} failed: {str(e)}")
+                module_actions.append({
+                    'action': suggestion['action'],
+                    'moduleKey': suggestion.get('moduleKey'),
+                    'moduleType': suggestion.get('moduleType'),
+                    'success': False
+                })
+        
+        # Clean up stale modules periodically
+        import random
+        if random.random() < 0.1:  # 10% chance to run cleanup
+            module_service.cleanup_stale_modules(profile_dict)
+        
+        # Update self with the modified profile data
+        self.context = profile_dict['context']
+        
+        return {
+            'moduleActions': module_actions,
+            'relevantModules': module_analysis['relevantModules']
+        }
+    
     def _update_domain_expertise(self, query: str):
         """Update domain expertise based on query content"""
         query_lower = query.lower()
@@ -237,6 +323,168 @@ class UserProfile:
                 self.communicationStyle['tone'] = 'professional'
             elif formal_count > casual_count:
                 self.communicationStyle['tone'] = 'formal'
+    
+    def _detect_intent(self, query: str) -> str:
+        """Detect intent from query for module context"""
+        query_lower = query.lower()
+        
+        if any(word in query_lower for word in ['add', 'create', 'make']):
+            return 'add'
+        elif any(word in query_lower for word in ['remove', 'delete', 'clear']):
+            return 'remove'
+        elif any(word in query_lower for word in ['update', 'change', 'modify']):
+            return 'update'
+        elif any(word in query_lower for word in ['show', 'display', 'list']):
+            return 'view'
+        
+        return 'general'
+    
+    def _generate_module_key(self, query: str, module_type: str) -> str:
+        """Generate a meaningful module key from query and type"""
+        query_words = [word for word in query.lower().split() if len(word) > 2]
+        relevant_words = query_words[:3]  # Take first 3 meaningful words
+        
+        key_base = ''.join(relevant_words)
+        return f"{key_base}{module_type.capitalize()}"
+    
+    def _extract_initial_module_data(self, query: str, module_type: str) -> any:
+        """Extract initial data for new modules based on query content"""
+        if module_type == 'list':
+            # Extract items from query like "add milk, eggs, bread to shopping list"
+            import re
+            item_pattern = r'(?:add|buy|get|need)\s+([^.!?]+?)(?:\s+to|\s+for|$)'
+            match = re.search(item_pattern, query, re.IGNORECASE)
+            if match:
+                items = [item.strip() for item in re.split(r'[,;&]', match.group(1)) if item.strip()]
+                return items
+            return []
+            
+        elif module_type == 'planner':
+            return {
+                'date': self._extract_date_from_query(query),
+                'tasks': self._extract_tasks_from_query(query),
+                'guests': self._extract_guests_from_query(query)
+            }
+            
+        elif module_type == 'calendar':
+            date_info = self._extract_date_from_query(query)
+            if date_info:
+                return {date_info: query}
+            return {}
+            
+        elif module_type == 'interest':
+            return {
+                'keywords': self._extract_keywords_from_query(query),
+                'engagementLevel': 5
+            }
+            
+        return {}
+    
+    def _extract_module_update_data(self, query: str, module_key: str, profile: dict) -> any:
+        """Extract update data for existing modules"""
+        modules = profile.get('context', {}).get('modules', {})
+        module = modules.get(module_key)
+        if not module:
+            return {}
+
+        intent = self._detect_intent(query)
+        
+        if module['type'] == 'list':
+            if intent == 'add':
+                return self._extract_items_from_query(query)
+            elif intent == 'remove':
+                return self._extract_items_to_remove(query, module['data'])
+        elif module['type'] == 'planner':
+            return {
+                'tasks': self._extract_tasks_from_query(query),
+                'guests': self._extract_guests_from_query(query)
+            }
+        
+        return {}
+    
+    def _extract_date_from_query(self, query: str) -> str:
+        """Extract date from query"""
+        import re
+        date_patterns = [
+            r'(\d{4}-\d{2}-\d{2})',
+            r'(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2}',
+            r'(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s+\d{1,2}'
+        ]
+        
+        for pattern in date_patterns:
+            match = re.search(pattern, query, re.IGNORECASE)
+            if match:
+                return match.group(1)
+        
+        return None
+    
+    def _extract_tasks_from_query(self, query: str) -> List[str]:
+        """Extract tasks from query"""
+        import re
+        task_patterns = [
+            r'(?:tasks?|todo|need to)\s*:?\s*([^.!?]+)',
+            r'(?:book|send|buy|get|organize)\s+([^.!?]+)'
+        ]
+        
+        tasks = []
+        for pattern in task_patterns:
+            matches = re.finditer(pattern, query, re.IGNORECASE)
+            for match in matches:
+                if match.group(1):
+                    tasks.append(match.group(1).strip())
+        
+        return tasks
+    
+    def _extract_guests_from_query(self, query: str) -> List[str]:
+        """Extract guests from query"""
+        import re
+        guest_pattern = r'(?:guests?|invite|attendees?)\s*:?\s*([^.!?]+)'
+        match = re.search(guest_pattern, query, re.IGNORECASE)
+        
+        if match:
+            return [guest.strip() for guest in re.split(r'[,;&]', match.group(1)) if guest.strip()]
+        
+        return []
+    
+    def _extract_keywords_from_query(self, query: str) -> List[str]:
+        """Extract meaningful keywords"""
+        words = query.lower().split()
+        stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by'}
+        
+        keywords = [word for word in words 
+                   if len(word) > 3 and word not in stop_words and word.isalpha()]
+        
+        return keywords[:5]  # Limit to 5 keywords
+    
+    def _extract_items_from_query(self, query: str) -> List[str]:
+        """Extract items to add from query"""
+        import re
+        item_pattern = r'(?:add|include)\s+([^.!?]+)'
+        match = re.search(item_pattern, query, re.IGNORECASE)
+        
+        if match:
+            return [item.strip() for item in re.split(r'[,;&]', match.group(1)) if item.strip()]
+        
+        return []
+    
+    def _extract_items_to_remove(self, query: str, current_items: List[str]) -> List[str]:
+        """Extract items to remove from query"""
+        import re
+        remove_pattern = r'(?:remove|delete)\s+([^.!?]+)'
+        match = re.search(remove_pattern, query, re.IGNORECASE)
+        
+        if match:
+            items_to_remove = [item.strip() for item in re.split(r'[,;&]', match.group(1))]
+            return [item for item in current_items 
+                   if any(remove_item.lower() in item.lower() for remove_item in items_to_remove)]
+        
+        return []
+    
+    def get_modules_summary(self):
+        """Get summary of user modules"""
+        module_service = ModuleService()
+        profile_dict = asdict(self)
+        return module_service.get_user_modules_summary(profile_dict)
 
 class QueryClassifier:
     """Intelligent query classification system"""

@@ -9,7 +9,8 @@
 
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
-import { Logger } from '../utils/logger';
+import { Logger } from './src/utils/logger';
+import { ModuleService, ModuleUpdateContext } from './src/modules/moduleService';
 import profileSchema from './userProfileSchema.json';
 
 export interface UserProfile {
@@ -54,6 +55,18 @@ export interface UserProfile {
       timePatterns: Record<string, number>;
       contextualPreferences: Record<string, any>;
     };
+    modules?: Record<string, {
+      type: 'list' | 'planner' | 'calendar' | 'interest' | 'tracker' | 'goal';
+      data: any;
+      metadata: {
+        createdAt: string;
+        lastUpdated: string;
+        lastAccessed?: string;
+        priority?: number;
+        tags?: string[];
+        archived?: boolean;
+      };
+    }>;
   };
   serviceSpecific: Record<string, {
     enabled: boolean;
@@ -74,13 +87,15 @@ export class UserProfileService {
   private profileCache: Map<string, UserProfile> = new Map();
   private logger: Logger;
   private storageAdapter: ProfileStorageAdapter;
+  private moduleService: ModuleService;
 
   constructor(storageAdapter?: ProfileStorageAdapter) {
     this.ajv = new Ajv({ allErrors: true });
     addFormats(this.ajv);
     this.ajv.addSchema(profileSchema, 'userProfile');
-    this.logger = new Logger();
+    this.logger = new Logger('UserProfileService');
     this.storageAdapter = storageAdapter || new InMemoryStorageAdapter();
+    this.moduleService = new ModuleService();
   }
 
   /**
@@ -168,6 +183,99 @@ export class UserProfileService {
 
     await this.saveProfile(updatedProfile);
     return updatedProfile;
+  }
+
+  /**
+   * Update profile with module integration - automatically detects and manages modules
+   */
+  async updateProfileWithModules(
+    userId: string, 
+    query: string, 
+    updates: Partial<UserProfile>,
+    queryType?: string
+  ): Promise<{
+    profile: UserProfile;
+    moduleActions: Array<{
+      action: string;
+      moduleKey?: string;
+      moduleType?: string;
+      success: boolean;
+    }>;
+  }> {
+    const profile = await this.updateProfile(userId, updates);
+    
+    // Analyze query for module relevance
+    const moduleAnalysis = await this.moduleService.analyzeQueryForModules(query, profile);
+    const moduleActions: Array<{
+      action: string;
+      moduleKey?: string;
+      moduleType?: string;
+      success: boolean;
+    }> = [];
+
+    const updateContext: ModuleUpdateContext = {
+      query,
+      queryType,
+      detectedIntent: this.detectIntent(query)
+    };
+
+    // Process suggested module actions
+    for (const suggestion of moduleAnalysis.suggestedActions) {
+      try {
+        if (suggestion.action === 'create' && suggestion.moduleType) {
+          const moduleKey = this.generateModuleKey(query, suggestion.moduleType);
+          const initialData = this.extractInitialModuleData(query, suggestion.moduleType);
+          
+          await this.moduleService.createModule(
+            profile,
+            moduleKey,
+            suggestion.moduleType,
+            initialData,
+            updateContext
+          );
+          
+          moduleActions.push({
+            action: 'create',
+            moduleKey,
+            moduleType: suggestion.moduleType,
+            success: true
+          });
+        } else if (suggestion.action === 'update' && suggestion.moduleKey) {
+          const updateData = this.extractModuleUpdateData(query, suggestion.moduleKey, profile);
+          
+          await this.moduleService.updateModule(
+            profile,
+            suggestion.moduleKey,
+            updateData,
+            updateContext
+          );
+          
+          moduleActions.push({
+            action: 'update',
+            moduleKey: suggestion.moduleKey,
+            success: true
+          });
+        }
+      } catch (error) {
+        this.logger.error(`Module ${suggestion.action} failed: ${error.message}`);
+        moduleActions.push({
+          action: suggestion.action,
+          moduleKey: suggestion.moduleKey,
+          moduleType: suggestion.moduleType,
+          success: false
+        });
+      }
+    }
+
+    // Clean up stale modules periodically
+    if (Math.random() < 0.1) { // 10% chance to run cleanup
+      await this.moduleService.cleanupStaleModules(profile);
+    }
+
+    // Save profile with updated modules
+    await this.saveProfile(profile);
+
+    return { profile, moduleActions };
   }
 
   /**
@@ -316,6 +424,206 @@ export class UserProfileService {
   }
 
   /**
+   * Get user modules summary using the ModuleService
+   */
+  getUserModulesSummary(userId: string): Promise<any> {
+    return this.loadProfile(userId).then(profile => 
+      this.moduleService.getUserModulesSummary(profile)
+    );
+  }
+
+  /**
+   * Detect intent from query for module context
+   */
+  private detectIntent(query: string): string {
+    const queryLower = query.toLowerCase();
+    
+    if (queryLower.includes('add') || queryLower.includes('create') || queryLower.includes('make')) {
+      return 'add';
+    } else if (queryLower.includes('remove') || queryLower.includes('delete') || queryLower.includes('clear')) {
+      return 'remove';
+    } else if (queryLower.includes('update') || queryLower.includes('change') || queryLower.includes('modify')) {
+      return 'update';
+    } else if (queryLower.includes('show') || queryLower.includes('display') || queryLower.includes('list')) {
+      return 'view';
+    }
+    
+    return 'general';
+  }
+
+  /**
+   * Generate a meaningful module key from query and type
+   */
+  private generateModuleKey(query: string, moduleType: string): string {
+    const queryWords = query.toLowerCase().split(' ').filter(word => word.length > 2);
+    const relevantWords = queryWords.slice(0, 3); // Take first 3 meaningful words
+    
+    const keyBase = relevantWords.join('');
+    return `${keyBase}${moduleType.charAt(0).toUpperCase()}${moduleType.slice(1)}`;
+  }
+
+  /**
+   * Extract initial data for new modules based on query content
+   */
+  private extractInitialModuleData(query: string, moduleType: string): any {
+    const queryLower = query.toLowerCase();
+    
+    switch (moduleType) {
+      case 'list':
+        // Extract items from query like "add milk, eggs, bread to shopping list"
+        const itemPattern = /(?:add|buy|get|need)\s+([^.!?]+?)(?:\s+to|\s+for|$)/i;
+        const match = query.match(itemPattern);
+        if (match) {
+          const items = match[1].split(/[,;&]/).map(item => item.trim()).filter(item => item.length > 0);
+          return items;
+        }
+        return [];
+        
+      case 'planner':
+        return {
+          date: this.extractDateFromQuery(query),
+          tasks: this.extractTasksFromQuery(query),
+          guests: this.extractGuestsFromQuery(query)
+        };
+        
+      case 'calendar':
+        const dateInfo = this.extractDateFromQuery(query);
+        if (dateInfo) {
+          return { [dateInfo]: query };
+        }
+        return {};
+        
+      case 'interest':
+        return {
+          keywords: this.extractKeywordsFromQuery(query),
+          engagementLevel: 5
+        };
+        
+      default:
+        return {};
+    }
+  }
+
+  /**
+   * Extract update data for existing modules
+   */
+  private extractModuleUpdateData(query: string, moduleKey: string, profile: UserProfile): any {
+    const module = profile.context.modules?.[moduleKey];
+    if (!module) return {};
+
+    const intent = this.detectIntent(query);
+    
+    switch (module.type) {
+      case 'list':
+        if (intent === 'add') {
+          return this.extractItemsFromQuery(query);
+        } else if (intent === 'remove') {
+          return this.extractItemsToRemove(query, module.data);
+        }
+        break;
+        
+      case 'planner':
+        return {
+          tasks: this.extractTasksFromQuery(query),
+          guests: this.extractGuestsFromQuery(query)
+        };
+        
+      default:
+        return {};
+    }
+    
+    return {};
+  }
+
+  /**
+   * Helper methods for data extraction
+   */
+  private extractDateFromQuery(query: string): string | null {
+    // Simple date extraction - could be enhanced with a proper date parsing library
+    const datePatterns = [
+      /(\d{4}-\d{2}-\d{2})/,
+      /(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2}/i,
+      /(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s+\d{1,2}/i
+    ];
+    
+    for (const pattern of datePatterns) {
+      const match = query.match(pattern);
+      if (match) return match[1];
+    }
+    
+    return null;
+  }
+
+  private extractTasksFromQuery(query: string): string[] {
+    const taskPatterns = [
+      /(?:tasks?|todo|need to)\s*:?\s*([^.!?]+)/i,
+      /(?:book|send|buy|get|organize)\s+([^.!?]+)/gi
+    ];
+    
+    const tasks: string[] = [];
+    for (const pattern of taskPatterns) {
+      const matches = query.matchAll(pattern);
+      for (const match of matches) {
+        if (match[1]) {
+          tasks.push(match[1].trim());
+        }
+      }
+    }
+    
+    return tasks;
+  }
+
+  private extractGuestsFromQuery(query: string): string[] {
+    const guestPattern = /(?:guests?|invite|attendees?)\s*:?\s*([^.!?]+)/i;
+    const match = query.match(guestPattern);
+    
+    if (match) {
+      return match[1].split(/[,;&]/).map(guest => guest.trim()).filter(guest => guest.length > 0);
+    }
+    
+    return [];
+  }
+
+  private extractKeywordsFromQuery(query: string): string[] {
+    // Extract meaningful keywords (nouns, adjectives)
+    const words = query.toLowerCase().split(/\s+/);
+    const stopWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by']);
+    
+    return words.filter(word => 
+      word.length > 3 && 
+      !stopWords.has(word) && 
+      /^[a-zA-Z]+$/.test(word)
+    ).slice(0, 5); // Limit to 5 keywords
+  }
+
+  private extractItemsFromQuery(query: string): string[] {
+    const itemPattern = /(?:add|include)\s+([^.!?]+)/i;
+    const match = query.match(itemPattern);
+    
+    if (match) {
+      return match[1].split(/[,;&]/).map(item => item.trim()).filter(item => item.length > 0);
+    }
+    
+    return [];
+  }
+
+  private extractItemsToRemove(query: string, currentItems: string[]): string[] {
+    const removePattern = /(?:remove|delete)\s+([^.!?]+)/i;
+    const match = query.match(removePattern);
+    
+    if (match) {
+      const itemsToRemove = match[1].split(/[,;&]/).map(item => item.trim());
+      return currentItems.filter(item => 
+        itemsToRemove.some(removeItem => 
+          item.toLowerCase().includes(removeItem.toLowerCase())
+        )
+      );
+    }
+    
+    return [];
+  }
+
+  /**
    * Validate profile against schema
    */
   private validateProfile(profileData: any): UserProfile {
@@ -359,7 +667,8 @@ export class UserProfileService {
           commonTopics: [],
           timePatterns: {},
           contextualPreferences: {}
-        }
+        },
+        modules: {}
       },
       serviceSpecific: {},
       metadata: {

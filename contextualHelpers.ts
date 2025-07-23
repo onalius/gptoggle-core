@@ -7,9 +7,9 @@
  * @version 2.0.0
  */
 
-import { UserProfile } from '../profile/userProfileService';
+import { UserProfile } from './userProfileService';
 import { QueryType } from './queryClassifier';
-import { Logger } from '../utils/logger';
+import { Logger } from './src/utils/logger';
 
 export interface ContextualEnhancementRequest {
   originalQuery: string;

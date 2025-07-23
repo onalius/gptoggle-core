@@ -58,6 +58,37 @@
       ],
       "timePatterns": {},
       "contextualPreferences": {}
+    },
+    "modules": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["list", "planner", "calendar", "interest", "tracker", "goal"]
+            },
+            "data": {
+              "type": ["object", "array"]
+            },
+            "metadata": {
+              "type": "object",
+              "properties": {
+                "createdAt": {"type": "string", "format": "date-time"},
+                "lastUpdated": {"type": "string", "format": "date-time"},
+                "lastAccessed": {"type": "string", "format": "date-time"},
+                "priority": {"type": "number", "minimum": 1, "maximum": 10},
+                "tags": {"type": "array", "items": {"type": "string"}},
+                "archived": {"type": "boolean"}
+              },
+              "required": ["createdAt", "lastUpdated"]
+            }
+          },
+          "required": ["type", "data", "metadata"]
+        }
+      },
+      "additionalProperties": false
     }
   },
   "serviceSpecific": {
