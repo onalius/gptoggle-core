@@ -54,6 +54,7 @@ import logging
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src', 'modules'))
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'modules'))
 from moduleService import ModuleService
 
 # Configure logging

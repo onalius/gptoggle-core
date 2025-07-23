@@ -1,0 +1,43 @@
+{
+  "name": "gptoggle-core",
+  "version": "1.0.3",
+  "description": "Multi-provider AI model wrapper with intelligent model selection",
+  "main": "gptoggle_enhanced.js",
+  "exports": {
+    ".": "./gptoggle_enhanced.js",
+    "./minimal": "./gptoggle.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ai",
+    "openai",
+    "claude",
+    "gemini",
+    "grok",
+    "gpt",
+    "chatgpt",
+    "api",
+    "wrapper",
+    "llm",
+    "multi-provider",
+    "gptoggle"
+  ],
+  "author": "GPToggle Team <lano@docdel.io>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/onalius/gptoggle-core.git"
+  },
+  "bugs": {
+    "url": "https://github.com/onalius/gptoggle-core/issues"
+  },
+  "homepage": "https://github.com/onalius/gptoggle-core#readme",
+  "dependencies": {
+    "axios": "^1.4.0"
+  },
+  "optionalDependencies": {
+    "openai": "^4.0.0"
+  }
+}

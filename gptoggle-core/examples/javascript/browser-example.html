@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPToggle Browser Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        
+        h1, h2, h3 {
+            color: #0066cc;
+        }
+        
+        .container {
+            margin-bottom: 30px;
+        }
+        
+        .api-key-container {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        textarea {
+            height: 100px;
+        }
+        
+        button {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #0052a3;
+        }
+        
+        .results {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            border-left: 4px solid #0066cc;
+        }
+        
+        .note {
+            background: #fffde7;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 4px solid #ffca28;
+            margin-bottom: 20px;
+        }
+        
+        code {
+            font-family: monospace;
+            background: #f1f1f1;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>GPToggle Browser Example</h1>
+    
+    <div class="note">
+        <p><strong>Note:</strong> This example demonstrates using GPToggle in a browser environment. Your API keys are stored in browser localStorage and never sent to any server other than the official API endpoints for the providers you select.</p>
+    </div>
+    
+    <div class="container api-key-container">
+        <h2>API Key Setup</h2>
+        <div class="form-group">
+            <label for="openai-key">OpenAI API Key:</label>
+            <input type="text" id="openai-key" placeholder="sk-...">
+        </div>
+        <div class="form-group">
+            <label for="claude-key">Anthropic API Key:</label>
+            <input type="text" id="claude-key" placeholder="sk-ant-...">
+        </div>
+        <div class="form-group">
+            <label for="gemini-key">Google API Key:</label>
+            <input type="text" id="gemini-key" placeholder="AIza...">
+        </div>
+        <div class="form-group">
+            <label for="grok-key">xAI API Key:</label>
+            <input type="text" id="grok-key" placeholder="...">
+        </div>
+        <button id="save-keys">Save Keys to localStorage</button>
+        <button id="clear-keys">Clear All Keys</button>
+    </div>
+    
+    <div class="container">
+        <h2>Model Recommendation</h2>
+        <div class="form-group">
+            <label for="recommendation-prompt">Enter a prompt:</label>
+            <textarea id="recommendation-prompt">Create a business plan for a SaaS startup and design a landing page</textarea>
+        </div>
+        <button id="get-recommendation">Get Model Recommendation</button>
+        <div id="recommendation-results" class="results" style="display: none;"></div>
+    </div>
+    
+    <div class="container">
+        <h2>Task-Specific Recommendations</h2>
+        <div class="form-group">
+            <label for="task-prompt">Enter a complex multi-task prompt:</label>
+            <textarea id="task-prompt">Design a marketing campaign for our product and implement a landing page with analytics tracking</textarea>
+        </div>
+        <button id="get-tasks">Get Task Recommendations</button>
+        <div id="task-results" class="results" style="display: none;"></div>
+    </div>
+    
+    <div class="container">
+        <h2>Generate Response</h2>
+        <div class="form-group">
+            <label for="response-prompt">Enter a prompt:</label>
+            <textarea id="response-prompt">Explain quantum computing in simple terms</textarea>
+        </div>
+        <div class="form-group">
+            <label for="provider-select">Provider (optional):</label>
+            <select id="provider-select">
+                <option value="">Auto-select</option>
+                <option value="openai">OpenAI</option>
+                <option value="claude">Claude</option>
+                <option value="gemini">Gemini</option>
+                <option value="grok">Grok</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="model-select">Model (optional):</label>
+            <input type="text" id="model-select" placeholder="Leave blank for auto-selection">
+        </div>
+        <button id="get-response">Generate Response</button>
+        <div id="response-results" class="results" style="display: none;"></div>
+    </div>
+    
+    <!-- Load the GPToggle script -->
+    <script src="../../gptoggle_enhanced.js"></script>
+    
+    <script>
+        // Initialize GPToggle with localStorage API keys
+        function initGPToggle() {
+            const apiKeys = {
+                openai: localStorage.getItem('openai-api-key'),
+                claude: localStorage.getItem('claude-api-key'),
+                gemini: localStorage.getItem('gemini-api-key'),
+                grok: localStorage.getItem('grok-api-key')
+            };
+            
+            return new GPToggle({}, apiKeys);
+        }
+        
+        // Load any existing keys from localStorage
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('openai-key').value = localStorage.getItem('openai-api-key') || '';
+            document.getElementById('claude-key').value = localStorage.getItem('claude-api-key') || '';
+            document.getElementById('gemini-key').value = localStorage.getItem('gemini-api-key') || '';
+            document.getElementById('grok-key').value = localStorage.getItem('grok-api-key') || '';
+        });
+        
+        // Save API keys to localStorage
+        document.getElementById('save-keys').addEventListener('click', () => {
+            localStorage.setItem('openai-api-key', document.getElementById('openai-key').value);
+            localStorage.setItem('claude-api-key', document.getElementById('claude-key').value);
+            localStorage.setItem('gemini-api-key', document.getElementById('gemini-key').value);
+            localStorage.setItem('grok-api-key', document.getElementById('grok-key').value);
+            
+            alert('API keys saved to localStorage');
+        });
+        
+        // Clear all keys from localStorage
+        document.getElementById('clear-keys').addEventListener('click', () => {
+            localStorage.removeItem('openai-api-key');
+            localStorage.removeItem('claude-api-key');
+            localStorage.removeItem('gemini-api-key');
+            localStorage.removeItem('grok-api-key');
+            
+            document.getElementById('openai-key').value = '';
+            document.getElementById('claude-key').value = '';
+            document.getElementById('gemini-key').value = '';
+            document.getElementById('grok-key').value = '';
+            
+            alert('All API keys cleared');
+        });
+        
+        // Get model recommendation
+        document.getElementById('get-recommendation').addEventListener('click', () => {
+            const prompt = document.getElementById('recommendation-prompt').value;
+            const resultElement = document.getElementById('recommendation-results');
+            
+            if (!prompt) {
+                alert('Please enter a prompt');
+                return;
+            }
+            
+            try {
+                const gptoggle = initGPToggle();
+                
+                // Check available providers
+                const providers = gptoggle.getAvailableProviders();
+                if (providers.length === 0) {
+                    resultElement.innerHTML = '<p>No API keys found. Please enter at least one provider API key and save it.</p>';
+                    resultElement.style.display = 'block';
+                    return;
+                }
+                
+                // Get recommendation
+                const recommendation = gptoggle.recommendModel(prompt);
+                
+                // Display results
+                resultElement.innerHTML = `
+                    <h3>Recommendation:</h3>
+                    <p><strong>Provider:</strong> ${recommendation.provider}</p>
+                    <p><strong>Model:</strong> ${recommendation.model}</p>
+                    <p><strong>Reason:</strong> ${recommendation.reason}</p>
+                    
+                    <h3>Detected Tasks:</h3>
+                    <ul>
+                        ${recommendation.tasks.map(task => `<li>${task.task_description}</li>`).join('')}
+                    </ul>
+                `;
+                resultElement.style.display = 'block';
+            } catch (error) {
+                resultElement.innerHTML = `<p>Error: ${error.message}</p>`;
+                resultElement.style.display = 'block';
+            }
+        });
+        
+        // Get task-specific recommendations
+        document.getElementById('get-tasks').addEventListener('click', () => {
+            const prompt = document.getElementById('task-prompt').value;
+            const resultElement = document.getElementById('task-results');
+            
+            if (!prompt) {
+                alert('Please enter a prompt');
+                return;
+            }
+            
+            try {
+                const gptoggle = initGPToggle();
+                
+                // Check available providers
+                const providers = gptoggle.getAvailableProviders();
+                if (providers.length === 0) {
+                    resultElement.innerHTML = '<p>No API keys found. Please enter at least one provider API key and save it.</p>';
+                    resultElement.style.display = 'block';
+                    return;
+                }
+                
+                // Get task recommendations
+                const taskRecs = gptoggle.getTaskRecommendations(prompt);
+                
+                // Generate HTML for task recommendations
+                let tasksHtml = '';
+                taskRecs.task_recommendations.forEach(task => {
+                    tasksHtml += `
+                        <div>
+                            <h4>${task.task_description}</h4>
+                            <p><strong>Recommendations:</strong></p>
+                            <ul>
+                                ${task.recommendations.map(rec => 
+                                    `<li><strong>${rec.provider}:</strong> ${rec.model} - ${rec.strength}</li>`
+                                ).join('')}
+                            </ul>
+                        </div>
+                    `;
+                });
+                
+                // Display results
+                resultElement.innerHTML = `
+                    <h3>Overall Recommendation:</h3>
+                    <p><strong>Provider:</strong> ${taskRecs.overall_recommendation.provider}</p>
+                    <p><strong>Model:</strong> ${taskRecs.overall_recommendation.model}</p>
+                    <p><strong>Reason:</strong> ${taskRecs.overall_recommendation.reason}</p>
+                    
+                    <h3>Task-Specific Recommendations:</h3>
+                    ${tasksHtml}
+                `;
+                resultElement.style.display = 'block';
+                
+                // Generate and display model suggestions
+                const suggestions = gptoggle.generateModelSuggestions(
+                    prompt, 
+                    taskRecs.overall_recommendation.provider, 
+                    taskRecs.overall_recommendation.model
+                );
+                
+                resultElement.innerHTML += `
+                    <h3>Model Suggestions:</h3>
+                    <pre>${suggestions}</pre>
+                `;
+            } catch (error) {
+                resultElement.innerHTML = `<p>Error: ${error.message}</p>`;
+                resultElement.style.display = 'block';
+            }
+        });
+        
+        // Generate response
+        document.getElementById('get-response').addEventListener('click', async () => {
+            const prompt = document.getElementById('response-prompt').value;
+            const provider = document.getElementById('provider-select').value;
+            const model = document.getElementById('model-select').value;
+            const resultElement = document.getElementById('response-results');
+            
+            if (!prompt) {
+                alert('Please enter a prompt');
+                return;
+            }
+            
+            try {
+                resultElement.innerHTML = 'Generating response...';
+                resultElement.style.display = 'block';
+                
+                const gptoggle = initGPToggle();
+                
+                // Check available providers
+                const providers = gptoggle.getAvailableProviders();
+                if (providers.length === 0) {
+                    resultElement.innerHTML = '<p>No API keys found. Please enter at least one provider API key and save it.</p>';
+                    return;
+                }
+                
+                // Generate response
+                const response = await gptoggle.getResponse(prompt, provider || null, model || null);
+                
+                // Display results
+                resultElement.innerHTML = `
+                    <h3>Response:</h3>
+                    <p>${response.replace(/\n/g, '<br>')}</p>
+                `;
+            } catch (error) {
+                resultElement.innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>

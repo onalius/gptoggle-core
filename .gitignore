@@ -1,4 +1,4 @@
-# Python artifacts
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -16,28 +16,13 @@ parts/
 sdist/
 var/
 wheels/
+share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
-# Distribution / packaging
-*.manifest
-*.spec
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-.hypothesis/
-.pytest_cache/
-
-# Environments
+# Virtual environments
 .env
 .venv
 env/
@@ -45,43 +30,140 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.python-version
 
-# IDE files
-.idea/
+# IDEs
 .vscode/
+.idea/
 *.swp
 *.swo
+*~
 
-# Project specific
-attached_assets/
-claudetoggle-core/
-gptoggle-core/
-.replit
-.upm/
-replit.nix
-.replitenv
-.config/
-.breakpoints
-.replit.backup
-poetry.lock
-uv.lock
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+package-lock.json
+yarn.lock
 
-# API keys and secrets
-*config.local.js
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-secrets.json
-.secrets
-
-# Logs and databases
+# Logs
+logs
 *.log
-*.sql
-*.sqlite
 
-# Editor files
-*.pyc
-__pycache__/
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# TypeScript
+*.tsbuildinfo
+
+# OS
 .DS_Store
-.history/
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# API Keys and Secrets
+.env.local
+.env.production
+.env.development
+secrets.json
+api_keys.json
+
+# User data and profiles
+user_profiles/
+user_data/
+modules_data/
+
+# Replit specific
+.replit
+replit.nix
+.config/
+.upm/
+
+# Attached assets (development artifacts)
+attached_assets/
+
+# Test artifacts  
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+test-results/
+
+# Build artifacts
+*.whl
+*.tar.gz
+
+# Documentation builds
+docs/_build/
+site/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
